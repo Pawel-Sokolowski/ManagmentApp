@@ -38,14 +38,14 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // API Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/clients', require('./routes/clients'));
-app.use('/api/invoices', require('./routes/invoices'));
-app.use('/api/calendar', require('./routes/calendar'));
-app.use('/api/chat', require('./routes/chat'));
-app.use('/api/documents', require('./routes/documents'));
-app.use('/api/users', require('./routes/users'));
-app.use('/api/settings', require('./routes/settings'));
+// app.use('/api/auth', require('./routes/auth'));
+// app.use('/api/clients', require('./routes/clients'));
+// app.use('/api/invoices', require('./routes/invoices'));
+// app.use('/api/calendar', require('./routes/calendar'));
+// app.use('/api/chat', require('./routes/chat'));
+// app.use('/api/documents', require('./routes/documents'));
+// app.use('/api/users', require('./routes/users'));
+// app.use('/api/settings', require('./routes/settings'));
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
@@ -60,6 +60,25 @@ app.get('/api/health', async (req, res) => {
     res.status(503).json({ 
       status: 'unhealthy', 
       database: 'disconnected',
+      error: error.message 
+    });
+  }
+});
+
+// Database query endpoint for browser version
+app.post('/api/db-query', async (req, res) => {
+  try {
+    const { query, params } = req.body;
+    const result = await pool.query(query, params);
+    res.json({ 
+      success: true, 
+      data: result.rows,
+      rowCount: result.rowCount 
+    });
+  } catch (error) {
+    console.error('Database query error:', error);
+    res.status(500).json({ 
+      success: false, 
       error: error.message 
     });
   }
@@ -96,7 +115,12 @@ app.post('/api/init-database', async (req, res) => {
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../build')));
   
-  app.get('*', (req, res) => {
+  // Handle SPA routing - send all non-API requests to React app
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      return next(); // Let API routes handle their own 404s
+    }
+    // For all other requests, serve the React app
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
   });
 }

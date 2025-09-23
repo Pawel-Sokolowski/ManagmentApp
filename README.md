@@ -92,6 +92,40 @@ This will:
 - **Team Communication**: Use "Chat Zespołowy" for internal communication
 - **Generate Reports**: Access various reports through the dashboard
 
+## 🌐 Browser Demo
+
+A browser-based demo version is available that doesn't require installing the desktop application:
+
+### Running the Browser Demo
+
+```bash
+# Quick start (builds and runs the demo)
+npm run demo
+
+# For development (with hot reload)
+npm run demo-dev
+```
+
+The demo will be available at: **http://localhost:3001**
+
+### Demo Features
+
+- ✅ Full application interface
+- ✅ All UI components and navigation
+- ✅ Mock data for demonstration
+- ✅ Client management
+- ✅ Invoice generation
+- ✅ Calendar functionality
+- ✅ Team communication
+- ⚠️ Database features require PostgreSQL setup (optional for demo)
+
+### Demo Login Credentials
+
+- **Email**: admin@demo.com
+- **Password**: admin123
+
+The browser demo uses the same interface as the desktop version but runs in your web browser, making it perfect for showcasing the application to others without requiring installation.
+
 ## 🛠️ Development
 
 ### Development Setup
@@ -116,13 +150,22 @@ npm run dist-win
 
 ## 📝 Available Scripts
 
+### Desktop Application (Electron)
 - `npm run dev` - Start Vite development server
-- `npm run build` - Build the React application
-- `npm run server` - Start the Express.js backend server
-- `npm run setup-db` - Initialize PostgreSQL database with demo data
 - `npm run electron` - Start Electron in development mode
 - `npm run electron-dev` - Start both Vite dev server and Electron
 - `npm run dist-win` - Build Windows installer (.exe)
+- `npm run dist-mac` - Build macOS installer (.dmg)
+- `npm run dist-linux` - Build Linux installer (.AppImage)
+
+### Browser Demo
+- `npm run demo` - Build and run browser demo (http://localhost:3001)
+- `npm run demo-dev` - Run browser demo with hot reload
+
+### Development & Utilities
+- `npm run build` - Build the React application
+- `npm run server` - Start the Express.js backend server
+- `npm run setup-db` - Initialize PostgreSQL database with demo data
 
 ## 🏗️ Architecture
 
