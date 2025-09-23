@@ -96,7 +96,26 @@ This will:
 
 A browser-based demo version is available that doesn't require installing the desktop application:
 
-### Running the Browser Demo
+### 🚀 Live GitHub Pages Demo
+
+**[Try the live demo here!](https://pawel-sokolowski.github.io/ManagmentApp/)**
+
+The demo is automatically deployed to GitHub Pages and includes:
+- ✅ Full application interface
+- ✅ All UI components and navigation
+- ✅ Mock data for demonstration
+- ✅ Client management
+- ✅ Invoice generation
+- ✅ Calendar functionality
+- ✅ Team communication
+- ⚠️ No backend features (database operations are simulated)
+
+### 🔑 Demo Login Credentials
+
+- **Email**: admin@demo.com
+- **Password**: admin123
+
+### Running the Browser Demo Locally
 
 ```bash
 # Quick start (builds and runs the demo)
@@ -106,9 +125,9 @@ npm run demo
 npm run demo-dev
 ```
 
-The demo will be available at: **http://localhost:3001**
+The local demo will be available at: **http://localhost:3001**
 
-### Demo Features
+### Local Demo Features
 
 - ✅ Full application interface
 - ✅ All UI components and navigation
@@ -118,11 +137,6 @@ The demo will be available at: **http://localhost:3001**
 - ✅ Calendar functionality
 - ✅ Team communication
 - ⚠️ Database features require PostgreSQL setup (optional for demo)
-
-### Demo Login Credentials
-
-- **Email**: admin@demo.com
-- **Password**: admin123
 
 The browser demo uses the same interface as the desktop version but runs in your web browser, making it perfect for showcasing the application to others without requiring installation.
 
@@ -164,6 +178,7 @@ npm run dist-win
 
 ### Development & Utilities
 - `npm run build` - Build the React application
+- `npm run build:pages` - Build for GitHub Pages deployment
 - `npm run server` - Start the Express.js backend server
 - `npm run setup-db` - Initialize PostgreSQL database with demo data
 
