@@ -22,6 +22,7 @@ import { DocumentManager } from "./components/DocumentManager";
 import { MonthlyDataPanel } from "./components/MonthlyDataPanel";
 import { SystemSettings } from "./components/SystemSettings";
 import { TimeTracker } from "./components/TimeTracker";
+import { Login } from "./components/Login";
 import { Toaster } from "./components/ui/sonner";
 import { LayoutDashboard, Users, UserPlus, MessageSquare, Mail, FileText, Settings, CalendarDays, UserCog, MailOpen, FolderOpen, BarChart3, CreditCard, ScrollText, Building2, Timer } from "lucide-react";
 import { toast } from "sonner@2.0.3";
@@ -118,9 +119,19 @@ export default function App() {
   const [clients, setClients] = useState<Client[]>(mockClients);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [users, setUsers] = useState<User[]>(mockUsers);
-  const [currentUser] = useState<User>(mockUsers[0]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [emails, setEmails] = useState<Email[]>(initialEmails);
   const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>(mockEmailTemplates);
+
+  // If not logged in, show login screen
+  if (!currentUser) {
+    return (
+      <>
+        <Login onLogin={setCurrentUser} />
+        <Toaster />
+      </>
+    );
+  }
 
   // Email management functions
   const addEmail = (email: Omit<Email, 'id'>) => {
