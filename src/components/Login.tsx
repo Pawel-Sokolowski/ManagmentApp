@@ -3,8 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Building2, Lock, User } from 'lucide-react';
+import { Building2, Lock, User, Globe, Monitor } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
+import { isElectron } from '../utils/electronAPI';
 
 interface LoginProps {
   onLogin: (user: any) => void;
@@ -122,7 +123,19 @@ export function Login({ onLogin }: LoginProps) {
 
         <div className="text-center mt-6 text-sm text-gray-500">
           <p>System Zarządzania Biurem v1.0.0</p>
-          <p>Powered by React + Electron + PostgreSQL</p>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            {isElectron ? (
+              <>
+                <Monitor className="h-4 w-4" />
+                <span>Desktop App (Electron + React + PostgreSQL)</span>
+              </>
+            ) : (
+              <>
+                <Globe className="h-4 w-4" />
+                <span>Browser Demo (React + Express + PostgreSQL)</span>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
