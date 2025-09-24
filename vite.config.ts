@@ -6,6 +6,10 @@
   export default defineConfig({
     plugins: [react()],
     base: process.env.GITHUB_PAGES === 'true' ? '/ManagmentApp/' : '/',
+    define: {
+      // Add build timestamp for cache busting
+      __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString())
+    },
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
@@ -53,6 +57,43 @@
     build: {
       target: 'esnext',
       outDir: 'build',
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          // Enable manual chunks for better code splitting
+          manualChunks: {
+            // Vendor libraries
+            'vendor-react': ['react', 'react-dom'],
+            'vendor-radix': [
+              '@radix-ui/react-accordion',
+              '@radix-ui/react-alert-dialog',
+              '@radix-ui/react-avatar',
+              '@radix-ui/react-checkbox',
+              '@radix-ui/react-dialog',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-popover',
+              '@radix-ui/react-select',
+              '@radix-ui/react-switch',
+              '@radix-ui/react-tabs'
+            ],
+            'vendor-ui': [
+              'lucide-react',
+              'sonner',
+              'next-themes',
+              'class-variance-authority',
+              'clsx',
+              'tailwind-merge'
+            ],
+            'vendor-charts': ['recharts'],
+            'vendor-forms': ['react-hook-form', 'react-day-picker']
+          },
+          // Add hash to filenames for cache busting
+          assetFileNames: 'assets/[name].[hash][extname]',
+          chunkFileNames: 'assets/[name].[hash].js',
+          entryFileNames: 'assets/[name].[hash].js'
+        }
+      },
+      chunkSizeWarningLimit: 1000
     },
     server: {
       port: 3000,
