@@ -2,6 +2,16 @@
 
 A comprehensive office management system built with React, Electron, and PostgreSQL. This application provides a complete solution for managing clients, invoices, calendar events, team communication, and more.
 
+## 📥 Quick Download
+
+**Ready-to-use installers are available in [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases):**
+
+- **Windows:** `Office Management System Setup.exe` (Full installer) or `Office Management System-portable.exe` (Portable)
+- **Linux:** `Office Management System.AppImage` (Portable application)
+- **macOS:** `Office Management System.dmg` (Disk image installer)
+
+**🌐 Try Online:** [Browser Demo](https://pawel-sokolowski.github.io/ManagmentApp/)
+
 ## 🚀 Features
 
 - **Client Management**: Complete client database with contact information and document management

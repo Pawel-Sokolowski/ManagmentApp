@@ -1,8 +1,18 @@
 # Office Management System - Installer Guide
 
-## Creating Installers
+## 📥 Pre-Built Installers (Recommended)
 
-The application is configured with electron-builder to create standalone installers that require no external dependencies.
+**Ready-to-use installers are automatically built and available in [GitHub Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases):**
+
+- **Windows:** 
+  - `Office Management System Setup X.X.X.exe` - Full installer with setup wizard
+  - `Office Management System-X.X.X-portable.exe` - Portable version (no installation required)
+- **Linux:** `Office Management System-X.X.X.AppImage` - Portable Linux application
+- **macOS:** `Office Management System-X.X.X.dmg` - macOS disk image installer
+
+## 🔧 Building Installers from Source
+
+If you need to build installers from source, the application is configured with electron-builder to create standalone installers that require no external dependencies.
 
 ### Windows Installer
 
@@ -55,6 +65,29 @@ dist-electron/
 ├── Office Management System Setup 1.0.0.exe   # Windows installer  
 ├── Office Management System-1.0.0-portable.exe # Windows portable
 └── Office Management System-1.0.0.dmg         # macOS installer
+```
+
+## 🤖 Automated Releases
+
+Installers are automatically built and released via GitHub Actions:
+
+### Triggers
+- **Tag Push**: Push a tag in format `v*.*.*` (e.g., `v1.0.0`) to trigger automatic builds
+- **Manual Dispatch**: Manually trigger builds from GitHub Actions tab
+
+### Process
+1. **Multi-platform Build**: Simultaneously builds on Windows, Linux, and macOS
+2. **Artifact Upload**: Each platform uploads its installer
+3. **Release Creation**: Creates GitHub Release with all installers
+4. **Download Links**: Makes installers available at `/releases`
+
+### Creating a New Release
+```bash
+# Create and push a new version tag
+git tag v1.0.1
+git push origin v1.0.1
+
+# This automatically triggers the release workflow
 ```
 
 ## Configuration
