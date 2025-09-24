@@ -142,6 +142,63 @@ CREATE TABLE IF NOT EXISTS client_emails (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Ustawienia automatycznego fakturowania klientów
+CREATE TABLE IF NOT EXISTS client_auto_invoicing (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+    
+    -- Podstawowe ustawienia
+    enabled BOOLEAN DEFAULT false,
+    frequency VARCHAR(20) NOT NULL CHECK (frequency IN ('weekly', 'monthly', 'quarterly', 'yearly')),
+    amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+    description TEXT,
+    
+    -- Daty
+    next_invoice_date DATE,
+    last_invoice_date DATE,
+    
+    -- Ustawienia podatku i płatności
+    vat_rate DECIMAL(5,2) DEFAULT 23.00,
+    payment_terms INTEGER DEFAULT 14, -- days
+    invoice_template VARCHAR(100),
+    
+    -- Limity dokumentów i inne ograniczenia
+    documents_limit INTEGER DEFAULT 35,
+    documents_limit_warning BOOLEAN DEFAULT true,
+    max_hours_per_month INTEGER,
+    max_documents_per_month INTEGER,
+    
+    -- Dodatkowe ustawienia
+    additional_services TEXT[], -- Array of service names
+    notes TEXT,
+    
+    -- Metadata
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_by UUID REFERENCES users(id),
+    
+    UNIQUE(client_id) -- One auto-invoicing setting per client
+);
+
+-- Pozycje dla automatycznych faktur (szablon)
+CREATE TABLE IF NOT EXISTS client_auto_invoice_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    auto_invoicing_id UUID NOT NULL REFERENCES client_auto_invoicing(id) ON DELETE CASCADE,
+    
+    -- Szczegóły pozycji
+    name VARCHAR(300) NOT NULL,
+    description TEXT,
+    quantity DECIMAL(10,3) NOT NULL DEFAULT 1,
+    unit VARCHAR(20) DEFAULT 'szt',
+    unit_price DECIMAL(12,2) NOT NULL,
+    tax_rate DECIMAL(5,2) NOT NULL DEFAULT 23,
+    
+    -- Porządkowanie
+    sort_order INTEGER DEFAULT 0,
+    
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- ================================================================================================
 -- 3. SYSTEM FAKTUR I PŁATNOŚCI
 -- ================================================================================================
@@ -741,6 +798,16 @@ CREATE INDEX IF NOT EXISTS idx_clients_nip ON clients(nip);
 CREATE INDEX IF NOT EXISTS idx_clients_status ON clients(status);
 CREATE INDEX IF NOT EXISTS idx_clients_assigned_user ON clients(assigned_user);
 CREATE INDEX IF NOT EXISTS idx_clients_date_added ON clients(date_added);
+
+-- Client auto-invoicing indexes
+CREATE INDEX IF NOT EXISTS idx_client_auto_invoicing_client_id ON client_auto_invoicing(client_id);
+CREATE INDEX IF NOT EXISTS idx_client_auto_invoicing_enabled ON client_auto_invoicing(enabled);
+CREATE INDEX IF NOT EXISTS idx_client_auto_invoicing_next_date ON client_auto_invoicing(next_invoice_date);
+CREATE INDEX IF NOT EXISTS idx_client_auto_invoicing_frequency ON client_auto_invoicing(frequency);
+
+-- Auto invoice items indexes
+CREATE INDEX IF NOT EXISTS idx_auto_invoice_items_auto_invoicing_id ON client_auto_invoice_items(auto_invoicing_id);
+CREATE INDEX IF NOT EXISTS idx_auto_invoice_items_sort_order ON client_auto_invoice_items(auto_invoicing_id, sort_order);
 
 -- Invoice indexes
 CREATE INDEX IF NOT EXISTS idx_invoices_client_id ON invoices(client_id);

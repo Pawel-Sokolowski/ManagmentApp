@@ -81,9 +81,9 @@ export function ClientDetails({ client, onBack, onEdit }: ClientDetailsProps) {
                   <CardTitle className="text-2xl">
                     {client.firstName} {client.lastName}
                   </CardTitle>
-                  {client.position && client.company && (
+                  {client.position && (client.companyName || client.company) && (
                     <CardDescription>
-                      {client.position} w {client.company}
+                      {client.position} w {client.companyName || client.company}
                     </CardDescription>
                   )}
                 </div>
@@ -219,29 +219,35 @@ export function ClientDetails({ client, onBack, onEdit }: ClientDetailsProps) {
               <Separator />
 
               {/* ZUS Information */}
-              <div className="space-y-3">
-                <h3>Informacje ZUS</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
-                  {client.zusInfo.zusNumber && (
+              {client.zusInfo && (
+                <div className="space-y-3">
+                  <h3>Informacje ZUS</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
+                    {client.zusInfo.zusCode && (
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Kod ZUS</p>
+                        <p>{client.zusInfo.zusCode}</p>
+                      </div>
+                    )}
+                    {client.zusInfo.startDate && (
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Data rozpoczęcia</p>
+                        <p>{new Date(client.zusInfo.startDate).toLocaleDateString('pl-PL')}</p>
+                      </div>
+                    )}
+                    {client.zusInfo.calculatedEndDate && (
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Data zakończenia (obliczona)</p>
+                        <p>{new Date(client.zusInfo.calculatedEndDate).toLocaleDateString('pl-PL')}</p>
+                      </div>
+                    )}
                     <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">Numer ZUS</p>
-                      <p>{client.zusInfo.zusNumber}</p>
+                      <p className="text-sm text-muted-foreground">Ubezpieczenie zdrowotne</p>
+                      <p>{client.zusInfo.healthInsurance ? 'Tak' : 'Nie'}</p>
                     </div>
-                  )}
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Status ZUS</p>
-                    <p>{client.zusInfo.zusStatus === 'aktywny' ? 'Aktywny' : client.zusInfo.zusStatus === 'zawieszony' ? 'Zawieszony' : 'Nie dotyczy'}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Rodzaj składek</p>
-                    <p>{client.zusInfo.contributionType === 'pelne' ? 'Pełne' : client.zusInfo.contributionType === 'preferencyjna' ? 'Preferencyjne' : client.zusInfo.contributionType === 'minimalna' ? 'Minimalne' : 'Dobrowolne'}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Ubezpieczenie zdrowotne</p>
-                    <p>{client.zusInfo.healthInsurance ? 'Tak' : 'Nie'}</p>
                   </div>
                 </div>
-              </div>
+              )}
 
               <Separator />
 
@@ -288,6 +294,85 @@ export function ClientDetails({ client, onBack, onEdit }: ClientDetailsProps) {
                   )}
                 </div>
               </div>
+
+              <Separator />
+
+              {/* Automatic Invoicing Settings */}
+              {client.autoInvoicing && (
+                <div className="space-y-3">
+                  <h3 className="flex items-center gap-2">
+                    Automatyczne fakturowanie
+                    <Badge variant={client.autoInvoicing.enabled ? 'default' : 'secondary'}>
+                      {client.autoInvoicing.enabled ? 'Włączone' : 'Wyłączone'}
+                    </Badge>
+                  </h3>
+                  {client.autoInvoicing.enabled && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Częstotliwość</p>
+                        <p>{
+                          client.autoInvoicing.frequency === 'weekly' ? 'Co tydzień' :
+                          client.autoInvoicing.frequency === 'monthly' ? 'Co miesiąc' :
+                          client.autoInvoicing.frequency === 'quarterly' ? 'Co kwartał' :
+                          client.autoInvoicing.frequency === 'yearly' ? 'Co rok' : 
+                          client.autoInvoicing.frequency
+                        }</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Kwota netto</p>
+                        <p className="font-semibold">{client.autoInvoicing.amount.toFixed(2)} zł</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Stawka VAT</p>
+                        <p>{client.autoInvoicing.vatRate}%</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Termin płatności</p>
+                        <p>{client.autoInvoicing.paymentTerms} dni</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Limit dokumentów</p>
+                        <p>{client.autoInvoicing.documentsLimit} miesięcznie</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Ostrzeżenia o limicie</p>
+                        <p>{client.autoInvoicing.documentsLimitWarning ? 'Włączone' : 'Wyłączone'}</p>
+                      </div>
+                      {client.autoInvoicing.description && (
+                        <div className="col-span-2 space-y-1">
+                          <p className="text-sm text-muted-foreground">Opis usługi</p>
+                          <p>{client.autoInvoicing.description}</p>
+                        </div>
+                      )}
+                      {client.autoInvoicing.nextInvoiceDate && (
+                        <div className="space-y-1">
+                          <p className="text-sm text-muted-foreground">Następna faktura</p>
+                          <p>{new Date(client.autoInvoicing.nextInvoiceDate).toLocaleDateString('pl-PL')}</p>
+                        </div>
+                      )}
+                      {client.autoInvoicing.items && client.autoInvoicing.items.length > 0 && (
+                        <div className="col-span-2 space-y-1">
+                          <p className="text-sm text-muted-foreground">Pozycje na fakturze</p>
+                          <div className="space-y-1">
+                            {client.autoInvoicing.items.map((item, index) => (
+                              <div key={index} className="text-sm p-2 bg-gray-50 rounded">
+                                <strong>{item.name}</strong> - {item.quantity} {item.unit || 'szt'} × {item.unitPrice.toFixed(2)} zł
+                                {item.description && <div className="text-muted-foreground">{item.description}</div>}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {client.autoInvoicing.notes && (
+                        <div className="col-span-2 space-y-1">
+                          <p className="text-sm text-muted-foreground">Uwagi dotyczące fakturowania</p>
+                          <p className="text-sm">{client.autoInvoicing.notes}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <Separator />
 
@@ -339,7 +424,7 @@ export function ClientDetails({ client, onBack, onEdit }: ClientDetailsProps) {
           </Card>
 
           {/* Tags */}
-          {client.tags.length > 0 && (
+          {client.hiddenTags && client.hiddenTags.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -349,7 +434,7 @@ export function ClientDetails({ client, onBack, onEdit }: ClientDetailsProps) {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {client.tags.map((tag) => (
+                  {client.hiddenTags.map((tag) => (
                     <Badge key={tag} variant="outline">
                       {tag}
                     </Badge>
