@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -149,7 +149,7 @@ export function MonthlyDataPanel({ clients }: MonthlyDataPanelProps) {
     { id: '4', name: 'Piotr Zieliński', role: 'ksiegowa' }
   ]);
 
-  // Mock data z uproszczonymi dokumentami
+  // Mock data z uproszczonymi dokumentami - moved before useEffect
   const [monthlyData, setMonthlyData] = useState<MonthlyClientData[]>([
     {
       clientId: "1",
@@ -233,6 +233,39 @@ export function MonthlyDataPanel({ clients }: MonthlyDataPanelProps) {
       ]
     }
   ]);
+
+  // Dodaj useEffect na początku, aby załadować zapisane czasomierze
+  useEffect(() => {
+    const savedSessions = localStorage.getItem('monthlyTimer_activeSessions');
+    const savedMonthlyData = localStorage.getItem('monthlyTimer_monthlyData');
+    
+    if (savedSessions) {
+      try {
+        const sessions = JSON.parse(savedSessions);
+        setActiveSessions(sessions);
+      } catch (error) {
+        console.error('Error loading saved timer sessions:', error);
+      }
+    }
+    
+    if (savedMonthlyData) {
+      try {
+        const data = JSON.parse(savedMonthlyData);
+        setMonthlyData(data);
+      } catch (error) {
+        console.error('Error loading saved monthly data:', error);
+      }
+    }
+  }, []);
+
+  // Zapisz czasomierze do localStorage przy każdej zmianie
+  useEffect(() => {
+    localStorage.setItem('monthlyTimer_activeSessions', JSON.stringify(activeSessions));
+  }, [activeSessions]);
+
+  useEffect(() => {
+    localStorage.setItem('monthlyTimer_monthlyData', JSON.stringify(monthlyData));
+  }, [monthlyData]);
 
   const [globalSettings, setGlobalSettings] = useState<GlobalSettings>({
     defaultEmployeeContract: 0,
@@ -347,19 +380,45 @@ export function MonthlyDataPanel({ clients }: MonthlyDataPanelProps) {
     toast.success(`Status zaktualizowany: ${newStatus}`);
   };
 
-  // Obsługa czasomierza - tylko jeden aktywny na raz
+  // Obsługa czasomierza - automatyczne przełączanie między firmami
   const startTimer = (clientId: string) => {
-    // Sprawdź czy jakiś czasomierz już działa
-    const hasActiveTimer = activeSessions.length > 0 || monthlyData.some(data => data.activeTimer);
-    
-    if (hasActiveTimer) {
-      toast.error("Zatrzymaj obecny czasomierz przed rozpoczęciem nowego");
-      return;
-    }
-
     const client = clients.find(c => c.id === clientId);
     if (!client) return;
 
+    // Sprawdź czy czasomierz dla tego klienta już działa
+    const currentSession = activeSessions.find(s => s.clientId === clientId);
+    if (currentSession) {
+      toast.info(`Czasomierz dla ${client.companyName} już działa`);
+      return;
+    }
+
+    // Zatrzymaj wszystkie aktywne czasomierze
+    if (activeSessions.length > 0) {
+      activeSessions.forEach(session => {
+        const duration = Math.floor((new Date().getTime() - new Date(session.startTime).getTime()) / 60000);
+        const prevClient = clients.find(c => c.id === session.clientId);
+        
+        // Zapisz czas dla poprzedniego klienta
+        setMonthlyData(prev => 
+          prev.map(data => 
+            data.clientId === session.clientId && data.month === selectedMonth && data.year === selectedYear
+              ? { 
+                ...data, 
+                activeTimer: false,
+                timeTracked: data.timeTracked + duration,
+                lastTimeEntry: new Date().toISOString()
+              }
+              : data
+          )
+        );
+
+        if (prevClient && duration > 0) {
+          toast.success(`Zatrzymano czasomierz dla ${prevClient.companyName} (${Math.floor(duration/60)}h ${duration%60}m)`);
+        }
+      });
+    }
+
+    // Uruchom nowy czasomierz
     const newSession: ClientTimeSession = {
       clientId,
       startTime: new Date().toISOString(),
