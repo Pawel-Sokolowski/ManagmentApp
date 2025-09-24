@@ -32,9 +32,15 @@ export function getEmailDomainType(email: string): 'business' | 'personal' | 'go
 // Date utilities for ZUS calculations
 export function calculateZusEndDate(startDate: string, duration: number = 12): string {
   if (!startDate) return '';
+  
   const start = new Date(startDate);
+  if (isNaN(start.getTime())) return '';
+  
   const end = new Date(start);
   end.setMonth(end.getMonth() + duration);
+  
+  if (isNaN(end.getTime())) return '';
+  
   return end.toISOString().split('T')[0];
 }
 
