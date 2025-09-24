@@ -114,53 +114,30 @@ function DraggableElement({ element, onUpdate, onSelect, isSelected }: Draggable
     }),
   });
 
-  const [, drop] = useDrop({
-    accept: 'element',
-    hover: (item: any, monitor) => {
-      if (!ref.current) return;
-      
-      const dragIndex = item.id;
-      const hoverIndex = element.id;
-      
-      if (dragIndex === hoverIndex) return;
-      
-      const hoverBoundingRect = ref.current.getBoundingClientRect();
-      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      if (!clientOffset) return;
-      
-      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-      
-      // Aktualizuj pozycję
-      const newX = clientOffset.x - hoverBoundingRect.left;
-      const newY = clientOffset.y - hoverBoundingRect.top;
-      
-      onUpdate(element.id, {
-        position: { x: newX, y: newY }
-      });
-    },
-  });
-
-  drag(drop(ref));
+  // Remove the hover drop logic that was causing issues
+  drag(ref);
 
   return (
     <div
       ref={ref}
-      className={`absolute cursor-move border-2 ${
-        isSelected ? 'border-blue-500' : 'border-transparent hover:border-gray-300'
-      } ${isDragging ? 'opacity-50' : ''}`}
+      className={`absolute cursor-move border-2 transition-all duration-200 ${
+        isSelected ? 'border-blue-500 shadow-lg' : 'border-transparent hover:border-gray-300'
+      } ${isDragging ? 'opacity-50 z-50' : 'hover:shadow-md'}`}
       style={{
         left: element.position.x,
         top: element.position.y,
         width: element.size.width,
         height: element.size.height,
-        fontSize: element.styles.fontSize,
-        fontWeight: element.styles.fontWeight,
-        color: element.styles.color,
-        textAlign: element.styles.textAlign,
-        backgroundColor: element.styles.backgroundColor,
+        fontSize: element.styles?.fontSize || 14,
+        fontWeight: element.styles?.fontWeight || 'normal',
+        color: element.styles?.color || '#000000',
+        textAlign: element.styles?.textAlign || 'left',
+        backgroundColor: element.styles?.backgroundColor || 'transparent',
       }}
-      onClick={() => onSelect(element.id)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(element.id);
+      }}
     >
       {isSelected && (
         <div className="absolute -top-6 left-0 bg-blue-500 text-white px-2 py-1 text-xs rounded">
@@ -234,36 +211,55 @@ interface A4PreviewProps {
 }
 
 function A4Preview({ template, selectedElementId, onUpdateElement, onSelectElement, onDropElement }: A4PreviewProps) {
-  const [, drop] = useDrop({
+  const [{ isOver }, drop] = useDrop({
     accept: ['element', 'new-element'],
     drop: (item: any, monitor) => {
       const offset = monitor.getClientOffset();
       const containerRect = document.getElementById('a4-preview')?.getBoundingClientRect();
       
       if (offset && containerRect) {
-        const x = offset.x - containerRect.left;
-        const y = offset.y - containerRect.top;
+        // Account for scale transformation (0.6) and margins
+        const scale = 0.6;
+        const rawX = (offset.x - containerRect.left) / scale;
+        const rawY = (offset.y - containerRect.top) / scale;
+        
+        // Convert margins from mm to pixels (assuming 96 DPI: 1mm ≈ 3.78px)
+        const marginLeft = template.pageSettings?.margins?.left || 10;
+        const marginTop = template.pageSettings?.margins?.top || 10;
+        const marginLeftPx = marginLeft * 3.78;
+        const marginTopPx = marginTop * 3.78;
+        
+        const x = Math.max(0, rawX - marginLeftPx);
+        const y = Math.max(0, rawY - marginTopPx);
         
         if (item.elementType) {
-          // Nowy element z panelu
+          // New element from panel
           onDropElement(item.elementType, { x, y });
+        } else if (item.id) {
+          // Existing element being moved
+          onUpdateElement(item.id, { position: { x, y } });
         }
       }
     },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
   });
 
   return (
     <div
       id="a4-preview"
       ref={drop}
-      className="relative bg-white shadow-lg mx-auto"
+      className={`relative bg-white shadow-lg mx-auto transition-all duration-200 ${
+        isOver ? 'ring-2 ring-blue-400 ring-opacity-50 bg-blue-50' : ''
+      }`}
       style={{
         width: '210mm',
         height: '297mm',
         transform: 'scale(0.6)',
         transformOrigin: 'top center',
-        backgroundColor: template.pageSettings.backgroundColor,
-        padding: `${template.pageSettings.margins.top}mm ${template.pageSettings.margins.right}mm ${template.pageSettings.margins.bottom}mm ${template.pageSettings.margins.left}mm`,
+        backgroundColor: template.pageSettings?.backgroundColor || '#ffffff',
+        padding: `${template.pageSettings?.margins?.top || 10}mm ${template.pageSettings?.margins?.right || 10}mm ${template.pageSettings?.margins?.bottom || 10}mm ${template.pageSettings?.margins?.left || 10}mm`,
       }}
     >
       {/* Domyślne elementy faktury */}
@@ -306,19 +302,25 @@ function ElementPanel({ onAddElement }: ElementPanelProps) {
             <div
               key={type}
               ref={drag}
-              className={`border rounded-lg p-3 cursor-move hover:bg-gray-50 ${
-                isDragging ? 'opacity-50' : ''
+              className={`border rounded-lg p-3 cursor-move transition-all duration-200 ${
+                isDragging 
+                  ? 'opacity-50 scale-105 border-blue-400 bg-blue-50' 
+                  : 'hover:bg-gray-50 hover:border-gray-400 hover:scale-105'
               }`}
               onClick={() => onAddElement(type)}
+              title={`Przeciągnij ${label.toLowerCase()} na podgląd lub kliknij, aby dodać`}
             >
               <div className="flex flex-col items-center gap-2">
                 <Icon className="h-6 w-6 text-gray-600" />
-                <span className="text-xs">{label}</span>
+                <span className="text-xs text-center">{label}</span>
               </div>
             </div>
           );
         })}
       </div>
+      <p className="text-xs text-muted-foreground">
+        💡 Przeciągnij elementy na podgląd A4 lub kliknij, aby dodać
+      </p>
     </div>
   );
 }
