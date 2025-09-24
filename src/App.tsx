@@ -10,6 +10,7 @@ import { ClientDetails } from "./components/ClientDetails";
 import { Login } from "./components/Login";
 import { Toaster } from "./components/ui/sonner";
 import { LoadingSpinner } from "./components/common/LoadingSpinner";
+import { PermissionProvider } from "./contexts/PermissionContext";
 import { LayoutDashboard, Users, UserPlus, MessageSquare, Mail, FileText, Settings, CalendarDays, UserCog, MailOpen, FolderOpen, BarChart3, CreditCard, ScrollText, Building2, Timer } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 import { Client, User, EmailTemplate, Email } from "./types/client";
@@ -23,7 +24,7 @@ const EnhancedEmailCenter = lazy(() => import("./components/EnhancedEmailCenter"
 const EnhancedInvoiceManager = lazy(() => import("./components/EnhancedInvoiceManager").then(module => ({ default: module.EnhancedInvoiceManager })));
 const AdvancedCalendar = lazy(() => import("./components/AdvancedCalendar").then(module => ({ default: module.AdvancedCalendar })));
 const UserManagement = lazy(() => import("./components/UserManagement").then(module => ({ default: module.UserManagement })));
-const InvoiceTemplates = lazy(() => import("./components/InvoiceTemplates").then(module => ({ default: module.InvoiceTemplates })));
+const InvoiceTemplates = lazy(() => import("./components/SimpleInvoiceTemplates").then(module => ({ default: module.SimpleInvoiceTemplates })));
 const EmailTemplates = lazy(() => import("./components/EmailTemplates").then(module => ({ default: module.EmailTemplates })));
 const UserProfileManagement = lazy(() => import("./components/UserProfileManagement").then(module => ({ default: module.UserProfileManagement })));
 const DocumentManager = lazy(() => import("./components/DocumentManager").then(module => ({ default: module.DocumentManager })));
@@ -453,8 +454,9 @@ export default function App() {
   ];
 
   return (
-    <SidebarProvider>
-      <div className="flex h-screen w-full">
+    <PermissionProvider>
+      <SidebarProvider>
+        <div className="flex h-screen w-full">
         <Sidebar>
           <SidebarContent>
             <SidebarGroup>
@@ -578,5 +580,6 @@ export default function App() {
       
       <Toaster />
     </SidebarProvider>
+    </PermissionProvider>
   );
 }
