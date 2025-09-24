@@ -149,40 +149,7 @@ export function MonthlyDataPanel({ clients }: MonthlyDataPanelProps) {
     { id: '4', name: 'Piotr Zieliński', role: 'ksiegowa' }
   ]);
 
-  // Dodaj useEffect na początku, aby załadować zapisane czasomierze
-  useEffect(() => {
-    const savedSessions = localStorage.getItem('monthlyTimer_activeSessions');
-    const savedMonthlyData = localStorage.getItem('monthlyTimer_monthlyData');
-    
-    if (savedSessions) {
-      try {
-        const sessions = JSON.parse(savedSessions);
-        setActiveSessions(sessions);
-      } catch (error) {
-        console.error('Error loading saved timer sessions:', error);
-      }
-    }
-    
-    if (savedMonthlyData) {
-      try {
-        const data = JSON.parse(savedMonthlyData);
-        setMonthlyData(data);
-      } catch (error) {
-        console.error('Error loading saved monthly data:', error);
-      }
-    }
-  }, []);
-
-  // Zapisz czasomierze do localStorage przy każdej zmianie
-  useEffect(() => {
-    localStorage.setItem('monthlyTimer_activeSessions', JSON.stringify(activeSessions));
-  }, [activeSessions]);
-
-  useEffect(() => {
-    localStorage.setItem('monthlyTimer_monthlyData', JSON.stringify(monthlyData));
-  }, [monthlyData]);
-
-  // Mock data z uproszczonymi dokumentami
+  // Mock data z uproszczonymi dokumentami - moved before useEffect
   const [monthlyData, setMonthlyData] = useState<MonthlyClientData[]>([
     {
       clientId: "1",
@@ -266,6 +233,39 @@ export function MonthlyDataPanel({ clients }: MonthlyDataPanelProps) {
       ]
     }
   ]);
+
+  // Dodaj useEffect na początku, aby załadować zapisane czasomierze
+  useEffect(() => {
+    const savedSessions = localStorage.getItem('monthlyTimer_activeSessions');
+    const savedMonthlyData = localStorage.getItem('monthlyTimer_monthlyData');
+    
+    if (savedSessions) {
+      try {
+        const sessions = JSON.parse(savedSessions);
+        setActiveSessions(sessions);
+      } catch (error) {
+        console.error('Error loading saved timer sessions:', error);
+      }
+    }
+    
+    if (savedMonthlyData) {
+      try {
+        const data = JSON.parse(savedMonthlyData);
+        setMonthlyData(data);
+      } catch (error) {
+        console.error('Error loading saved monthly data:', error);
+      }
+    }
+  }, []);
+
+  // Zapisz czasomierze do localStorage przy każdej zmianie
+  useEffect(() => {
+    localStorage.setItem('monthlyTimer_activeSessions', JSON.stringify(activeSessions));
+  }, [activeSessions]);
+
+  useEffect(() => {
+    localStorage.setItem('monthlyTimer_monthlyData', JSON.stringify(monthlyData));
+  }, [monthlyData]);
 
   const [globalSettings, setGlobalSettings] = useState<GlobalSettings>({
     defaultEmployeeContract: 0,
