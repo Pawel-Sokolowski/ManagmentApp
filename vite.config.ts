@@ -53,6 +53,23 @@
     build: {
       target: 'esnext',
       outDir: 'build',
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            ui: [
+              '@radix-ui/react-dialog', 
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-select',
+              '@radix-ui/react-tabs',
+              '@radix-ui/react-popover'
+            ],
+            icons: ['lucide-react'],
+            forms: ['react-hook-form'],
+            charts: ['recharts']
+          }
+        }
+      }
     },
     server: {
       port: 3000,
