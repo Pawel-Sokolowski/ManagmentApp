@@ -1,49 +1,41 @@
 import { Clock, Zap } from "lucide-react";
-import { AutomaticInvoicing } from "./components/AutomaticInvoicing";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import { BankIntegration } from "./components/BankIntegration";
-import { ContractManagement } from "./components/ContractManagement";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { ActiveTimerDisplay } from "./components/ActiveTimerDisplay";
 import { Dashboard } from "./components/Dashboard";
 import { ClientForm } from "./components/ClientForm";
 import { ClientList } from "./components/ClientList";
 import { ClientDetails } from "./components/ClientDetails";
-import { TeamChat } from "./components/TeamChat";
-import { EnhancedEmailCenter } from "./components/EnhancedEmailCenter";
-import { EnhancedInvoiceManager } from "./components/EnhancedInvoiceManager";
-import { AdvancedCalendar } from "./components/AdvancedCalendar";
-import { UserManagement } from "./components/UserManagement";
-import { InvoiceTemplates } from "./components/InvoiceTemplates";
-import { EmailTemplates } from "./components/EmailTemplates";
-import { UserProfileManagement } from "./components/UserProfileManagement";
-import { DocumentManager } from "./components/DocumentManager";
-import { MonthlyDataPanel } from "./components/MonthlyDataPanel";
-import { SystemSettings } from "./components/SystemSettings";
-import { TimeTracker } from "./components/TimeTracker";
 import { Login } from "./components/Login";
 import { Toaster } from "./components/ui/sonner";
+import { LoadingSpinner } from "./components/common/LoadingSpinner";
 import { LayoutDashboard, Users, UserPlus, MessageSquare, Mail, FileText, Settings, CalendarDays, UserCog, MailOpen, FolderOpen, BarChart3, CreditCard, ScrollText, Building2, Timer } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 import { Client, User, EmailTemplate, Email } from "./types/client";
+
+// Lazy load heavy components to reduce initial bundle size
+const AutomaticInvoicing = lazy(() => import("./components/AutomaticInvoicing").then(module => ({ default: module.AutomaticInvoicing })));
+const BankIntegration = lazy(() => import("./components/BankIntegration").then(module => ({ default: module.BankIntegration })));
+const ContractManagement = lazy(() => import("./components/ContractManagement").then(module => ({ default: module.ContractManagement })));
+const TeamChat = lazy(() => import("./components/TeamChat").then(module => ({ default: module.TeamChat })));
+const EnhancedEmailCenter = lazy(() => import("./components/EnhancedEmailCenter").then(module => ({ default: module.EnhancedEmailCenter })));
+const EnhancedInvoiceManager = lazy(() => import("./components/EnhancedInvoiceManager").then(module => ({ default: module.EnhancedInvoiceManager })));
+const AdvancedCalendar = lazy(() => import("./components/AdvancedCalendar").then(module => ({ default: module.AdvancedCalendar })));
+const UserManagement = lazy(() => import("./components/UserManagement").then(module => ({ default: module.UserManagement })));
+const InvoiceTemplates = lazy(() => import("./components/InvoiceTemplates").then(module => ({ default: module.InvoiceTemplates })));
+const EmailTemplates = lazy(() => import("./components/EmailTemplates").then(module => ({ default: module.EmailTemplates })));
+const UserProfileManagement = lazy(() => import("./components/UserProfileManagement").then(module => ({ default: module.UserProfileManagement })));
+const DocumentManager = lazy(() => import("./components/DocumentManager").then(module => ({ default: module.DocumentManager })));
+const MonthlyDataPanel = lazy(() => import("./components/MonthlyDataPanel").then(module => ({ default: module.MonthlyDataPanel })));
+const SystemSettings = lazy(() => import("./components/SystemSettings").then(module => ({ default: module.SystemSettings })));
+const TimeTracker = lazy(() => import("./components/TimeTracker").then(module => ({ default: module.TimeTracker })));
 
 type View = 'dashboard' | 'clients' | 'add-client' | 'edit-client' | 'view-client' | 'chat' | 'email' | 'invoices' | 'calendar' | 'users' | 'email-templates' | 'invoice-templates' | 'profile' | 'documents' | 'monthly-data' | 'settings' | 'bank-integration' | 'contracts' | 'time-tracker' | 'auto-invoicing';
 
 // Mock data - should be moved to separate file
 import { mockClients } from "./data/mockClients";
-
-const mockUsers: User[] = [
-  {
-    id: '1',
-    firstName: 'Jan',
-    lastName: 'Kowalski',
-    email: 'jan.kowalski@firma.pl',
-    role: 'administrator',
-    isActive: true,
-    permissions: []
-  }
-];
+import { mockUsers, mockEmailTemplates } from "./data/mockData";
 
 const initialEmails: Email[] = [
   {
@@ -96,21 +88,6 @@ const initialEmails: Email[] = [
     isStarred: false,
     isArchived: false,
     isDeleted: false
-  }
-];
-
-const mockEmailTemplates: EmailTemplate[] = [
-  {
-    id: '1',
-    name: 'Oferta księgowa',
-    subject: 'Oferta na usługi księgowe',
-    content: 'Szanowni Państwo,\n\nW odpowiedzi na Państwa zapytanie, przesyłamy ofertę na kompleksową obsługę księgową.\n\nNasza oferta obejmuje:\n- Pełną obsługę księgową\n- Rozliczenia VAT\n- Sporządzanie deklaracji\n- Konsultacje podatkowe\n\nPozdrawiam,\n[Imię Nazwisko]'
-  },
-  {
-    id: '2',
-    name: 'Przypomnienie o płatności',
-    subject: 'Przypomnienie o płatności faktury',
-    content: 'Szanowni Państwo,\n\nUprzejmie przypominamy o płatności faktury nr [NUMER] z dnia [DATA].\n\nTermin płatności upłynął [LICZBA DNI] dni temu.\n\nProsimy o pilną regulację należności.\n\nPozdrawiam,\n[Imię Nazwisko]'
   }
 ];
 
@@ -249,71 +226,125 @@ export default function App() {
           />
         ) : null;
       case 'chat':
-        return <TeamChat currentUser={currentUser} allUsers={users} />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <TeamChat currentUser={currentUser} allUsers={users} />
+          </Suspense>
+        );
       case 'email':
         return (
-          <EnhancedEmailCenter 
-            clients={clients} 
-            templates={emailTemplates}
-            emails={emails}
-            onSendEmail={addEmail}
-            onUpdateEmail={updateEmail}
-            onDeleteEmail={deleteEmail}
-          />
+          <Suspense fallback={<LoadingSpinner />}>
+            <EnhancedEmailCenter 
+              clients={clients} 
+              templates={emailTemplates}
+              emails={emails}
+              onSendEmail={addEmail}
+              onUpdateEmail={updateEmail}
+              onDeleteEmail={deleteEmail}
+            />
+          </Suspense>
         );
       case 'invoices':
-        return <EnhancedInvoiceManager clients={clients} />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <EnhancedInvoiceManager clients={clients} />
+          </Suspense>
+        );
       case 'calendar':
-        return <AdvancedCalendar currentUser={currentUser} allUsers={users} />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdvancedCalendar currentUser={currentUser} allUsers={users} />
+          </Suspense>
+        );
       case 'users':
-        return <UserManagement />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <UserManagement />
+          </Suspense>
+        );
       case 'email-templates':
         return (
-          <EmailTemplates 
-            templates={emailTemplates}
-            onSaveTemplate={(template) => {
-              if (template.id) {
-                setEmailTemplates(prev => prev.map(t => t.id === template.id ? template : t));
-                toast.success("Szablon został zaktualizowany");
-              } else {
-                const newTemplate = { ...template, id: Date.now().toString() };
-                setEmailTemplates(prev => [...prev, newTemplate]);
-                toast.success("Nowy szablon został utworzony");
-              }
-            }}
-            onDeleteTemplate={(templateId) => {
-              setEmailTemplates(prev => prev.filter(t => t.id !== templateId));
-              toast.success("Szablon został usunięty");
-            }}
-          />
+          <Suspense fallback={<LoadingSpinner />}>
+            <EmailTemplates 
+              templates={emailTemplates}
+              onSaveTemplate={(template) => {
+                if (template.id) {
+                  setEmailTemplates(prev => prev.map(t => t.id === template.id ? template : t));
+                  toast.success("Szablon został zaktualizowany");
+                } else {
+                  const newTemplate = { ...template, id: Date.now().toString() };
+                  setEmailTemplates(prev => [...prev, newTemplate]);
+                  toast.success("Nowy szablon został utworzony");
+                }
+              }}
+              onDeleteTemplate={(templateId) => {
+                setEmailTemplates(prev => prev.filter(t => t.id !== templateId));
+                toast.success("Szablon został usunięty");
+              }}
+            />
+          </Suspense>
         );
       case 'invoice-templates':
-        return <InvoiceTemplates />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <InvoiceTemplates />
+          </Suspense>
+        );
       case 'profile':
         return (
-          <UserProfileManagement 
-            user={currentUser as any} 
-            onSave={(updatedUser) => {
-              setUsers(prev => prev.map(u => u.id === currentUser.id ? { ...u, ...updatedUser } : u));
-              toast.success("Profil został zaktualizowany");
-            }}
-            isAdmin={currentUser.role === 'administrator'}
-          />
+          <Suspense fallback={<LoadingSpinner />}>
+            <UserProfileManagement 
+              user={currentUser as any} 
+              onSave={(updatedUser) => {
+                setUsers(prev => prev.map(u => u.id === currentUser.id ? { ...u, ...updatedUser } : u));
+                toast.success("Profil został zaktualizowany");
+              }}
+              isAdmin={currentUser.role === 'administrator'}
+            />
+          </Suspense>
         );
       case 'documents':
-        return <DocumentManager clients={clients} />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <DocumentManager clients={clients} />
+          </Suspense>
+        );
       case 'monthly-data':
-        return <MonthlyDataPanel clients={clients} />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <MonthlyDataPanel clients={clients} />
+          </Suspense>
+        );
       case 'settings':
-        return <SystemSettings />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <SystemSettings />
+          </Suspense>
+        );
       case 'bank-integration':
-        return <BankIntegration />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <BankIntegration />
+          </Suspense>
+        );
       case 'contracts':
-        return <ContractManagement />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <ContractManagement />
+          </Suspense>
+        );
       case 'time-tracker':
-        return <TimeTracker currentUser={currentUser} />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <TimeTracker currentUser={currentUser} />
+          </Suspense>
+        );
       case 'auto-invoicing':
-        return <AutomaticInvoicing clients={clients} />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <AutomaticInvoicing clients={clients} />
+          </Suspense>
+        );
       default:
         return <Dashboard currentUser={currentUser} onNavigate={setCurrentView} />;
     }
