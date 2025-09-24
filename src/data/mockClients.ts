@@ -99,7 +99,42 @@ export const mockClients: Client[] = [
     ],
     invoiceEmail: 'faktura@firma.pl',
     taxNotificationEmails: ['podatki@firma.pl'],
-    hiddenTags: generateHiddenTags('spZoo', 'cit', 'pelneKsiegi', 'pelnyZus')
+    hiddenTags: generateHiddenTags('spZoo', 'cit', 'pelneKsiegi', 'pelnyZus'),
+    // Automatic invoicing settings
+    autoInvoicing: {
+      enabled: true,
+      frequency: 'monthly',
+      amount: 800,
+      description: 'Obsługa księgowa pełna',
+      nextInvoiceDate: new Date(2024, 11, 1).toISOString(),
+      vatRate: 23,
+      paymentTerms: 14,
+      items: [
+        {
+          name: 'Księgowość pełna',
+          description: 'Prowadzenie pełnych ksiąg rachunkowych',
+          quantity: 1,
+          unitPrice: 600,
+          taxRate: 23,
+          unit: 'usługa'
+        },
+        {
+          name: 'Obsługa kadrowo-płacowa',
+          description: 'Obsługa pracowników',
+          quantity: 1,
+          unitPrice: 200,
+          taxRate: 23,
+          unit: 'usługa'
+        }
+      ],
+      documentsLimit: 50,
+      documentsLimitWarning: true,
+      maxHoursPerMonth: 8,
+      additionalServices: ['VAT-7', 'PIT-11', 'Raporty miesięczne'],
+      notes: 'Klient premium - priorytetowa obsługa',
+      created: new Date(2024, 9, 1).toISOString(),
+      lastModified: new Date(2024, 10, 1).toISOString()
+    }
   },
   {
     id: '2',
@@ -160,7 +195,33 @@ export const mockClients: Client[] = [
     ],
     invoiceEmail: 'anna.nowak@creative.pl',
     taxNotificationEmails: ['anna.nowak@creative.pl'],
-    hiddenTags: generateHiddenTags('spZoo', 'liniowy', 'kpir', 'malyZus')
+    hiddenTags: generateHiddenTags('spZoo', 'liniowy', 'kpir', 'malyZus'),
+    // Automatic invoicing settings
+    autoInvoicing: {
+      enabled: true,
+      frequency: 'quarterly',
+      amount: 1200,
+      description: 'Obsługa księgowa dla firmy kreatywnej',
+      nextInvoiceDate: new Date(2025, 0, 1).toISOString(),
+      vatRate: 23,
+      paymentTerms: 14,
+      items: [
+        {
+          name: 'Księga przychodów i rozchodów',
+          description: 'Prowadzenie KPiR',
+          quantity: 1,
+          unitPrice: 1200,
+          taxRate: 23,
+          unit: 'kwartał'
+        }
+      ],
+      documentsLimit: 35,
+      documentsLimitWarning: true,
+      maxHoursPerMonth: 6,
+      additionalServices: ['VAT-7', 'PIT-36'],
+      notes: 'Młoda firma, wymagająca elastyczności',
+      created: new Date(2024, 10, 1).toISOString()
+    }
   },
   {
     id: '3',
@@ -223,7 +284,33 @@ export const mockClients: Client[] = [
     ],
     invoiceEmail: 'piotr.wisniewski@startup.pl',
     taxNotificationEmails: ['piotr.wisniewski@startup.pl'],
-    hiddenTags: generateHiddenTags('dzialalnoscGospodarcza', 'ryczalt', 'ryczaltEwidencyjny', 'malyZus')
+    hiddenTags: generateHiddenTags('dzialalnoscGospodarcza', 'ryczalt', 'ryczaltEwidencyjny', 'malyZus'),
+    // Automatic invoicing settings for startup - simple consultation
+    autoInvoicing: {
+      enabled: true,
+      frequency: 'monthly',
+      amount: 300,
+      description: 'Konsultacje księgowe i doradztwo podatkowe',
+      nextInvoiceDate: new Date(2024, 11, 15).toISOString(),
+      vatRate: 23,
+      paymentTerms: 7,
+      items: [
+        {
+          name: 'Konsultacje księgowe',
+          description: 'Doradztwo w zakresie księgowości',
+          quantity: 1,
+          unitPrice: 300,
+          taxRate: 23,
+          unit: 'usługa'
+        }
+      ],
+      documentsLimit: 20,
+      documentsLimitWarning: true,
+      maxHoursPerMonth: 2,
+      additionalServices: ['Ryczałt ewidencyjny', 'Deklaracje VAT'],
+      notes: 'Startup - elastyczne podejście do terminów',
+      created: new Date(2024, 1, 1).toISOString()
+    }
   },
   {
     id: '4',
@@ -283,6 +370,21 @@ export const mockClients: Client[] = [
     ],
     invoiceEmail: 'm.kowalczyk@oldcompany.pl',
     taxNotificationEmails: [],
-    hiddenTags: generateHiddenTags('spZoo', 'cit', 'pelneKsiegi', 'other')
+    hiddenTags: generateHiddenTags('spZoo', 'cit', 'pelneKsiegi', 'other'),
+    // Automatic invoicing disabled for archived client
+    autoInvoicing: {
+      enabled: false,
+      frequency: 'monthly',
+      amount: 0,
+      description: 'Firma zlikwidowana - brak aktywnej obsługi',
+      vatRate: 23,
+      paymentTerms: 14,
+      items: [],
+      documentsLimit: 35,
+      documentsLimitWarning: false,
+      notes: 'Klient archiwalny - usługi wstrzymane',
+      created: new Date(2022, 4, 1).toISOString(),
+      lastModified: new Date(2023, 11, 1).toISOString()
+    }
   }
 ];

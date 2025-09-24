@@ -75,7 +75,19 @@ export function ClientForm({ client, onSave, onCancel }: ClientFormProps) {
     },
     ksefEnabled: client?.ksefEnabled || false,
     ksefToken: client?.ksefToken || '',
-    employeeCount: client?.employeeCount || 0
+    employeeCount: client?.employeeCount || 0,
+    // Automatic invoicing settings
+    autoInvoicing: client?.autoInvoicing || {
+      enabled: false,
+      frequency: 'monthly',
+      amount: 0,
+      description: '',
+      vatRate: 23,
+      paymentTerms: 14,
+      items: [],
+      documentsLimit: 35,
+      documentsLimitWarning: true
+    }
   });
 
   const [tagInput, setTagInput] = useState('');
@@ -993,6 +1005,196 @@ export function ClientForm({ client, onSave, onCancel }: ClientFormProps) {
                 placeholder="Dodatkowe informacje o tym kliencie..."
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Automatic Invoicing Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calculator className="h-5 w-5" />
+              Automatyczne fakturowanie
+            </CardTitle>
+            <CardDescription>
+              Skonfiguruj automatyczne generowanie faktur dla tego klienta
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="auto-invoicing-enabled"
+                checked={formData.autoInvoicing?.enabled || false}
+                onCheckedChange={(checked) => setFormData(prev => ({
+                  ...prev,
+                  autoInvoicing: {
+                    ...prev.autoInvoicing,
+                    enabled: checked,
+                    frequency: prev.autoInvoicing?.frequency || 'monthly',
+                    amount: prev.autoInvoicing?.amount || 0,
+                    description: prev.autoInvoicing?.description || '',
+                    vatRate: prev.autoInvoicing?.vatRate || 23,
+                    paymentTerms: prev.autoInvoicing?.paymentTerms || 14,
+                    items: prev.autoInvoicing?.items || [],
+                    documentsLimit: prev.autoInvoicing?.documentsLimit || 35,
+                    documentsLimitWarning: prev.autoInvoicing?.documentsLimitWarning || true
+                  }
+                }))}
+              />
+              <Label htmlFor="auto-invoicing-enabled">Włącz automatyczne fakturowanie</Label>
+            </div>
+
+            {formData.autoInvoicing?.enabled && (
+              <div className="space-y-4 pl-6 border-l-2 border-blue-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Częstotliwość</Label>
+                    <Select
+                      value={formData.autoInvoicing?.frequency || 'monthly'}
+                      onValueChange={(value) => setFormData(prev => ({
+                        ...prev,
+                        autoInvoicing: {
+                          ...prev.autoInvoicing!,
+                          frequency: value as 'weekly' | 'monthly' | 'quarterly' | 'yearly'
+                        }
+                      }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Wybierz częstotliwość" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="weekly">Co tydzień</SelectItem>
+                        <SelectItem value="monthly">Co miesiąc</SelectItem>
+                        <SelectItem value="quarterly">Co kwartał</SelectItem>
+                        <SelectItem value="yearly">Co rok</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Kwota netto</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={formData.autoInvoicing?.amount || 0}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        autoInvoicing: {
+                          ...prev.autoInvoicing!,
+                          amount: parseFloat(e.target.value) || 0
+                        }
+                      }))}
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Opis usługi</Label>
+                  <Input
+                    value={formData.autoInvoicing?.description || ''}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      autoInvoicing: {
+                        ...prev.autoInvoicing!,
+                        description: e.target.value
+                      }
+                    }))}
+                    placeholder="np. Obsługa księgowa pełna"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>Stawka VAT (%)</Label>
+                    <Select
+                      value={formData.autoInvoicing?.vatRate?.toString() || '23'}
+                      onValueChange={(value) => setFormData(prev => ({
+                        ...prev,
+                        autoInvoicing: {
+                          ...prev.autoInvoicing!,
+                          vatRate: parseInt(value)
+                        }
+                      }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">0% (zwolnione)</SelectItem>
+                        <SelectItem value="5">5%</SelectItem>
+                        <SelectItem value="8">8%</SelectItem>
+                        <SelectItem value="23">23%</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Termin płatności (dni)</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="120"
+                      value={formData.autoInvoicing?.paymentTerms || 14}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        autoInvoicing: {
+                          ...prev.autoInvoicing!,
+                          paymentTerms: parseInt(e.target.value) || 14
+                        }
+                      }))}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Limit dokumentów</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={formData.autoInvoicing?.documentsLimit || 35}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        autoInvoicing: {
+                          ...prev.autoInvoicing!,
+                          documentsLimit: parseInt(e.target.value) || 35
+                        }
+                      }))}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="documents-warning"
+                    checked={formData.autoInvoicing?.documentsLimitWarning || true}
+                    onCheckedChange={(checked) => setFormData(prev => ({
+                      ...prev,
+                      autoInvoicing: {
+                        ...prev.autoInvoicing!,
+                        documentsLimitWarning: checked
+                      }
+                    }))}
+                  />
+                  <Label htmlFor="documents-warning">Ostrzegaj o przekroczeniu limitu dokumentów</Label>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Dodatkowe uwagi dotyczące fakturowania</Label>
+                  <Textarea
+                    value={formData.autoInvoicing?.notes || ''}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      autoInvoicing: {
+                        ...prev.autoInvoicing!,
+                        notes: e.target.value
+                      }
+                    }))}
+                    rows={2}
+                    placeholder="Specjalne uwagi, dodatkowe usługi, itp."
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
