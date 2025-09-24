@@ -7,7 +7,7 @@ import { ContractManagement } from "./components/ContractManagement";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { ActiveTimerDisplay } from "./components/ActiveTimerDisplay";
 import { Dashboard } from "./components/Dashboard";
-import { NewClientForm } from "./components/NewClientForm";
+import { ClientForm } from "./components/ClientForm";
 import { ClientList } from "./components/ClientList";
 import { ClientDetails } from "./components/ClientDetails";
 import { TeamChat } from "./components/TeamChat";
@@ -227,14 +227,14 @@ export default function App() {
         );
       case 'add-client':
         return (
-          <NewClientForm
+          <ClientForm
             onSave={handleSaveClient}
             onCancel={handleCancelForm}
           />
         );
       case 'edit-client':
         return selectedClient ? (
-          <NewClientForm
+          <ClientForm
             client={selectedClient}
             onSave={handleSaveClient}
             onCancel={handleCancelForm}
@@ -331,12 +331,6 @@ export default function App() {
       icon: Users,
       onClick: () => setCurrentView('clients'),
       active: currentView === 'clients'
-    },
-    {
-      title: "Dodaj Klienta",
-      icon: UserPlus,
-      onClick: () => handleAddClient(),
-      active: currentView === 'add-client'
     },
     {
       title: "Dokumenty",

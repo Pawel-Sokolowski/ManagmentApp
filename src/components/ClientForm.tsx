@@ -76,6 +76,9 @@ export function ClientForm({ client, onSave, onCancel }: ClientFormProps) {
     ksefEnabled: client?.ksefEnabled || false,
     ksefToken: client?.ksefToken || '',
     employeeCount: client?.employeeCount || 0,
+    // Email settings
+    invoiceEmail: client?.invoiceEmail || '',
+    taxNotificationEmails: client?.taxNotificationEmails || [''],
     // Automatic invoicing settings
     autoInvoicing: client?.autoInvoicing || {
       enabled: false,
@@ -152,6 +155,34 @@ export function ClientForm({ client, onSave, onCancel }: ClientFormProps) {
       setFormData(prev => ({
         ...prev,
         emails: updatedEmails
+      }));
+    }
+  };
+
+  // Tax notification email handlers
+  const handleTaxEmailChange = (index: number, value: string) => {
+    const updatedEmails = [...(formData.taxNotificationEmails || [''])];
+    updatedEmails[index] = value;
+    setFormData(prev => ({
+      ...prev,
+      taxNotificationEmails: updatedEmails
+    }));
+  };
+
+  const addTaxEmail = () => {
+    setFormData(prev => ({
+      ...prev,
+      taxNotificationEmails: [...(prev.taxNotificationEmails || ['']), '']
+    }));
+  };
+
+  const removeTaxEmail = (index: number) => {
+    const emails = formData.taxNotificationEmails || [''];
+    if (emails.length > 1) {
+      const updatedEmails = emails.filter((_, i) => i !== index);
+      setFormData(prev => ({
+        ...prev,
+        taxNotificationEmails: updatedEmails
       }));
     }
   };
@@ -326,6 +357,8 @@ export function ClientForm({ client, onSave, onCancel }: ClientFormProps) {
       ksefToken: formData.ksefToken,
       emailTemplates: client?.emailTemplates || [],
       employeeCount: formData.employeeCount,
+      invoiceEmail: formData.invoiceEmail,
+      taxNotificationEmails: formData.taxNotificationEmails?.filter(email => email.trim() !== '') || [],
       emailFolders
     };
 
@@ -438,6 +471,82 @@ export function ClientForm({ client, onSave, onCancel }: ClientFormProps) {
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 placeholder="+48 123 456 789"
               />
+            </div>
+
+            {/* Invoice Email */}
+            <div className="space-y-2">
+              <Label htmlFor="invoiceEmail">Email do faktur</Label>
+              <Input
+                id="invoiceEmail"
+                type="email"
+                value={formData.invoiceEmail || ''}
+                onChange={(e) => handleInputChange('invoiceEmail', e.target.value)}
+                placeholder="faktury@firma.pl"
+              />
+              <p className="text-sm text-muted-foreground">
+                Dedykowany email do przesyłania faktur (opcjonalnie)
+              </p>
+            </div>
+
+            {/* Tax Notification Emails */}
+            <div className="space-y-4">
+              <div>
+                <Label>Emaile do powiadomień podatkowych</Label>
+                <p className="text-sm text-muted-foreground">
+                  Adresy email do przesyłania informacji podatkowych i dokumentów ZUS
+                </p>
+              </div>
+              {(formData.taxNotificationEmails || ['']).map((email, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        type="email"
+                        value={email}
+                        onChange={(e) => handleTaxEmailChange(index, e.target.value)}
+                        placeholder={index === 0 ? "podatki@firma.pl (główny)" : "dodatkowy@firma.pl"}
+                      />
+                      {email && (
+                        <div className="mt-1 flex items-center gap-2">
+                          {validateEmail(email) ? (
+                            <div className="flex items-center gap-1 text-sm">
+                              <Check className="h-3 w-3 text-green-600" />
+                              <span className={getEmailDomainType(email) === 'business' ? 'text-blue-600' : 'text-muted-foreground'}>
+                                {getEmailDomainType(email) === 'business' ? 'Domena firmowa' : 'Popularna domena'}
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1 text-sm text-red-600">
+                              <AlertCircle className="h-3 w-3" />
+                              <span>Nieprawidłowy format email</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {(formData.taxNotificationEmails || ['']).length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeTaxEmail(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addTaxEmail}
+                className="w-full"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Dodaj email podatkowy
+              </Button>
             </div>
           </CardContent>
         </Card>

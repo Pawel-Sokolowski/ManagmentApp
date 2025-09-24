@@ -465,14 +465,14 @@ export function Dashboard({ currentUser, onNavigate }: DashboardProps) {
               className="h-20 flex-col"
               onClick={() => {
                 if (onNavigate) {
-                  onNavigate('add-client');
+                  onNavigate('clients');
                 } else {
-                  toast.success("Przechodzenie do formularza dodawania klienta");
+                  toast.success("Przechodzenie do listy klientów");
                 }
               }}
             >
-              <UserPlus className="h-5 w-5 mb-2" />
-              Dodaj Klienta
+              <Users className="h-5 w-5 mb-2" />
+              Wszyscy Klienci
             </Button>
             {canViewFinancials && (
               <Button 

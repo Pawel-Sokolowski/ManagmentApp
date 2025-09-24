@@ -351,6 +351,9 @@ export interface ClientFormData {
   // Business information
   accountingType?: string;
   zusType?: string;
+  // Email settings
+  invoiceEmail?: string;
+  taxNotificationEmails?: string[];
   // Automatic invoicing settings
   autoInvoicing?: AutoInvoicingSettings;
 }
