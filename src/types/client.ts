@@ -433,6 +433,8 @@ export interface UserProfile {
     smsNotifications: boolean;
     pushNotifications: boolean;
   };
+  permissions?: ModulePermission[];
+  smtpSettings?: SMTPSettings;
   signature?: string;
   avatar?: string;
   bio?: string;
@@ -458,6 +460,12 @@ export interface SMTPSettings {
 
 export interface ModulePermission {
   module: string;
-  permissions: string[];
+  permissions: {
+    read: boolean;
+    write: boolean;
+    delete: boolean;
+    admin: boolean;
+  };
+  restrictions?: Record<string, boolean>;
   description?: string;
 }

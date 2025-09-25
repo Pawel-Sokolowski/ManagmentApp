@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 import { Client, Invoice, InvoiceItem } from "../types/client";
 import { toast } from "sonner@2.0.3";
+import { PDFInvoiceGenerator, availableTemplates } from "../utils/pdfGenerator";
+import { usePermissions } from "../contexts/PermissionContext";
 
 interface ServiceItem {
   id: string;
@@ -79,6 +81,7 @@ interface EnhancedInvoiceManagerProps {
 }
 
 export function EnhancedInvoiceManager({ clients }: EnhancedInvoiceManagerProps) {
+  const { hasPermission } = usePermissions();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [recurringInvoices, setRecurringInvoices] = useState<RecurringInvoice[]>([]);
@@ -89,6 +92,30 @@ export function EnhancedInvoiceManager({ clients }: EnhancedInvoiceManagerProps)
   const [isNewServiceDialogOpen, setIsNewServiceDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [selectedTemplate, setSelectedTemplate] = useState('standard');
+
+  // Check permissions
+  const canRead = hasPermission('invoices', 'read');
+  const canWrite = hasPermission('invoices', 'write');
+  const canDelete = hasPermission('invoices', 'delete');
+  const isAdmin = hasPermission('invoices', 'admin');
+
+  // If user doesn't have read permission, show access denied
+  if (!canRead) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <XCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Brak dostępu</h2>
+            <p className="text-muted-foreground">
+              Nie masz uprawnień do przeglądania faktur. Skontaktuj się z administratorem.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Mock data initialization
   useEffect(() => {
@@ -399,45 +426,20 @@ export function EnhancedInvoiceManager({ clients }: EnhancedInvoiceManagerProps)
   };
 
   const handleDownloadInvoice = (invoice: Invoice) => {
-    // Generowanie PDF faktury
-    const client = clients.find(c => c.id === invoice.clientId);
-    const clientName = client ? `${client.firstName} ${client.lastName}` : 'Nieznany klient';
-    
-    const invoiceContent = `
-FAKTURA VAT
+    try {
+      const client = clients.find(c => c.id === invoice.clientId);
+      if (!client) {
+        toast.error('Nie znaleziono danych klienta');
+        return;
+      }
 
-Numer: ${invoice.number}
-Data wystawienia: ${new Date(invoice.issueDate).toLocaleDateString('pl-PL')}
-Termin płatności: ${new Date(invoice.dueDate).toLocaleDateString('pl-PL')}
-
-Nabywca:
-${clientName}
-${client?.company || ''}
-${client?.address || ''}
-${client?.nip ? `NIP: ${client.nip}` : ''}
-
-Pozycje:
-${invoice.items.map((item, index) => 
-  `${index + 1}. ${item.description} - ${item.quantity} szt. x ${item.unitPrice.toFixed(2)} zł = ${item.grossAmount.toFixed(2)} zł`
-).join('\n')}
-
-Podsumowanie:
-Netto: ${invoice.totalNet.toFixed(2)} zł
-VAT 23%: ${invoice.totalTax.toFixed(2)} zł
-Brutto: ${invoice.totalGross.toFixed(2)} zł
-    `;
-
-    const blob = new Blob([invoiceContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${invoice.number}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    toast.success('Faktura została pobrana');
+      const pdfGenerator = new PDFInvoiceGenerator();
+      pdfGenerator.generateInvoice(invoice, client, selectedTemplate);
+      toast.success('Faktura PDF została pobrana');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Błąd podczas generowania faktury PDF');
+    }
   };
 
   const handleSendInvoice = (invoice: Invoice) => {
@@ -462,22 +464,26 @@ Brutto: ${invoice.totalGross.toFixed(2)} zł
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Dialog open={isNewServiceDialogOpen} onOpenChange={setIsNewServiceDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Euro className="mr-2 h-4 w-4" />
-                Dodaj usługę
-              </Button>
-            </DialogTrigger>
-          </Dialog>
-          <Dialog open={isNewInvoiceDialogOpen} onOpenChange={setIsNewInvoiceDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Nowa faktura
-              </Button>
-            </DialogTrigger>
-          </Dialog>
+          {canWrite && (
+            <Dialog open={isNewServiceDialogOpen} onOpenChange={setIsNewServiceDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline">
+                  <Euro className="mr-2 h-4 w-4" />
+                  Dodaj usługę
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+          )}
+          {canWrite && (
+            <Dialog open={isNewInvoiceDialogOpen} onOpenChange={setIsNewInvoiceDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nowa faktura
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+          )}
         </div>
       </div>
 
@@ -513,6 +519,21 @@ Brutto: ${invoice.totalGross.toFixed(2)} zł
                 <SelectItem value="przeterminowana">Przeterminowane</SelectItem>
               </SelectContent>
             </Select>
+            <div className="flex items-center gap-2">
+              <Label className="text-sm">Szablon PDF:</Label>
+              <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableTemplates.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      {template.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <Card>
@@ -559,16 +580,20 @@ Brutto: ${invoice.totalGross.toFixed(2)} zł
                           >
                             <Download className="h-4 w-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => handleSendInvoice(invoice)}
-                          >
-                            <Send className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                          {canWrite && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleSendInvoice(invoice)}
+                            >
+                              <Send className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {canWrite && (
+                            <Button variant="ghost" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
