@@ -225,7 +225,6 @@ export function UserProfileManagement({ user, onSave, isAdmin }: UserProfileMana
           <TabsTrigger value="profile">Profil</TabsTrigger>
           <TabsTrigger value="email">Ustawienia Email</TabsTrigger>
           <TabsTrigger value="calendar">Kalendarz</TabsTrigger>
-          <TabsTrigger value="chat">Chat</TabsTrigger>
           {isAdmin && <TabsTrigger value="permissions">Uprawnienia</TabsTrigger>}
         </TabsList>
 
@@ -528,70 +527,6 @@ export function UserProfileManagement({ user, onSave, isAdmin }: UserProfileMana
                     }
                   />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Chat Settings Tab */}
-        <TabsContent value="chat" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5" />
-                Ustawienia chatu
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="notifications"
-                  checked={profile.chatSettings?.notifications}
-                  onCheckedChange={(checked) => 
-                    handleProfileUpdate('chatSettings', {
-                      ...profile.chatSettings,
-                      notifications: checked
-                    })
-                  }
-                />
-                <Label htmlFor="notifications">Powiadomienia o nowych wiadomościach</Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="allowDirectMessages"
-                  checked={profile.chatSettings?.allowDirectMessages}
-                  onCheckedChange={(checked) => 
-                    handleProfileUpdate('chatSettings', {
-                      ...profile.chatSettings,
-                      allowDirectMessages: checked
-                    })
-                  }
-                />
-                <Label htmlFor="allowDirectMessages">Pozwól na prywatne wiadomości</Label>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Status online</Label>
-                <Select
-                  value={profile.chatSettings?.onlineStatus}
-                  onValueChange={(value: any) => 
-                    handleProfileUpdate('chatSettings', {
-                      ...profile.chatSettings,
-                      onlineStatus: value
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="online">Online</SelectItem>
-                    <SelectItem value="away">Nieobecny</SelectItem>
-                    <SelectItem value="busy">Zajęty</SelectItem>
-                    <SelectItem value="invisible">Niewidoczny</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </CardContent>
           </Card>

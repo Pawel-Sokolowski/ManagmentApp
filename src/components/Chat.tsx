@@ -6,9 +6,13 @@ import { Badge } from "./ui/badge";
 import { ScrollArea } from "./ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import { Send, Users, Hash, Plus, Settings } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
+import { Send, Users, Hash, Plus, Settings, Bell, BellOff } from "lucide-react";
 import { ChatChannelOld, ChatMessage } from "../types/client";
 import { mockChatChannels, mockChatMessages } from "../data/mockData";
+import { toast } from "sonner";
 
 export function Chat() {
   const [channels] = useState<ChatChannelOld[]>(mockChatChannels);
@@ -16,6 +20,16 @@ export function Chat() {
   const [activeChannel, setActiveChannel] = useState<string>('1');
   const [newMessage, setNewMessage] = useState('');
   const [onlineUsers] = useState(['Jan Kowalski', 'Anna Nowak', 'Piotr Wiśniewski']);
+  const [showSettings, setShowSettings] = useState(false);
+  const [channelNotifications, setChannelNotifications] = useState<{[key: string]: boolean}>({
+    '1': true,
+    '2': true
+  });
+  const [userNotifications, setUserNotifications] = useState<{[key: string]: boolean}>({
+    'Jan Kowalski': true,
+    'Anna Nowak': true,
+    'Piotr Wiśniewski': false
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -133,7 +147,7 @@ export function Chat() {
                 {activeChannelData?.description}
               </p>
             </div>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => setShowSettings(true)}>
               <Settings className="h-4 w-4" />
             </Button>
           </div>
@@ -198,5 +212,88 @@ export function Chat() {
         </CardContent>
       </Card>
     </div>
+
+    {/* Chat Settings Dialog */}
+    <Dialog open={showSettings} onOpenChange={setShowSettings}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Ustawienia chatu</DialogTitle>
+          <DialogDescription>
+            Zarządzaj powiadomieniami dla kanałów i użytkowników
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Channel Notifications */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-medium">Powiadomienia kanałów</h4>
+            {channels.map((channel) => (
+              <div key={channel.id} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">
+                    {channel.isPrivate ? '🔒' : '#'} {channel.name}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={channelNotifications[channel.id] ?? true}
+                    onCheckedChange={(checked) => {
+                      setChannelNotifications(prev => ({
+                        ...prev,
+                        [channel.id]: checked
+                      }));
+                      toast.success(
+                        `Powiadomienia ${checked ? 'włączone' : 'wyłączone'} dla kanału ${channel.name}`
+                      );
+                    }}
+                  />
+                  {channelNotifications[channel.id] ? (
+                    <Bell className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <BellOff className="h-4 w-4 text-gray-400" />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* User Notifications */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-medium">Powiadomienia użytkowników</h4>
+            {onlineUsers.map((user) => (
+              <div key={user} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback className="text-xs">
+                      {user.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm">{user}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={userNotifications[user] ?? true}
+                    onCheckedChange={(checked) => {
+                      setUserNotifications(prev => ({
+                        ...prev,
+                        [user]: checked
+                      }));
+                      toast.success(
+                        `Powiadomienia ${checked ? 'włączone' : 'wyłączone'} dla użytkownika ${user}`
+                      );
+                    }}
+                  />
+                  {userNotifications[user] ? (
+                    <Bell className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <BellOff className="h-4 w-4 text-gray-400" />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

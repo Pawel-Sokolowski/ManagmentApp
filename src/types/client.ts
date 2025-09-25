@@ -66,9 +66,17 @@ export interface AutoInvoicingSettings {
   paymentTerms: number; // days
   invoiceTemplate?: string;
   items: AutoInvoiceItem[];
-  // Document limits
+  // Employee-based pricing
+  employeePricing: {
+    enabled: boolean;
+    rates: {
+      [employeeType: string]: number; // e.g., 'manager': 200, 'specialist': 150, 'assistant': 100
+    };
+  };
+  // Document limits and pricing
   documentsLimit: number;
   documentsLimitWarning: boolean;
+  documentsOverLimitPrice: number; // price per document over limit
   // Other limits
   maxHoursPerMonth?: number;
   maxDocumentsPerMonth?: number;
