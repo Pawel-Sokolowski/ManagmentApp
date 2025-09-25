@@ -31,8 +31,9 @@ const DocumentManager = lazy(() => import("./components/DocumentManager").then(m
 const MonthlyDataPanel = lazy(() => import("./components/MonthlyDataPanel").then(module => ({ default: module.MonthlyDataPanel })));
 const SystemSettings = lazy(() => import("./components/SystemSettings").then(module => ({ default: module.SystemSettings })));
 const TimeTracker = lazy(() => import("./components/TimeTracker").then(module => ({ default: module.TimeTracker })));
+const WorkTimeReport = lazy(() => import("./components/WorkTimeReport").then(module => ({ default: module.WorkTimeReport })));
 
-type View = 'dashboard' | 'clients' | 'add-client' | 'edit-client' | 'view-client' | 'chat' | 'email' | 'invoices' | 'calendar' | 'users' | 'email-templates' | 'invoice-templates' | 'profile' | 'documents' | 'monthly-data' | 'settings' | 'bank-integration' | 'contracts' | 'time-tracker' | 'auto-invoicing';
+type View = 'dashboard' | 'clients' | 'add-client' | 'edit-client' | 'view-client' | 'chat' | 'email' | 'invoices' | 'calendar' | 'users' | 'email-templates' | 'invoice-templates' | 'profile' | 'documents' | 'monthly-data' | 'settings' | 'bank-integration' | 'contracts' | 'time-tracker' | 'work-time-report' | 'auto-invoicing';
 
 // Mock data - should be moved to separate file
 import { mockClients } from "./data/mockClients";
@@ -340,6 +341,12 @@ export default function App() {
             <TimeTracker currentUser={currentUser} />
           </Suspense>
         );
+      case 'work-time-report':
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <WorkTimeReport currentUser={currentUser} clients={clients} users={users} />
+          </Suspense>
+        );
       case 'auto-invoicing':
         return (
           <Suspense fallback={<LoadingSpinner />}>
@@ -434,10 +441,16 @@ export default function App() {
 
   const organizationItems = [
     {
-      title: "Raport Czasu Pracy",
-      icon: Timer,
+      title: "Czasomierz",
+      icon: Clock,
       onClick: () => setCurrentView('time-tracker'),
       active: currentView === 'time-tracker'
+    },
+    {
+      title: "Raport Czasu Pracy", 
+      icon: Timer,
+      onClick: () => setCurrentView('work-time-report'),
+      active: currentView === 'work-time-report'
     },
     {
       title: "Zarządzanie Personelem",
