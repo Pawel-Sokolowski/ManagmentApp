@@ -6,6 +6,7 @@ interface PermissionContextType {
   hasPermission: (module: string, action: 'read' | 'write' | 'delete' | 'admin') => boolean;
   hasRestriction: (module: string, restriction: string) => boolean;
   setPermissions: (permissions: ModulePermission[]) => void;
+  setDemoAdminMode: () => void;
 }
 
 const PermissionContext = createContext<PermissionContextType | undefined>(undefined);
@@ -54,6 +55,50 @@ const defaultPermissions: ModulePermission[] = [
   }
 ];
 
+// Demo admin permissions - full access to all modules for demo purposes
+export const demoAdminPermissions: ModulePermission[] = [
+  {
+    module: 'clients',
+    permissions: { read: true, write: true, delete: true, admin: true },
+    restrictions: { viewPersonalDataOnly: false, accessToSecretData: true }
+  },
+  {
+    module: 'invoices',
+    permissions: { read: true, write: true, delete: true, admin: true },
+    restrictions: { accessToFinancialData: true }
+  },
+  {
+    module: 'email',
+    permissions: { read: true, write: true, delete: true, admin: true }
+  },
+  {
+    module: 'chat',
+    permissions: { read: true, write: true, delete: true, admin: true },
+    restrictions: { accessToFullChatHistory: true }
+  },
+  {
+    module: 'calendar',
+    permissions: { read: true, write: true, delete: true, admin: true }
+  },
+  {
+    module: 'ceidg',
+    permissions: { read: true, write: true, delete: true, admin: true }
+  },
+  {
+    module: 'reports',
+    permissions: { read: true, write: true, delete: true, admin: true }
+  },
+  {
+    module: 'settings',
+    permissions: { read: true, write: true, delete: true, admin: true }
+  },
+  {
+    module: 'user_management',
+    permissions: { read: true, write: true, delete: true, admin: true },
+    restrictions: { manageOtherUsers: true }
+  }
+];
+
 export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [permissions, setPermissions] = useState<ModulePermission[]>(defaultPermissions);
 
@@ -85,12 +130,18 @@ export const PermissionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.setItem('user_permissions', JSON.stringify(newPermissions));
   };
 
+  const setDemoAdminMode = () => {
+    setPermissions(demoAdminPermissions);
+    localStorage.setItem('user_permissions', JSON.stringify(demoAdminPermissions));
+  };
+
   return (
     <PermissionContext.Provider value={{
       permissions,
       hasPermission,
       hasRestriction,
-      setPermissions: updatePermissions
+      setPermissions: updatePermissions,
+      setDemoAdminMode
     }}>
       {children}
     </PermissionContext.Provider>

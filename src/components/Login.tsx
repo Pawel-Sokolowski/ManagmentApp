@@ -6,6 +6,7 @@ import { Label } from './ui/label';
 import { Building2, Lock, User, Globe, Monitor } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { isElectron } from '../utils/electronAPI';
+import { usePermissions } from '../contexts/PermissionContext';
 
 interface LoginProps {
   onLogin: (user: any) => void;
@@ -15,6 +16,7 @@ export function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState('admin@demo.com');
   const [password, setPassword] = useState('admin123');
   const [isLoading, setIsLoading] = useState(false);
+  const { setDemoAdminMode } = usePermissions();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +37,9 @@ export function Login({ onLogin }: LoginProps) {
           isActive: true,
           permissions: []
         };
+        
+        // Set demo admin permissions for full access to all features
+        setDemoAdminMode();
         
         toast.success('Pomyślnie zalogowano!');
         onLogin(user);
