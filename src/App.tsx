@@ -105,10 +105,10 @@ export default function App() {
   // If not logged in, show login screen
   if (!currentUser) {
     return (
-      <>
+      <PermissionProvider>
         <Login onLogin={setCurrentUser} />
         <Toaster />
-      </>
+      </PermissionProvider>
     );
   }
 
