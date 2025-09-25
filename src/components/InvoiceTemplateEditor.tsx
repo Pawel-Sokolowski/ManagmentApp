@@ -499,6 +499,45 @@ export function InvoiceTemplateEditor() {
               color: '#000000',
               textAlign: 'center'
             }
+          },
+          {
+            id: '2',
+            type: 'text',
+            position: { x: 400, y: 60 },
+            size: { width: 150, height: 20 },
+            content: 'Nr: {{INVOICE_NUMBER}}',
+            styles: {
+              fontSize: 14,
+              fontWeight: 'normal',
+              textAlign: 'right',
+              color: '#000000'
+            }
+          },
+          {
+            id: '3',
+            type: 'text',
+            position: { x: 50, y: 120 },
+            size: { width: 250, height: 100 },
+            content: 'Sprzedawca:\n{{COMPANY_NAME}}\n{{COMPANY_ADDRESS}}\nNIP: {{COMPANY_NIP}}',
+            styles: {
+              fontSize: 12,
+              fontWeight: 'normal',
+              textAlign: 'left',
+              color: '#000000'
+            }
+          },
+          {
+            id: '4',
+            type: 'text',
+            position: { x: 350, y: 120 },
+            size: { width: 250, height: 100 },
+            content: 'Nabywca:\n{{CLIENT_NAME}}\n{{CLIENT_ADDRESS}}\nNIP: {{CLIENT_NIP}}',
+            styles: {
+              fontSize: 12,
+              fontWeight: 'normal',
+              textAlign: 'left',
+              color: '#000000'
+            }
           }
         ],
         pageSettings: {

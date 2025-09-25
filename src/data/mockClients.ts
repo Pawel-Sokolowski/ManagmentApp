@@ -10,20 +10,11 @@ function generateHiddenTags(businessType: string, taxType: string, accountingTyp
   ];
 }
 
-// Funkcja pomocnicza do generowania folderów mailowych
+// Funkcja pomocnicza do generowania folderów mailowych - uproszczona struktura
 function generateEmailFolders(companyName: string, businessType: string): string[] {
   const cleanCompanyName = companyName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
-  
-  if (businessType === 'dzialalnoscGospodarcza') {
-    return [cleanCompanyName];
-  } else {
-    const suffix = businessType === 'spZoo' ? '_sp_z_o_o' : 
-                  businessType === 'komandytowa' ? '_sp_k' :
-                  businessType === 'akcyjna' ? '_sa' :
-                  businessType === 'fundacja' ? '_fundacja' :
-                  businessType === 'stowarzyszenie' ? '_stowarzyszenie' : '';
-    return [cleanCompanyName + suffix];
-  }
+  // Zwracamy tylko jeden główny folder dla klienta
+  return [cleanCompanyName];
 }
 
 export const mockClients: Client[] = [
@@ -127,8 +118,18 @@ export const mockClients: Client[] = [
           unit: 'usługa'
         }
       ],
+      employeePricing: {
+        enabled: true,
+        rates: {
+          'manager': 250,    // kierownik - wyższa cena
+          'specialist': 180, // specjalista
+          'assistant': 120,  // asystent
+          'intern': 80      // praktykant
+        }
+      },
       documentsLimit: 50,
       documentsLimitWarning: true,
+      documentsOverLimitPrice: 25, // 25 PLN za dokument powyżej limitu
       maxHoursPerMonth: 8,
       additionalServices: ['VAT-7', 'PIT-11', 'Raporty miesięczne'],
       notes: 'Klient premium - priorytetowa obsługa',
@@ -215,8 +216,18 @@ export const mockClients: Client[] = [
           unit: 'kwartał'
         }
       ],
+      employeePricing: {
+        enabled: true,
+        rates: {
+          'creative_director': 300, // dyrektor kreatywny
+          'designer': 200,          // grafik/projektant
+          'junior_designer': 150,   // junior designer
+          'administrative': 100     // administracja
+        }
+      },
       documentsLimit: 35,
       documentsLimitWarning: true,
+      documentsOverLimitPrice: 25,
       maxHoursPerMonth: 6,
       additionalServices: ['VAT-7', 'PIT-36'],
       notes: 'Młoda firma, wymagająca elastyczności',

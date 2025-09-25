@@ -76,6 +76,7 @@ export function ContractManagement() {
   const [showAddContract, setShowAddContract] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
+  const [previewTemplate, setPreviewTemplate] = useState<ContractTemplate | null>(null);
 
   // Mock data
   const [contracts, setContracts] = useState<Contract[]>([
@@ -172,8 +173,36 @@ export function ContractManagement() {
       id: '1',
       name: 'Umowa o świadczenie usług księgowych - Sp. z o.o.',
       type: 'service',
-      content: 'Szablon umowy dla spółek z o.o...',
-      variables: ['CLIENT_NAME', 'START_DATE', 'MONTHLY_FEE', 'SERVICES_SCOPE'],
+      content: `UMOWA O ŚWIADCZENIE USŁUG KSIĘGOWYCH
+
+Zawarta w dniu {{DATA_ZAWARCIA}} między:
+
+{{NAZWA_FIRMY}}
+{{ADRES_FIRMY}}
+NIP: {{NIP_FIRMY}}
+zwaną dalej "Zleceniodawcą"
+
+a
+
+{{NAZWA_KANCELARII}}
+{{ADRES_KANCELARII}}
+NIP: {{NIP_KANCELARII}}
+zwaną dalej "Zleceniobiorcą"
+
+§1. Przedmiot umowy
+1. Zleceniobiorca zobowiązuje się do prowadzenia księgowości Zleceniodawcy w zakresie:
+   - prowadzenie pełnych ksiąg rachunkowych
+   - sporządzanie deklaracji VAT
+   - sporządzanie sprawozdań finansowych
+   - {{DODATKOWE_USLUGI}}
+
+§2. Wynagrodzenie
+1. Wynagrodzenie miesięczne wynosi: {{WYNAGRODZENIE_MIESIĘCZNE}} PLN netto
+2. Płatność do {{TERMIN_PLATNOSCI}} dnia każdego miesiąca
+
+§3. Okres obowiązywania
+Umowa zawarta na czas od {{DATA_ROZPOCZECIA}} do {{DATA_ZAKONCZENIA}}`,
+      variables: ['DATA_ZAWARCIA', 'NAZWA_FIRMY', 'ADRES_FIRMY', 'NIP_FIRMY', 'NAZWA_KANCELARII', 'ADRES_KANCELARII', 'NIP_KANCELARII', 'DODATKOWE_USLUGI', 'WYNAGRODZENIE_MIESIĘCZNE', 'TERMIN_PLATNOSCI', 'DATA_ROZPOCZECIA', 'DATA_ZAKONCZENIA'],
       isActive: true,
       createdBy: 'Anna Nowak',
       lastUsed: '2024-12-01'
@@ -182,8 +211,32 @@ export function ContractManagement() {
       id: '2',
       name: 'Umowa o świadczenie usług księgowych - JDG',
       type: 'service',
-      content: 'Szablon umowy dla jednoosobowych działalności...',
-      variables: ['CLIENT_NAME', 'START_DATE', 'MONTHLY_FEE', 'TAX_FORM'],
+      content: `UMOWA O ŚWIADCZENIE USŁUG KSIĘGOWYCH
+(Jednoosobowa Działalność Gospodarcza)
+
+Zawarta w dniu {{DATA_ZAWARCIA}} między:
+
+{{IMIE_NAZWISKO}}
+prowadzący działalność gospodarczą pod nazwą: {{NAZWA_DZIALALNOSCI}}
+NIP: {{NIP}}
+zwanym dalej "Zleceniodawcą"
+
+a
+
+{{NAZWA_KANCELARII}}
+{{ADRES_KANCELARII}}
+NIP: {{NIP_KANCELARII}}
+zwaną dalej "Zleceniobiorcą"
+
+§1. Przedmiot umowy
+1. Zleceniobiorca zobowiązuje się do:
+   - prowadzenia księgi przychodów i rozchodów
+   - sporządzania deklaracji VAT
+   - obliczania i rozliczania składek ZUS
+   - {{FORMA_OPODATKOWANIA}}
+
+§2. Wynagrodzenie miesięczne: {{WYNAGRODZENIE}} PLN netto`,
+      variables: ['DATA_ZAWARCIA', 'IMIE_NAZWISKO', 'NAZWA_DZIALALNOSCI', 'NIP', 'NAZWA_KANCELARII', 'ADRES_KANCELARII', 'NIP_KANCELARII', 'FORMA_OPODATKOWANIA', 'WYNAGRODZENIE'],
       isActive: true,
       createdBy: 'Anna Nowak',
       lastUsed: '2024-11-28'
@@ -192,8 +245,33 @@ export function ContractManagement() {
       id: '3',
       name: 'Umowa o pracę - księgowa',
       type: 'employment',
-      content: 'Szablon umowy o pracę na stanowisku księgowa...',
-      variables: ['EMPLOYEE_NAME', 'START_DATE', 'SALARY', 'WORKING_HOURS'],
+      content: `UMOWA O PRACĘ
+
+Zawarta w dniu {{DATA_ZAWARCIA}} między:
+
+{{NAZWA_PRACODAWCY}}
+{{ADRES_PRACODAWCY}}
+NIP: {{NIP_PRACODAWCY}}
+zwanym dalej "Pracodawcą"
+
+a
+
+{{IMIE_NAZWISKO_PRACOWNIKA}}
+{{ADRES_PRACOWNIKA}}
+PESEL: {{PESEL_PRACOWNIKA}}
+zwanym dalej "Pracownikiem"
+
+§1. Strony ustalają następujące warunki pracy:
+1. Rodzaj umowy: umowa o pracę na czas {{RODZAJ_UMOWY}}
+2. Stanowisko: {{STANOWISKO}}
+3. Miejsce pracy: {{MIEJSCE_PRACY}}
+4. Wymiar czasu pracy: {{WYMIAR_CZASU_PRACY}} godz./tydzień
+5. Data rozpoczęcia pracy: {{DATA_ROZPOCZECIA}}
+
+§2. Wynagrodzenie
+1. Wynagrodzenie zasadnicze: {{WYNAGRODZENIE}} PLN brutto
+2. Wypłata wynagrodzenia: {{TERMIN_WYPLATY}} każdego miesiąca`,
+      variables: ['DATA_ZAWARCIA', 'NAZWA_PRACODAWCY', 'ADRES_PRACODAWCY', 'NIP_PRACODAWCY', 'IMIE_NAZWISKO_PRACOWNIKA', 'ADRES_PRACOWNIKA', 'PESEL_PRACOWNIKA', 'RODZAJ_UMOWY', 'STANOWISKO', 'MIEJSCE_PRACY', 'WYMIAR_CZASU_PRACY', 'DATA_ROZPOCZECIA', 'WYNAGRODZENIE', 'TERMIN_WYPLATY'],
       isActive: true,
       createdBy: 'Jan Kowalski',
       lastUsed: '2024-11-15'
@@ -676,6 +754,14 @@ export function ContractManagement() {
                     <Button
                       variant="outline"
                       size="sm"
+                      onClick={() => setPreviewTemplate(template)}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Podgląd
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleCreateFromTemplate(template.id)}
                     >
                       <Copy className="h-4 w-4 mr-2" />
@@ -796,6 +882,75 @@ export function ContractManagement() {
                 </div>
               </div>
             </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Template Preview Dialog */}
+      <Dialog open={!!previewTemplate} onOpenChange={() => setPreviewTemplate(null)}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Podgląd szablonu: {previewTemplate?.name}</DialogTitle>
+            <DialogDescription>
+              Szablon umowy z dostępnymi zmiennymi
+            </DialogDescription>
+          </DialogHeader>
+          
+          {previewTemplate && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Template Content */}
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Treść szablonu</h4>
+                    <div className="p-4 bg-gray-50 rounded-lg border max-h-96 overflow-y-auto">
+                      <pre className="text-sm whitespace-pre-wrap font-mono">
+                        {previewTemplate.content}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Available Variables */}
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Dostępne zmienne</h4>
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {previewTemplate.variables.map((variable) => (
+                        <div key={variable} className="p-2 bg-blue-50 rounded border-l-4 border-blue-400">
+                          <code className="text-sm font-mono text-blue-800">
+                            {`{{${variable}}}`}
+                          </code>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4">
+                    <h4 className="font-medium mb-2">Informacje o szablonie</h4>
+                    <div className="text-sm text-muted-foreground space-y-1">
+                      <p>Typ: {getTypeLabel(previewTemplate.type)}</p>
+                      <p>Utworzony przez: {previewTemplate.createdBy}</p>
+                      <p>Ostatnio użyty: {previewTemplate.lastUsed ? new Date(previewTemplate.lastUsed).toLocaleDateString('pl-PL') : 'Nigdy'}</p>
+                      <p>Status: {previewTemplate.isActive ? 'Aktywny' : 'Nieaktywny'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setPreviewTemplate(null)}>
+                  Zamknij
+                </Button>
+                <Button onClick={() => {
+                  handleCreateFromTemplate(previewTemplate.id);
+                  setPreviewTemplate(null);
+                }}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Użyj szablonu
+                </Button>
+              </div>
+            </div>
           )}
         </DialogContent>
       </Dialog>

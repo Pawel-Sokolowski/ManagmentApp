@@ -20,7 +20,12 @@ let users = [
       { module: 'ceidg', permissions: { read: true, write: true, delete: true, admin: true } },
       { module: 'reports', permissions: { read: true, write: true, delete: true, admin: true } },
       { module: 'settings', permissions: { read: true, write: true, delete: true, admin: true } },
-      { module: 'user_management', permissions: { read: true, write: true, delete: true, admin: true } }
+      { module: 'user_management', permissions: { read: true, write: true, delete: true, admin: true } },
+      { module: 'contracts', permissions: { read: true, write: true, delete: true, admin: true } },
+      { module: 'documents', permissions: { read: true, write: true, delete: true, admin: true } },
+      { module: 'templates', permissions: { read: true, write: true, delete: true, admin: true } },
+      { module: 'banking', permissions: { read: true, write: true, delete: true, admin: true } },
+      { module: 'time_tracking', permissions: { read: true, write: true, delete: true, admin: true } }
     ],
     createdAt: new Date().toISOString(),
     lastLogin: new Date().toISOString()

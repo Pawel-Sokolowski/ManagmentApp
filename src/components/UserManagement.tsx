@@ -45,7 +45,14 @@ export function UserManagement() {
     'chat': 'Chat',
     'kalendarz': 'Kalendarz',
     'ceidg': 'CEIDG',
-    'raporty': 'Raporty'
+    'raporty': 'Raporty',
+    'kontrakty': 'Kontrakty',
+    'dokumenty': 'Dokumenty',
+    'szablony': 'Szablony',
+    'bankowosc': 'Bankowość',
+    'czas_pracy': 'Czas pracy',
+    'ustawienia': 'Ustawienia',
+    'zarzadzanie_uzytkownikami': 'Zarządzanie użytkownikami'
   };
 
   const actionLabels = {
@@ -62,10 +69,17 @@ export function UserManagement() {
           { module: 'klienci', actions: ['read', 'write', 'delete', 'admin'] },
           { module: 'faktury', actions: ['read', 'write', 'delete', 'admin'] },
           { module: 'email', actions: ['read', 'write', 'delete', 'admin'] },
-          { module: 'chat', actions: ['read', 'write', 'admin'] },
+          { module: 'chat', actions: ['read', 'write', 'delete', 'admin'] },
           { module: 'kalendarz', actions: ['read', 'write', 'delete', 'admin'] },
-          { module: 'ceidg', actions: ['read', 'write', 'admin'] },
-          { module: 'raporty', actions: ['read', 'write', 'admin'] }
+          { module: 'ceidg', actions: ['read', 'write', 'delete', 'admin'] },
+          { module: 'raporty', actions: ['read', 'write', 'delete', 'admin'] },
+          { module: 'kontrakty', actions: ['read', 'write', 'delete', 'admin'] },
+          { module: 'dokumenty', actions: ['read', 'write', 'delete', 'admin'] },
+          { module: 'szablony', actions: ['read', 'write', 'delete', 'admin'] },
+          { module: 'bankowosc', actions: ['read', 'write', 'delete', 'admin'] },
+          { module: 'czas_pracy', actions: ['read', 'write', 'delete', 'admin'] },
+          { module: 'ustawienia', actions: ['read', 'write', 'delete', 'admin'] },
+          { module: 'zarzadzanie_uzytkownikami', actions: ['read', 'write', 'delete', 'admin'] }
         ];
       case 'sekretariat':
         return [
