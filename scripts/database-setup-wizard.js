@@ -169,8 +169,8 @@ class DatabaseSetupWizard {
       await pool.query(schema);
       
       // Create demo users using the enhanced setup script
-      const setupScript = require('./setup-database.js');
-      // Note: The setup script has the insertDemoUsers function which we'd need to export
+      const { insertDemoUsers } = require('./setup-database.js');
+      await insertDemoUsers(pool);
       
       await pool.end();
       return { success: true, message: 'Database schema initialized successfully' };
