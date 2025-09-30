@@ -1,6 +1,26 @@
 # Installer Resources
 
-This directory contains scripts and resources for creating and managing Windows installers for the Office Management System.
+## ⚠️ **You Probably Don't Need These Scripts**
+
+**If you used the ONE-CLICK installer (recommended), everything is already set up.**
+
+These scripts are included for:
+- Advanced troubleshooting scenarios
+- Custom configurations
+- Manual recovery procedures
+- Development and testing
+
+**Standard installation requires ZERO manual script execution.**
+
+---
+
+## About This Directory
+
+This directory contains scripts and resources used by the installer for automatic setup.
+
+The installer runs these scripts automatically during installation when you click YES for automatic setup.
+
+---
 
 ## Files
 

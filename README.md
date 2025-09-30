@@ -30,6 +30,8 @@ Same installer, server-optimized:
 
 ## ⚡ Installation (3 Steps - 5 Minutes)
 
+**📘 [Full Installation Guide →](INSTALLATION.md)**
+
 ### For Desktop/Workstation Users:
 
 1. **Download** `Office Management System Setup.exe` from [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)
@@ -46,6 +48,8 @@ Same 3 steps above, then optionally install as Windows Service:
 1. Open PowerShell as Administrator in installation folder
 2. Run: `.\install-service.ps1`
 3. Service starts automatically on boot
+
+**See [INSTALLATION.md](INSTALLATION.md) for complete details and FAQ.**
 
 ---
 
@@ -172,9 +176,14 @@ Features:
 
 ## 📚 Documentation
 
-- **[Installation Guide](WINDOWS_SERVER_INSTALLATION.md)** - Detailed installation steps
-- **[Quick Start](QUICK_START.md)** - Get started in 5 minutes
-- **[Installer Guide](INSTALLER_GUIDE.md)** - Installer details and options
+### Installation & Setup
+- **[INSTALLATION.md](INSTALLATION.md)** - ⭐ **Start here** - ONE file installation guide with FAQ
+- **[QUICK_START.md](QUICK_START.md)** - Get started in 5 minutes
+- **[WINDOWS_SERVER_INSTALLATION.md](WINDOWS_SERVER_INSTALLATION.md)** - Detailed installation and troubleshooting
+
+### Advanced Deployment
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Enterprise deployment and custom configurations
+- **[INSTALLER_GUIDE.md](INSTALLER_GUIDE.md)** - About the installer and building from source
 
 ---
 

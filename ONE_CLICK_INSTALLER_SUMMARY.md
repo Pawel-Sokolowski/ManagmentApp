@@ -1,5 +1,13 @@
 # One-Click Installer Implementation Summary
 
+## 📌 **Technical Reference Document**
+
+**This document describes how the one-click installer works internally.**
+
+**For installation instructions, see:** [QUICK_START.md](QUICK_START.md)
+
+---
+
 ## Overview
 
 This implementation transforms the Office Management System installer from a multi-step process into a **true one-click installation** that automatically handles PostgreSQL installation, database creation, and complete system configuration.
@@ -8,20 +16,16 @@ This implementation transforms the Office Management System installer from a mul
 
 **Original Request:** "Create one click installer for windows server, that installs postgresql, creates all the tables, and everything. not bunch of scripts"
 
-**Previous Situation:**
-- Installer required multiple manual steps
-- Users had to manually download and install PostgreSQL
-- Users had to run `setup-database.bat` separately
-- Database configuration required manual input
-- Multiple scripts scattered across documentation
+**Solution Implemented:**
+- ✅ **ONE installer file** - Users download and run a single .exe
+- ✅ **Automatic PostgreSQL** - Downloaded and installed automatically
+- ✅ **Zero scripts to run** - Everything happens during installation
+- ✅ **Complete setup** - Database, tables, demo users all configured
+- ✅ **One YES click** - Single prompt handles everything
 
-**New Solution:**
-- Single installer with integrated automatic setup
-- PostgreSQL automatically downloaded and installed
-- Database created and configured automatically
-- All tables and schemas initialized automatically
-- Demo users created automatically
-- One "YES" click handles everything
+**Users only see:** Download → Install → Click YES → Done
+
+---
 
 ## New Files Created
 
