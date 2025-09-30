@@ -1,83 +1,87 @@
-# Fix for "can't load same language file twice" Error
+# Fix for NSIS Build Errors - Complete History
 
-## Problem Summary
-The Windows installer build was failing with the error:
+## Latest Error (Current Fix)
+### Problem: "macro named MUI_HEADER_TEXT not found"
+The Windows installer build was failing with:
+```
+!insertmacro: macro named "MUI_HEADER_TEXT" not found!
+!include: error in script: "installer-resources\installer.nsh" on line 26
+```
+
+### Root Cause
+The custom NSIS script was using `!insertmacro MUI_HEADER_TEXT` in custom functions but did NOT include MUI2.nsh. While the previous fix removed MUI2.nsh to avoid "language file twice" errors, this was incorrect - the MUI macros are needed in custom functions.
+
+### Solution
+**Added back** `!include "MUI2.nsh"` to the custom script. NSIS header files use include guards, so including MUI2.nsh multiple times is safe:
+- electron-builder's generated script includes MUI2.nsh
+- Our custom script also includes MUI2.nsh
+- NSIS's include guards prevent duplicate definitions
+- MUI macros are now available in our custom functions
+
+### Changes Made
+**installer-resources/installer.nsh:**
+- **Added:** `!include "MUI2.nsh"` (line 11, before LogicLib.nsh)
+
+**installer-resources/README.md:**
+- Updated to clarify that `!include "MUI2.nsh"` SHOULD be included
+- Added troubleshooting section for "MUI_HEADER_TEXT not found" error
+
+---
+
+## Previous Error (Previously Fixed)
+### Problem: "can't load same language file twice"
+The Windows installer build was failing with:
 ```
 Error: can't load same language file twice.
 Error in macro MUI_LANGUAGEEX on macroline 13
 Error in macro MUI_LANGUAGE on macroline 4
 ```
 
-## Root Cause
-The custom NSIS script (`installer-resources/installer.nsh`) was redefining elements that electron-builder's generated script already provides:
-- `!include "MUI2.nsh"` 
+### Root Cause
+The custom NSIS script was redefining elements that electron-builder's generated script already provides:
 - Standard MUI pages (Welcome, Directory, InstFiles, Finish)
 - Uninstaller pages (Confirm, InstFiles)
 - Language definition (`!insertmacro MUI_LANGUAGE "English"`)
 
-When electron-builder includes the custom script into its generated NSIS script, this causes duplicate definitions, specifically the language being defined twice.
+### Solution Applied (Still Valid)
+Removed the following from custom script (these are correctly NOT included):
+- `!insertmacro MUI_PAGE_WELCOME`
+- `!insertmacro MUI_PAGE_DIRECTORY`
+- `!insertmacro MUI_PAGE_INSTFILES`
+- `!insertmacro MUI_PAGE_FINISH`
+- `!insertmacro MUI_UNPAGE_CONFIRM`
+- `!insertmacro MUI_UNPAGE_INSTFILES`
+- `!insertmacro MUI_LANGUAGE "English"`
 
-## Solution
-Removed ALL standard MUI elements from the custom NSIS script because:
+---
 
-1. **electron-builder's generated script already includes:**
-   - `!include "MUI2.nsh"`
-   - All standard pages
-   - All uninstaller pages
-   - Language definitions
+## What the Custom Script Should Contain
 
-2. **Custom script should ONLY contain:**
-   - Additional includes needed for custom logic (`!include "LogicLib.nsh"`)
-   - Variable declarations
-   - Custom page definitions (`Page custom FunctionName`)
-   - Custom page functions
-   - Custom install/uninstall macros
-
-## Changes Made
-
-### installer-resources/installer.nsh
-**Removed:**
-- `!include "MUI2.nsh"` (line 9)
-- `!insertmacro MUI_PAGE_WELCOME` (line 18)
-- `!insertmacro MUI_PAGE_DIRECTORY` (line 23)
-- `!insertmacro MUI_PAGE_INSTFILES` (line 24)
-- `!insertmacro MUI_PAGE_FINISH` (line 29)
-- `!insertmacro MUI_UNPAGE_CONFIRM` (line 32)
-- `!insertmacro MUI_UNPAGE_INSTFILES` (line 33)
-- `!insertmacro MUI_LANGUAGE "English"` (line 36)
-
-**Kept:**
-- `!include "LogicLib.nsh"` - needed for ${If}, ${Else}, etc.
+**DO Include:**
+- `!include "MUI2.nsh"` - Needed for MUI macros in custom functions (safe due to include guards)
+- `!include "LogicLib.nsh"` - Needed for ${If}, ${Else}, etc.
 - Variable declarations (Var InstallationType, etc.)
-- Custom page definitions (Page custom InstallationTypePageCreate, etc.)
-- Custom functions (using !insertmacro MUI_HEADER_TEXT, nsDialogs, etc.)
+- Custom page definitions (Page custom FunctionName)
+- Custom functions (using MUI_HEADER_TEXT, nsDialogs, etc.)
 - Custom install/uninstall macros
 
-**Result:** 
-- File reduced from 140 lines to 127 lines
-- Much cleaner and follows electron-builder best practices
-- Custom functionality preserved
+**DO NOT Include:**
+- `Name`, `OutFile`, `InstallDir`, `RequestExecutionLevel` directives
+- Standard MUI page macros (MUI_PAGE_WELCOME, etc.)
+- Uninstaller page macros (MUI_UNPAGE_CONFIRM, etc.)
+- Language definitions (MUI_LANGUAGE)
+- Section "Install" or Section "Uninstall" (use macros instead)
 
-### Documentation Updates
-- Updated `installer-resources/README.md` with comprehensive list of what NOT to include
-- Updated `NSIS_FIX_SUMMARY.md` with complete fix history
-- Added troubleshooting section for this specific error
+---
 
 ## Why This Works
-When electron-builder includes the custom script:
-1. electron-builder's script defines MUI2.nsh, pages, and language
-2. Custom script is included at a specific point
-3. Custom pages and functions are added
-4. Custom install/uninstall macros are called at appropriate times
-5. No duplicate definitions = no errors
+1. NSIS include files have include guards (similar to C/C++ `#pragma once`)
+2. Including MUI2.nsh multiple times doesn't cause errors
+3. Custom functions can use MUI macros like MUI_HEADER_TEXT
+4. electron-builder's generated script provides the pages and language
+5. Our custom script adds custom pages and functionality
 
-## How Custom Functionality Still Works
-Even though we removed `!include "MUI2.nsh"` from the custom script:
-- electron-builder's generated script includes MUI2.nsh
-- All MUI macros (MUI_HEADER_TEXT, etc.) are available
-- All nsDialogs functions are available
-- Custom pages can still use these macros and functions
-- Everything works because the custom script is included into a script that already has these definitions
+---
 
 ## Verification
 To test this fix:
@@ -86,9 +90,8 @@ To test this fix:
 
 ## Key Takeaway
 **When creating a custom NSIS script for electron-builder:**
-- Think of it as a "plugin" or "extension"
-- Only add custom elements, never redefine standard ones
-- electron-builder provides the complete NSIS infrastructure
-- Your script just adds custom pages, variables, and installation logic
-
-This is documented in electron-builder's official documentation but is a common source of confusion.
+- Include MUI2.nsh if you need MUI macros (safe due to include guards)
+- Include LogicLib.nsh if you need conditional logic
+- DO NOT define standard pages, languages, or installer directives
+- Only add custom pages, variables, and installation logic
+- Think of it as a "plugin" that extends electron-builder's generated script

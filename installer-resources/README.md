@@ -17,9 +17,10 @@ Custom NSIS script that provides additional installation options beyond electron
 - Standard MUI page macros (`!insertmacro MUI_PAGE_WELCOME`, `MUI_PAGE_DIRECTORY`, `MUI_PAGE_INSTFILES`, `MUI_PAGE_FINISH`, etc.)
 - Uninstaller page macros (`!insertmacro MUI_UNPAGE_CONFIRM`, `MUI_UNPAGE_INSTFILES`, etc.)
 - Language definitions (`!insertmacro MUI_LANGUAGE "English"`)
-- `!include "MUI2.nsh"` (electron-builder's generated script includes this)
 - `Section "Install"` (use `!macro customInstall` instead)
 - `Section "Uninstall"` (use `!macro customUnInstall` instead)
+
+**Note:** The script DOES include `!include "MUI2.nsh"` to make MUI macros (like `MUI_HEADER_TEXT`) available in custom functions. This is safe because NSIS's include mechanism handles multiple includes of the same file gracefully with include guards.
 
 ### What This Script Does
 
@@ -67,18 +68,25 @@ This error occurs when the custom script duplicates directives that electron-bui
 
 This error occurs when the custom script defines `!insertmacro MUI_LANGUAGE` which conflicts with electron-builder's generated script that already includes language definitions.
 
-**Solution:** Remove all of the following from the custom script:
-- `!include "MUI2.nsh"` (electron-builder includes this)
-- Standard MUI page macros (`!insertmacro MUI_PAGE_WELCOME`, `MUI_PAGE_DIRECTORY`, etc.)
-- Uninstaller page macros (`!insertmacro MUI_UNPAGE_CONFIRM`, `MUI_UNPAGE_INSTFILES`, etc.)
-- Language macro (`!insertmacro MUI_LANGUAGE "English"`)
+**Solution:** Remove the language definition from the custom script, but keep `!include "MUI2.nsh"` if you need MUI macros in custom functions:
+- Keep `!include "MUI2.nsh"` (NSIS handles multiple includes with include guards)
+- Remove standard MUI page macros (`!insertmacro MUI_PAGE_WELCOME`, `MUI_PAGE_DIRECTORY`, etc.)
+- Remove uninstaller page macros (`!insertmacro MUI_UNPAGE_CONFIRM`, `MUI_UNPAGE_INSTFILES`, etc.)
+- Remove language macro (`!insertmacro MUI_LANGUAGE "English"`)
 
-Keep only:
+Keep:
+- `!include "MUI2.nsh"` (needed for MUI macros like MUI_HEADER_TEXT)
 - `!include "LogicLib.nsh"` (for conditional logic)
 - Variable declarations (`Var VariableName`)
 - Custom page definitions (`Page custom FunctionName`)
 - Custom functions
 - Custom install/uninstall macros (`!macro customInstall`, `!macro customUnInstall`)
+
+### NSIS Error: "macro named MUI_HEADER_TEXT not found"
+
+This error occurs when custom functions try to use MUI macros but MUI2.nsh is not included.
+
+**Solution:** Add `!include "MUI2.nsh"` at the top of the custom script (after the comments). NSIS include files have include guards, so including MUI2.nsh multiple times is safe and won't cause conflicts.
 
 ### NSIS Warning: "MUI_UNPAGE_* inserted after MUI_LANGUAGE"
 
