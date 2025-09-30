@@ -59,17 +59,8 @@ async function initializeSchema() {
     await pool.query(schema);
     console.log('✅ Database schema initialized successfully');
     
-    // Insert demo admin user
-    const bcrypt = require('bcryptjs');
-    const hashedPassword = await bcrypt.hash('admin123', 12);
-    
-    await pool.query(`
-      INSERT INTO users (first_name, last_name, email, password_hash, role, is_active)
-      VALUES ('Admin', 'User', 'admin@demo.com', $1, 'administrator', true)
-      ON CONFLICT (email) DO NOTHING
-    `, [hashedPassword]);
-    
-    console.log('✅ Demo admin user created (email: admin@demo.com, password: admin123)');
+    // Insert demo users with different roles and permissions
+    await insertDemoUsers(pool);
     
     // Insert demo data
     await insertDemoData(pool);
@@ -82,22 +73,209 @@ async function initializeSchema() {
   }
 }
 
+async function insertDemoUsers(pool) {
+  const bcrypt = require('bcryptjs');
+  
+  // Define demo users with different roles and permissions
+  const demoUsers = [
+    {
+      firstName: 'Admin',
+      lastName: 'User',
+      email: 'admin@demo.com',
+      password: 'admin123',
+      role: 'administrator',
+      position: 'System Administrator',
+      phone: '+48 100 000 001',
+      permissions: [
+        { module: 'clients', permissions: ['read', 'write', 'delete', 'admin'] },
+        { module: 'invoices', permissions: ['read', 'write', 'delete', 'admin'] },
+        { module: 'calendar', permissions: ['read', 'write', 'delete', 'admin'] },
+        { module: 'chat', permissions: ['read', 'write', 'delete', 'admin'] },
+        { module: 'documents', permissions: ['read', 'write', 'delete', 'admin'] },
+        { module: 'reports', permissions: ['read', 'write', 'delete', 'admin'] },
+        { module: 'users', permissions: ['read', 'write', 'delete', 'admin'] },
+        { module: 'settings', permissions: ['read', 'write', 'delete', 'admin'] }
+      ]
+    },
+    {
+      firstName: 'Manager',
+      lastName: 'Kowalski',
+      email: 'manager@demo.com',
+      password: 'manager123',
+      role: 'zarzadzanie',
+      position: 'Office Manager',
+      phone: '+48 100 000 002',
+      permissions: [
+        { module: 'clients', permissions: ['read', 'write', 'delete'] },
+        { module: 'invoices', permissions: ['read', 'write'] },
+        { module: 'calendar', permissions: ['read', 'write', 'delete'] },
+        { module: 'chat', permissions: ['read', 'write'] },
+        { module: 'documents', permissions: ['read', 'write', 'delete'] },
+        { module: 'reports', permissions: ['read', 'write'] },
+        { module: 'users', permissions: ['read'] }
+      ]
+    },
+    {
+      firstName: 'Anna',
+      lastName: 'Nowak',
+      email: 'accountant@demo.com',
+      password: 'accountant123',
+      role: 'ksiegowa',
+      position: 'Chief Accountant',
+      phone: '+48 100 000 003',
+      permissions: [
+        { module: 'clients', permissions: ['read', 'write'] },
+        { module: 'invoices', permissions: ['read', 'write', 'delete'] },
+        { module: 'calendar', permissions: ['read', 'write'] },
+        { module: 'chat', permissions: ['read', 'write'] },
+        { module: 'documents', permissions: ['read', 'write'] },
+        { module: 'reports', permissions: ['read', 'write'] }
+      ]
+    },
+    {
+      firstName: 'Maria',
+      lastName: 'Wiśniewska',
+      email: 'secretary@demo.com',
+      password: 'secretary123',
+      role: 'sekretariat',
+      position: 'Secretary',
+      phone: '+48 100 000 004',
+      permissions: [
+        { module: 'clients', permissions: ['read', 'write'] },
+        { module: 'invoices', permissions: ['read'] },
+        { module: 'calendar', permissions: ['read', 'write', 'delete'] },
+        { module: 'chat', permissions: ['read', 'write'] },
+        { module: 'documents', permissions: ['read', 'write'] }
+      ]
+    },
+    {
+      firstName: 'Piotr',
+      lastName: 'Zieliński',
+      email: 'hr@demo.com',
+      password: 'hr123',
+      role: 'kadrowa',
+      position: 'HR Manager',
+      phone: '+48 100 000 005',
+      permissions: [
+        { module: 'clients', permissions: ['read'] },
+        { module: 'calendar', permissions: ['read', 'write'] },
+        { module: 'chat', permissions: ['read', 'write'] },
+        { module: 'documents', permissions: ['read', 'write'] },
+        { module: 'reports', permissions: ['read'] },
+        { module: 'users', permissions: ['read', 'write'] }
+      ]
+    },
+    {
+      firstName: 'Owner',
+      lastName: 'Company',
+      email: 'owner@demo.com',
+      password: 'owner123',
+      role: 'wlasciciel',
+      position: 'Company Owner',
+      phone: '+48 100 000 006',
+      permissions: [
+        { module: 'clients', permissions: ['read', 'write', 'delete'] },
+        { module: 'invoices', permissions: ['read', 'write', 'delete'] },
+        { module: 'calendar', permissions: ['read', 'write', 'delete'] },
+        { module: 'chat', permissions: ['read', 'write'] },
+        { module: 'documents', permissions: ['read', 'write', 'delete'] },
+        { module: 'reports', permissions: ['read', 'write'] },
+        { module: 'users', permissions: ['read', 'write'] },
+        { module: 'settings', permissions: ['read', 'write'] }
+      ]
+    }
+  ];
+
+  try {
+    console.log('🔐 Creating demo users with different permission levels...');
+    
+    for (const user of demoUsers) {
+      // Hash password
+      const hashedPassword = await bcrypt.hash(user.password, 12);
+      
+      // Insert user
+      const result = await pool.query(`
+        INSERT INTO users (
+          first_name, last_name, email, password_hash, role, 
+          is_active, position, phone
+        )
+        VALUES ($1, $2, $3, $4, $5, true, $6, $7)
+        ON CONFLICT (email) DO UPDATE SET
+          first_name = EXCLUDED.first_name,
+          last_name = EXCLUDED.last_name,
+          role = EXCLUDED.role,
+          position = EXCLUDED.position,
+          phone = EXCLUDED.phone
+        RETURNING id
+      `, [
+        user.firstName,
+        user.lastName,
+        user.email,
+        hashedPassword,
+        user.role,
+        user.position,
+        user.phone
+      ]);
+
+      const userId = result.rows[0].id;
+
+      // Insert permissions for this user
+      for (const permConfig of user.permissions) {
+        for (const permission of permConfig.permissions) {
+          await pool.query(`
+            INSERT INTO user_permissions (user_id, module, permission)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (user_id, module, permission) DO NOTHING
+          `, [userId, permConfig.module, permission]);
+        }
+      }
+
+      console.log(`✅ Created user: ${user.email} (${user.role}) - Password: ${user.password}`);
+    }
+
+    console.log('\n📋 Demo User Credentials Summary:');
+    console.log('================================');
+    for (const user of demoUsers) {
+      console.log(`${user.position}:`);
+      console.log(`  Email: ${user.email}`);
+      console.log(`  Password: ${user.password}`);
+      console.log(`  Role: ${user.role}`);
+      console.log('');
+    }
+
+  } catch (error) {
+    console.error('❌ Error creating demo users:', error.message);
+    throw error;
+  }
+}
+
 async function insertDemoData(pool) {
   try {
     // Insert demo clients
     await pool.query(`
       INSERT INTO clients (
-        company_name, company_nip, company_regon, company_address,
+        company_name, nip, regon, 
         contact_person_first_name, contact_person_last_name,
-        contact_person_email, contact_person_phone,
-        industry, company_size, contract_type, is_active
+        email, phone,
+        street, city, postal_code, country,
+        status, client_type, business_type,
+        vat_rate, payment_terms
       ) VALUES 
-      ('ABC Sp. z o.o.', '1234567890', '123456789', 'ul. Przykładowa 1, 00-001 Warszawa',
+      ('ABC Technologies Sp. z o.o.', '1234567890', '123456789',
        'Jan', 'Kowalski', 'jan.kowalski@abc.pl', '+48 123 456 789',
-       'technology', 'medium', 'standard', true),
-      ('XYZ Firma', '0987654321', '987654321', 'ul. Testowa 2, 01-002 Kraków',
+       'ul. Przykładowa 1', 'Warszawa', '00-001', 'Polska',
+       'aktualny', 'firma', 'technology',
+       23.00, 14),
+      ('XYZ Consulting', '0987654321', '987654321',
        'Anna', 'Nowak', 'anna.nowak@xyz.pl', '+48 987 654 321',
-       'consulting', 'small', 'premium', true)
+       'ul. Testowa 2', 'Kraków', '01-002', 'Polska',
+       'aktualny', 'firma', 'consulting',
+       23.00, 30),
+      ('DEF Services', '1122334455', '112233445',
+       'Piotr', 'Wiśniewski', 'piotr@def.pl', '+48 111 222 333',
+       'ul. Główna 5', 'Wrocław', '50-001', 'Polska',
+       'potencjalny', 'firma', 'services',
+       23.00, 14)
       ON CONFLICT DO NOTHING
     `);
     

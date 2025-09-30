@@ -94,20 +94,71 @@
             "appId": "com.office.management.system",
             "productName": "Office Management System",
             "directories": {
-                  "output": "dist-electron"
+                  "output": "dist-electron",
+                  "buildResources": "installer-resources"
             },
             "files": [
                   "build/**/*",
                   "public/electron.js",
                   "public/preload.js",
                   "server/**/*",
-                  "node_modules/**/*"
+                  "scripts/**/*",
+                  "src/database/**/*",
+                  "package.json",
+                  "package-lock.json",
+                  "!node_modules/**/*"
             ],
             "extraFiles": [
                   {
                         "from": "server",
                         "to": "server"
+                  },
+                  {
+                        "from": "scripts",
+                        "to": "scripts"
+                  },
+                  {
+                        "from": "src/database",
+                        "to": "src/database"
+                  },
+                  {
+                        "from": "installer-resources/setup-database.bat",
+                        "to": "setup-database.bat"
+                  },
+                  {
+                        "from": "installer-resources/check-postgresql.bat",
+                        "to": "check-postgresql.bat"
+                  },
+                  {
+                        "from": "installer-resources/start-server.bat",
+                        "to": "start-server.bat"
+                  },
+                  {
+                        "from": "installer-resources/install-service.ps1",
+                        "to": "install-service.ps1"
+                  },
+                  {
+                        "from": "installer-resources/README.md",
+                        "to": "INSTALLER_README.md"
+                  },
+                  {
+                        "from": ".env.example",
+                        "to": ".env.example"
+                  },
+                  {
+                        "from": "WINDOWS_SERVER_INSTALLATION.md",
+                        "to": "WINDOWS_SERVER_INSTALLATION.md"
+                  },
+                  {
+                        "from": "QUICK_START.md",
+                        "to": "QUICK_START.md"
                   }
+            ],
+            "asarUnpack": [
+                  "node_modules/**/*",
+                  "server/**/*",
+                  "scripts/**/*",
+                  "src/database/**/*"
             ],
             "mac": {
                   "category": "public.app-category.business",
@@ -139,7 +190,10 @@
                   "createStartMenuShortcut": true,
                   "deleteAppDataOnUninstall": false,
                   "runAfterFinish": true,
-                  "allowElevation": true
+                  "allowElevation": true,
+                  "include": "installer-resources/installer.nsh",
+                  "perMachine": false,
+                  "shortcutName": "Office Management System"
             },
             "portable": {
                   "artifactName": "${productName}-${version}-portable.${ext}"

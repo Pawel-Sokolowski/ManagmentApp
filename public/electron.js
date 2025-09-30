@@ -143,6 +143,50 @@ ipcMain.handle('db-query', async (event, query, params) => {
   }
 });
 
+// Database setup wizard handlers
+ipcMain.handle('db-setup-check', async () => {
+  try {
+    const DatabaseSetupWizard = require(path.join(__dirname, '../scripts/database-setup-wizard.js'));
+    const wizard = new DatabaseSetupWizard();
+    const result = await wizard.validateSetup();
+    return result;
+  } catch (error) {
+    console.error('Database setup check error:', error);
+    return { 
+      valid: false, 
+      requiresSetup: true, 
+      message: error.message 
+    };
+  }
+});
+
+ipcMain.handle('db-setup-test-connection', async (event, config) => {
+  try {
+    const DatabaseSetupWizard = require(path.join(__dirname, '../scripts/database-setup-wizard.js'));
+    const wizard = new DatabaseSetupWizard();
+    const result = await wizard.checkDatabaseConnection(config);
+    return result;
+  } catch (error) {
+    console.error('Connection test error:', error);
+    return { success: false, message: error.message };
+  }
+});
+
+ipcMain.handle('db-setup-run', async (event, config) => {
+  try {
+    const DatabaseSetupWizard = require(path.join(__dirname, '../scripts/database-setup-wizard.js'));
+    const wizard = new DatabaseSetupWizard();
+    const result = await wizard.runSetup(config);
+    return result;
+  } catch (error) {
+    console.error('Database setup error:', error);
+    return { 
+      success: false, 
+      steps: [{ name: 'Error', status: 'failed', message: error.message }]
+    };
+  }
+});
+
 // Security: Prevent new window creation
 app.on('web-contents-created', (event, contents) => {
   contents.on('new-window', (event, navigationUrl) => {

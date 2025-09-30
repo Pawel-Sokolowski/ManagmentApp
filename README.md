@@ -12,6 +12,8 @@ A comprehensive office management system built with React, Electron, and Postgre
 
 **🌐 Try Online:** [Browser Demo](https://pawel-sokolowski.github.io/ManagmentApp/)
 
+**📘 Server Installation:** See [Windows Server Installation Guide](WINDOWS_SERVER_INSTALLATION.md) for production deployment
+
 ## 🚀 Features
 
 - **Client Management**: Complete client database with contact information and document management
