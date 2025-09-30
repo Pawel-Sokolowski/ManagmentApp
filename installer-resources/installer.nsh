@@ -1,6 +1,10 @@
 ; NSIS Installer Script for Office Management System
 ; Provides options for Desktop or Server installation
-; Note: Name, OutFile, InstallDir, and RequestExecutionLevel are set by electron-builder
+;
+; IMPORTANT: This script is INCLUDED by electron-builder's generated NSIS script.
+; Do NOT define: Name, OutFile, InstallDir, RequestExecutionLevel - electron-builder sets these.
+; Do NOT create Section "Install" or Section "Uninstall" - use !macro customInstall and !macro customUnInstall instead.
+; For details, see README.md in this directory.
 
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
