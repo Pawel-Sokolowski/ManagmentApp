@@ -68,6 +68,8 @@ if /i "%CHANGE_CONFIG%"=="y" (
         echo DB_PASSWORD=!DB_PASSWORD!
     ) > "%CONFIG_FILE%"
     echo Configuration saved to: %CONFIG_FILE%
+    REM Restrict configuration file permissions to current user
+    icacls "%CONFIG_FILE%" /inheritance:r /grant:r "%USERNAME%:R"
 )
 
 echo.
