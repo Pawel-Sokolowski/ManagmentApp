@@ -111,6 +111,48 @@ app.post('/api/init-database', async (req, res) => {
   }
 });
 
+// Database configuration check endpoint
+app.get('/api/db-status', async (req, res) => {
+  try {
+    // Check connection
+    await pool.query('SELECT 1');
+    
+    // Check if schema is initialized
+    const result = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'users'
+      ) as schema_exists
+    `);
+    
+    const schemaInitialized = result.rows[0].schema_exists;
+    
+    // Count users if schema exists
+    let userCount = 0;
+    if (schemaInitialized) {
+      const userResult = await pool.query('SELECT COUNT(*) as count FROM users');
+      userCount = parseInt(userResult.rows[0].count);
+    }
+    
+    res.json({
+      connected: true,
+      schemaInitialized,
+      userCount,
+      requiresSetup: !schemaInitialized || userCount === 0,
+      database: process.env.DB_NAME || 'office_management',
+      host: process.env.DB_HOST || 'localhost'
+    });
+  } catch (error) {
+    res.status(503).json({
+      connected: false,
+      schemaInitialized: false,
+      requiresSetup: true,
+      error: error.message
+    });
+  }
+});
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../build')));
