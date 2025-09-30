@@ -28,11 +28,11 @@ Page custom PostInstallPageCreate
 
 !insertmacro MUI_PAGE_FINISH
 
-; Uninstaller pages
+; Uninstaller pages (must be before MUI_LANGUAGE)
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
-; Languages
+; Languages (must be after all page definitions)
 !insertmacro MUI_LANGUAGE "English"
 
 ; Custom page to select installation type
