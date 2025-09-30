@@ -8,6 +8,7 @@
 ; Do NOT create Section "Install" or Section "Uninstall" - use !macro customInstall and !macro customUnInstall instead.
 ; For details, see README.md in this directory.
 
+!include "MUI2.nsh"
 !include "LogicLib.nsh"
 
 ; Variables
