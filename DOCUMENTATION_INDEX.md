@@ -34,7 +34,9 @@ Welcome! This document helps you find the right guide for your needs.
 
 | Document | Purpose | Time Required |
 |----------|---------|---------------|
-| [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) | Install and configure the application | 15-30 minutes |
+| [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) | Install and configure the desktop application | 15-30 minutes |
+| [WEB_DEPLOYMENT_GUIDE.md](WEB_DEPLOYMENT_GUIDE.md) | Deploy as a web application on a server | 30-60 minutes |
+| [VERIFICATION_GUIDE.md](VERIFICATION_GUIDE.md) | Verify installation and troubleshoot issues | 10-20 minutes |
 | [README.md](README.md) | Project overview, features, and quick start | 5 minutes |
 
 ### For Builders (Creating the .exe)

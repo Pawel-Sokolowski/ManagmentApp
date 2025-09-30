@@ -146,11 +146,21 @@ Function PostInstallPageCreate
   Pop $0
   
   ${If} $InstallationType == "Server"
-    ${NSD_CreateLabel} 0 0 100% 60u "Installation Type: Server$\r$\n$\r$\nNext Steps:$\r$\n1. Ensure PostgreSQL is installed and running$\r$\n2. Initialize the database using the provided schema files$\r$\n3. Configure the application as a Windows Service (optional)$\r$\n4. Configure firewall rules for network access$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
-    Pop $0
+    ${If} $PostgreSQLInstalled == "Yes"
+      ${NSD_CreateLabel} 0 0 100% 70u "Installation Type: Server$\r$\n$\r$\nPostgreSQL: Detected ✓$\r$\n$\r$\nNext Steps:$\r$\n1. Launch the application$\r$\n2. Complete the Database Setup Wizard on first run$\r$\n3. Configure the application as a Windows Service (optional)$\r$\n4. Configure firewall rules for network access$\r$\n$\r$\nThe application will guide you through database configuration.$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+      Pop $0
+    ${Else}
+      ${NSD_CreateLabel} 0 0 100% 70u "Installation Type: Server$\r$\n$\r$\nPostgreSQL: Not detected ✗$\r$\n$\r$\nNext Steps:$\r$\n1. Install PostgreSQL 13+ from postgresql.org$\r$\n2. Launch the application$\r$\n3. Complete the Database Setup Wizard$\r$\n4. Configure the application as a Windows Service (optional)$\r$\n5. Configure firewall rules for network access$\r$\n$\r$\nThe application will guide you through database configuration.$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+      Pop $0
+    ${EndIf}
   ${Else}
-    ${NSD_CreateLabel} 0 0 100% 50u "Installation Type: Desktop Application$\r$\n$\r$\nNext Steps:$\r$\n1. Ensure PostgreSQL is installed and running$\r$\n2. Initialize the database using the provided schema files$\r$\n3. Launch the application from your desktop$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
-    Pop $0
+    ${If} $PostgreSQLInstalled == "Yes"
+      ${NSD_CreateLabel} 0 0 100% 60u "Installation Type: Desktop Application$\r$\n$\r$\nPostgreSQL: Detected ✓$\r$\n$\r$\nNext Steps:$\r$\n1. Launch the application from your desktop$\r$\n2. Complete the Database Setup Wizard on first run$\r$\n$\r$\nThe application will automatically guide you through$\r$\ndatabase configuration on first launch.$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+      Pop $0
+    ${Else}
+      ${NSD_CreateLabel} 0 0 100% 60u "Installation Type: Desktop Application$\r$\n$\r$\nPostgreSQL: Not detected ✗$\r$\n$\r$\nNext Steps:$\r$\n1. Install PostgreSQL 13+ from postgresql.org$\r$\n2. Launch the application from your desktop$\r$\n3. Complete the Database Setup Wizard$\r$\n$\r$\nThe application will guide you through database configuration.$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+      Pop $0
+    ${EndIf}
   ${EndIf}
   
   nsDialogs::Show
