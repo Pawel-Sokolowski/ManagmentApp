@@ -39,6 +39,9 @@ logs
 dist-electron/
 app-dist/
 
+# Installer executables (large binary files)
+installer/*.exe
+
 # Database files
 *.sqlite
 *.db

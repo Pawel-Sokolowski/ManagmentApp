@@ -122,48 +122,12 @@
                         "to": "src/database"
                   },
                   {
-                        "from": "installer-resources/setup-database.bat",
-                        "to": "setup-database.bat"
-                  },
-                  {
-                        "from": "installer-resources/check-postgresql.bat",
-                        "to": "check-postgresql.bat"
-                  },
-                  {
-                        "from": "installer-resources/start-server.bat",
-                        "to": "start-server.bat"
-                  },
-                  {
-                        "from": "installer-resources/one-click-setup.bat",
-                        "to": "one-click-setup.bat"
-                  },
-                  {
-                        "from": "installer-resources/install-postgresql.ps1",
-                        "to": "install-postgresql.ps1"
-                  },
-                  {
-                        "from": "installer-resources/refresh-env.bat",
-                        "to": "refresh-env.bat"
-                  },
-                  {
-                        "from": "installer-resources/install-service.ps1",
-                        "to": "install-service.ps1"
-                  },
-                  {
-                        "from": "installer-resources/README.md",
-                        "to": "INSTALLER_README.md"
-                  },
-                  {
                         "from": ".env.example",
                         "to": ".env.example"
                   },
                   {
-                        "from": "WINDOWS_SERVER_INSTALLATION.md",
-                        "to": "WINDOWS_SERVER_INSTALLATION.md"
-                  },
-                  {
-                        "from": "QUICK_START.md",
-                        "to": "QUICK_START.md"
+                        "from": "INSTALLATION_GUIDE.md",
+                        "to": "INSTALLATION_GUIDE.md"
                   }
             ],
             "asarUnpack": [

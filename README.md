@@ -1,217 +1,81 @@
-# Office Management System - Windows Desktop Application
+# Office Management System
 
 A comprehensive office management system built with React, Electron, and PostgreSQL. This application provides a complete solution for managing clients, invoices, calendar events, team communication, and more.
 
 ---
 
-## 🎯 **ONE INSTALLER. ZERO SCRIPTS. JUST WORKS.** ⚡
+## 📥 Installation
 
-**Download ONE file. Run it. That's it.**
+**[📘 Complete Installation Guide →](INSTALLATION_GUIDE.md)**
 
-### 📥 For Windows Desktop/Workstation:
-**[Download: `Office Management System Setup.exe`](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)**
+Download the unified installer that supports both Desktop and Server installations:
 
-This single installer file:
-- ✅ Installs the complete application
-- ✅ Installs PostgreSQL database automatically (if needed)
-- ✅ Sets up everything with demo users
-- ✅ **No scripts to run. No configuration needed.**
+**[Download: Office-Management-System-Setup.exe](installer/Office-Management-System-Setup.exe)**
 
-### 🖥️ For Windows Server (Dedicated Server):
-**[Download: `Office Management System Setup.exe`](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)**
+### Quick Start
+1. Download the installer from the `installer` folder
+2. Run as administrator
+3. Choose installation type:
+   - **Desktop Application** - For single-user workstations
+   - **Server Installation** - For multi-user server environments
 
-Same installer, server-optimized:
-- ✅ Full server installation with PostgreSQL
-- ✅ Automatic database initialization
-- ✅ Can be configured as Windows Service
-- ✅ **One file installs everything**
+The installer automatically handles everything including PostgreSQL installation, database setup, and configuration.
+
+**For detailed instructions, see [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)**
 
 ---
 
-## ⚡ Installation (3 Steps - 5 Minutes)
-
-**📘 [Full Installation Guide →](INSTALLATION.md)**
-
-### For Desktop/Workstation Users:
-
-1. **Download** `Office Management System Setup.exe` from [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)
-2. **Run** the installer (right-click → "Run as administrator")
-3. **Click YES** when prompted for automatic setup
-
-**That's it!** Launch the app and log in with:
-- Email: `admin@demo.com`
-- Password: `admin123`
-
-### For Server Deployment:
-
-Same 3 steps above, then optionally install as Windows Service:
-1. Open PowerShell as Administrator in installation folder
-2. Run: `.\install-service.ps1`
-3. Service starts automatically on boot
-
-**See [INSTALLATION.md](INSTALLATION.md) for complete details and FAQ.**
-
----
-
-## 🌐 Try Online Demo (No Installation)
+## 🌐 Online Demo
 
 **[Live Browser Demo](https://pawel-sokolowski.github.io/ManagmentApp/)**
 
-Test all features in your browser before installing. No download required.
+Test features in your browser before installing.
 
 ---
 
-## 📋 What You Get
+## ✨ Features
 
-**ONE installer includes:**
-- ✅ Complete desktop application
-- ✅ PostgreSQL 15 database (auto-installed)
-- ✅ Express.js backend server (embedded)
-- ✅ 6 demo users with different roles
-- ✅ Sample data for testing
-- ✅ All modules fully configured
+- **Client Management** - Complete client database with contacts and documents
+- **Invoice System** - Create, manage, and track invoices
+- **Calendar & Scheduling** - Event management and team coordination
+- **Team Chat** - Real-time collaboration
+- **Email Center** - Integrated email management
+- **Document Management** - Centralized document storage
+- **Time Tracking** - Employee time tracking and reporting
+- **Financial Reports** - Comprehensive analytics
+- **User Management** - Role-based access control
 
-**System Requirements:**
+---
+
+## 📋 System Requirements
+
 - Windows 10/11 or Windows Server 2016+
-- 4 GB RAM (8 GB recommended for server)
-- 10 GB free disk space
-- Internet connection (for PostgreSQL download)
-
-## 🚀 Features
-
-- **Client Management**: Complete client database with contact information and document management
-- **Invoice System**: Create, manage, and track invoices with automated reminders
-- **Calendar & Scheduling**: Advanced calendar with event management and team coordination
-- **Team Chat**: Real-time communication system for team collaboration
-- **Email Center**: Integrated email management with templates and automation
-- **Document Management**: Centralized document storage and organization
-- **Time Tracking**: Employee time tracking with detailed reporting
-- **Financial Reports**: Comprehensive reporting and analytics
-- **User Management**: Role-based access control and user permissions
-
-## 💡 Common Questions
-
-### "Do I need to install PostgreSQL separately?"
-**No.** The installer does it automatically.
-
-### "Do I need to run any scripts or configuration?"
-**No.** Everything is configured automatically during installation.
-
-### "What if I already have PostgreSQL?"
-The installer detects it and uses your existing installation.
-
-### "Can I use this on a server?"
-**Yes.** Same installer works for desktop and server deployment.
-
-### "What about MSI installer?"
-The NSIS .exe installer is equivalent to MSI and works on all Windows systems.
+- 4 GB RAM (8 GB recommended)
+- 500 MB disk space + 200 MB for PostgreSQL
+- Internet connection for initial setup
 
 ---
 
-## 🔧 Advanced: Building from Source
+## 🔧 For Developers
 
-<details>
-<summary>Click to expand - For developers only</summary>
+### Building from Source
 
-### Requirements
-- Node.js 18+
-- PostgreSQL 13+ (optional - installer can add it)
+```bash
+# Clone repository
+git clone https://github.com/Pawel-Sokolowski/ManagmentApp.git
+cd ManagmentApp
 
-### Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Pawel-Sokolowski/ManagmentApp.git
-   cd ManagmentApp
-   ```
+# Install dependencies
+npm install
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Build Windows installer:
-   ```bash
-   npm run dist-win
-   ```
+# Build installer
+npm run dist-win
+```
 
 The installer will be created in `dist-electron/` directory.
 
-</details>
-
 ---
 
-## 🌐 Browser Demo
-
-Want to try before installing?
-
-**[Live Demo →](https://pawel-sokolowski.github.io/ManagmentApp/)**
-
-Features:
-- ✅ Full application interface
-- ✅ All UI components
-- ✅ Mock data for testing
-- ⚠️ Database features require desktop installation
-
-**Demo Login:**
-- Email: `admin@demo.com`
-- Password: `admin123`
-
----
-
-## 🔐 Security & Production Use
-
-**After installation:**
-1. Change all demo user passwords
-2. Remove unused demo accounts
-3. Configure Windows Firewall
-4. Set up regular database backups
-
-**For production servers:**
-- Install as Windows Service (included)
-- Use strong PostgreSQL password
-- Enable SSL connections
-- Configure network security
-
----
-
-## 📚 Documentation
-
-### Installation & Setup
-- **[INSTALLATION.md](INSTALLATION.md)** - ⭐ **Start here** - ONE file installation guide with FAQ
-- **[QUICK_START.md](QUICK_START.md)** - Get started in 5 minutes
-- **[WINDOWS_SERVER_INSTALLATION.md](WINDOWS_SERVER_INSTALLATION.md)** - Detailed installation and troubleshooting
-
-### Advanced Deployment
-- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Enterprise deployment and custom configurations
-- **[INSTALLER_GUIDE.md](INSTALLER_GUIDE.md)** - About the installer and building from source
-
----
-
-## 🛠️ Development
-
-<details>
-<summary>For developers - Build and development info</summary>
-
-### Available Scripts
-- `npm run dev` - Start development server
-- `npm run electron-dev` - Start Electron with hot reload
-- `npm run dist-win` - Build Windows installer
-- `npm run demo` - Run browser demo locally
-
-### Architecture
-```
-Office Management System/
-├── src/                    # React frontend
-├── server/                # Express.js backend  
-├── public/                # Electron main process
-├── scripts/               # Database setup
-└── installer-resources/   # Installer scripts
-```
-
-</details>
-
----
-
-**Version**: 1.0.0
-**Platform**: Windows 10/11
-**Requirements**: PostgreSQL 13+, Node.js 18+
+**Version**: 1.0.0  
+**License**: See LICENSE file  
+**Platform**: Windows 10/11, Windows Server 2016+

@@ -1,62 +1,183 @@
-; Custom NSIS installer script for Office Management System
-; This script handles automatic PostgreSQL installation and configuration
+; NSIS Installer Script for Office Management System
+; Provides options for Desktop or Server installation
 
-!macro customInstall
-  ; Create data directory for application
-  CreateDirectory "$INSTDIR\data"
-  CreateDirectory "$INSTDIR\data\database"
-  CreateDirectory "$INSTDIR\data\logs"
+!include "MUI2.nsh"
+!include "LogicLib.nsh"
+
+; Installer name and settings
+Name "Office Management System"
+OutFile "Office-Management-System-Setup.exe"
+InstallDir "$PROGRAMFILES\Office Management System"
+RequestExecutionLevel admin
+
+; Variables
+Var InstallationType
+Var PostgreSQLInstalled
+Var SetupSuccess
+
+; Interface Settings
+!define MUI_ABORTWARNING
+!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
+!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+
+; Pages
+!insertmacro MUI_PAGE_WELCOME
+
+; Custom page for installation type selection
+Page custom InstallationTypePageCreate InstallationTypePageLeave
+
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+
+; Custom page for post-installation
+Page custom PostInstallPageCreate
+
+!insertmacro MUI_PAGE_FINISH
+
+; Uninstaller pages
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+
+; Languages
+!insertmacro MUI_LANGUAGE "English"
+
+; Custom page to select installation type
+Function InstallationTypePageCreate
+  !insertmacro MUI_HEADER_TEXT "Select Installation Type" "Choose between Desktop Application or Server Installation"
   
-  ; Copy all setup scripts
-  File /oname=$INSTDIR\setup-database.bat "${BUILD_RESOURCES_DIR}\setup-database.bat"
-  File /oname=$INSTDIR\check-postgresql.bat "${BUILD_RESOURCES_DIR}\check-postgresql.bat"
-  File /oname=$INSTDIR\one-click-setup.bat "${BUILD_RESOURCES_DIR}\one-click-setup.bat"
-  File /oname=$INSTDIR\install-postgresql.ps1 "${BUILD_RESOURCES_DIR}\install-postgresql.ps1"
-  File /oname=$INSTDIR\refresh-env.bat "${BUILD_RESOURCES_DIR}\refresh-env.bat"
-  
-  ; Create config file with default database settings
-  FileOpen $0 "$INSTDIR\data\db-config.txt" w
-  FileWrite $0 "DB_HOST=localhost$\r$\n"
-  FileWrite $0 "DB_PORT=5432$\r$\n"
-  FileWrite $0 "DB_NAME=office_management$\r$\n"
-  FileWrite $0 "DB_USER=postgres$\r$\n"
-  FileWrite $0 "DB_PASSWORD=postgres123!$\r$\n"
-  FileClose $0
-  
-  ; Display one-click setup dialog
-  MessageBox MB_YESNO|MB_ICONQUESTION "Office Management System - Automatic Setup$\n$\nWould you like to run the automatic setup now?$\n$\nThis will:$\n1. Install PostgreSQL (if not already installed)$\n2. Create the database$\n3. Initialize all tables and schemas$\n4. Create demo users$\n$\nThis process takes 5-15 minutes.$\n$\nClick YES for automatic setup (recommended)$\nClick NO to set up manually later" IDYES run_auto_setup IDNO skip_auto_setup
-  
-  run_auto_setup:
-  ; Show progress message
-  DetailPrint "Running automatic setup..."
-  DetailPrint "This may take several minutes. Please wait..."
-  
-  ; Run one-click setup with elevated privileges
-  nsExec::ExecToLog '"$INSTDIR\one-click-setup.bat" -silent'
+  nsDialogs::Create 1018
   Pop $0
   
-  ${If} $0 == 0
-    DetailPrint "Automatic setup completed successfully!"
-    MessageBox MB_OK|MB_ICONINFORMATION "Setup Complete!$\n$\nOffice Management System is ready to use.$\n$\nDemo credentials:$\n  admin@demo.com / admin123$\n  manager@demo.com / manager123$\n$\nSee the installation folder for more user accounts."
+  ${NSD_CreateLabel} 0 0 100% 40u "Please select the type of installation:$\r$\n$\r$\nDesktop Application: For single-user workstations$\r$\nServer Installation: For multi-user server environments with Windows Service"
+  Pop $0
+  
+  ${NSD_CreateRadioButton} 20u 60u 100% 15u "&Desktop Application (Recommended for single users)"
+  Pop $1
+  ${NSD_Check} $1
+  
+  ${NSD_CreateRadioButton} 20u 80u 100% 15u "&Server Installation (For multi-user environments)"
+  Pop $2
+  
+  nsDialogs::Show
+FunctionEnd
+
+Function InstallationTypePageLeave
+  ${NSD_GetState} $1 $0
+  ${If} $0 == ${BST_CHECKED}
+    StrCpy $InstallationType "Desktop"
   ${Else}
-    DetailPrint "Automatic setup encountered issues."
-    MessageBox MB_OK|MB_ICONWARNING "Setup completed with warnings.$\n$\nYou may need to run 'setup-database.bat' manually.$\n$\nCheck the log file in the data\logs folder for details."
+    StrCpy $InstallationType "Server"
   ${EndIf}
-  Goto end_setup
-  
-  skip_auto_setup:
-  MessageBox MB_OK|MB_ICONINFORMATION "Manual Setup Required$\n$\nTo complete installation:$\n$\n1. Run 'one-click-setup.bat' from the installation folder$\n   OR$\n2. Run 'setup-database.bat' if PostgreSQL is already installed$\n$\nSee WINDOWS_SERVER_INSTALLATION.md for detailed instructions."
-  
-  end_setup:
-!macroend
+FunctionEnd
 
-!macro customUnInstall
-  ; Clean up data directory
-  RMDir /r "$INSTDIR\data"
-!macroend
+; Main installation section
+Section "Install"
+  SetOutPath "$INSTDIR"
+  
+  DetailPrint "Installing Office Management System..."
+  DetailPrint "Installation Type: $InstallationType"
+  
+  ; Copy application files (these would be populated by electron-builder)
+  File /r "${BUILD_RESOURCES_DIR}\*.*"
+  
+  ; Create .env file based on installation type
+  ${If} $InstallationType == "Server"
+    DetailPrint "Configuring for Server installation..."
+    FileOpen $0 "$INSTDIR\.env" w
+    FileWrite $0 "DB_HOST=localhost$\r$\n"
+    FileWrite $0 "DB_PORT=5432$\r$\n"
+    FileWrite $0 "DB_NAME=office_management$\r$\n"
+    FileWrite $0 "DB_USER=postgres$\r$\n"
+    FileWrite $0 "DB_PASSWORD=postgres$\r$\n"
+    FileWrite $0 "PORT=3001$\r$\n"
+    FileWrite $0 "NODE_ENV=production$\r$\n"
+    FileClose $0
+  ${Else}
+    DetailPrint "Configuring for Desktop installation..."
+    FileOpen $0 "$INSTDIR\.env" w
+    FileWrite $0 "DB_HOST=localhost$\r$\n"
+    FileWrite $0 "DB_PORT=5432$\r$\n"
+    FileWrite $0 "DB_NAME=office_management$\r$\n"
+    FileWrite $0 "DB_USER=postgres$\r$\n"
+    FileWrite $0 "DB_PASSWORD=postgres$\r$\n"
+    FileWrite $0 "PORT=3001$\r$\n"
+    FileWrite $0 "NODE_ENV=development$\r$\n"
+    FileClose $0
+  ${EndIf}
+  
+  ; Check for PostgreSQL
+  DetailPrint "Checking for PostgreSQL installation..."
+  nsExec::ExecToStack 'cmd /c where psql'
+  Pop $0
+  Pop $1
+  
+  ${If} $0 == "0"
+    StrCpy $PostgreSQLInstalled "Yes"
+    DetailPrint "PostgreSQL is already installed"
+  ${Else}
+    StrCpy $PostgreSQLInstalled "No"
+    DetailPrint "PostgreSQL not found. Please install PostgreSQL 13+ manually."
+    MessageBox MB_OKCANCEL "PostgreSQL is not installed.$\r$\n$\r$\nYou need to install PostgreSQL 13 or higher for this application to work.$\r$\n$\r$\nClick OK to continue without PostgreSQL (you'll need to install it later),$\r$\nor Cancel to abort installation." IDOK continue
+    Abort "Installation cancelled. Please install PostgreSQL and try again."
+    continue:
+  ${EndIf}
+  
+  ; Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall.exe"
+  
+  ; Create shortcuts based on installation type
+  ${If} $InstallationType == "Desktop"
+    DetailPrint "Creating desktop shortcut..."
+    CreateShortCut "$DESKTOP\Office Management System.lnk" "$INSTDIR\Office Management System.exe"
+    CreateDirectory "$SMPROGRAMS\Office Management System"
+    CreateShortCut "$SMPROGRAMS\Office Management System\Office Management System.lnk" "$INSTDIR\Office Management System.exe"
+    CreateShortCut "$SMPROGRAMS\Office Management System\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  ${Else}
+    DetailPrint "Server installation - skipping desktop shortcuts..."
+    CreateDirectory "$SMPROGRAMS\Office Management System"
+    CreateShortCut "$SMPROGRAMS\Office Management System\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  ${EndIf}
+  
+  ; Write registry keys for uninstaller
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "DisplayName" "Office Management System"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "UninstallString" "$INSTDIR\Uninstall.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "InstallLocation" "$INSTDIR"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "Publisher" "Office Management System"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "DisplayVersion" "1.0.0"
+  
+  StrCpy $SetupSuccess "Yes"
+SectionEnd
 
-; Add custom page for database configuration
-!macro customPage
-  ; This would add a custom page to configure database during installation
-  ; For simplicity, we're using batch scripts instead
-!macroend
+; Post-installation page
+Function PostInstallPageCreate
+  !insertmacro MUI_HEADER_TEXT "Installation Complete" "Office Management System has been installed"
+  
+  nsDialogs::Create 1018
+  Pop $0
+  
+  ${If} $InstallationType == "Server"
+    ${NSD_CreateLabel} 0 0 100% 60u "Installation Type: Server$\r$\n$\r$\nNext Steps:$\r$\n1. Ensure PostgreSQL is installed and running$\r$\n2. Initialize the database using the provided schema files$\r$\n3. Configure the application as a Windows Service (optional)$\r$\n4. Configure firewall rules for network access$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+    Pop $0
+  ${Else}
+    ${NSD_CreateLabel} 0 0 100% 50u "Installation Type: Desktop Application$\r$\n$\r$\nNext Steps:$\r$\n1. Ensure PostgreSQL is installed and running$\r$\n2. Initialize the database using the provided schema files$\r$\n3. Launch the application from your desktop$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+    Pop $0
+  ${EndIf}
+  
+  nsDialogs::Show
+FunctionEnd
+
+; Uninstaller section
+Section "Uninstall"
+  ; Remove files
+  Delete "$INSTDIR\*.*"
+  RMDir /r "$INSTDIR"
+  
+  ; Remove shortcuts
+  Delete "$DESKTOP\Office Management System.lnk"
+  RMDir /r "$SMPROGRAMS\Office Management System"
+  
+  ; Remove registry keys
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem"
+  
+  MessageBox MB_OK "Office Management System has been uninstalled.$\r$\n$\r$\nNote: PostgreSQL and the database were not removed.$\r$\nYou can uninstall PostgreSQL separately if needed."
+SectionEnd
