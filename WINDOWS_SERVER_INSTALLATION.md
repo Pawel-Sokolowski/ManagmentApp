@@ -22,7 +22,9 @@ This guide provides step-by-step instructions for deploying the Office Managemen
 
 ## 🚀 Installation Steps
 
-### Option 1: Quick Install (Recommended)
+### Option 1: One-Click Automatic Install (Recommended) ⚡
+
+The installer now includes **fully automatic setup** that installs PostgreSQL, creates the database, and configures everything in one go!
 
 1. **Download the installer**
    - Get `Office Management System Setup.exe` from the releases page
@@ -33,31 +35,53 @@ This guide provides step-by-step instructions for deploying the Office Managemen
    - Follow the installation wizard
    - Choose installation directory (default: `C:\Program Files\Office Management System`)
 
-3. **PostgreSQL Setup**
-   - If PostgreSQL is not installed, the installer will prompt you to download it
-   - Download from: https://www.postgresql.org/download/windows/
-   - Install PostgreSQL with default settings
-   - **Remember the password you set for the postgres user!**
-
-4. **Database Initialization**
-   - After installation, navigate to the installation folder
-   - Run `setup-database.bat` as administrator
-   - Follow the prompts to configure database connection
-   - The script will:
+3. **Choose automatic setup** (When prompted)
+   - Click **YES** when asked "Would you like to run the automatic setup now?"
+   - The installer will automatically:
+     - Download and install PostgreSQL 15 (if not already installed)
      - Create the `office_management` database
-     - Initialize all tables and schemas
+     - Initialize all tables and schemas (1,400+ lines of SQL)
      - Create 6 demo users with different permission levels
-     - Insert sample data
+     - Configure all application settings
+   - **Wait 5-15 minutes** for the process to complete
 
-5. **Start the application**
+4. **Start using the application**
    - Launch "Office Management System" from Start Menu or Desktop
    - Log in with one of the demo accounts (see credentials below)
+   - **That's it! You're ready to go!** 🎉
+
+**Default Database Credentials:**
+- **Host:** localhost
+- **Port:** 5432
+- **Database:** office_management
+- **Username:** postgres
+- **Password:** postgres123!
 
 ---
 
-### Option 2: Manual Installation
+### Option 2: Quick Install (PostgreSQL Already Installed)
 
-If you need more control over the installation process:
+If you already have PostgreSQL installed:
+
+1. **Download and run the installer**
+   - Right-click `Office Management System Setup.exe` and select "Run as administrator"
+   - Follow the installation wizard
+
+2. **Choose automatic setup**
+   - When prompted, click **YES** to run automatic setup
+   - The installer will detect existing PostgreSQL
+   - Enter your PostgreSQL password if different from the default
+   - Wait for database initialization to complete
+
+3. **Start the application**
+   - Launch from Start Menu or Desktop
+   - Log in with demo credentials
+
+---
+
+### Option 3: Manual Setup (Advanced Users)
+
+For users who want full control over the installation:
 
 1. **Install PostgreSQL**
    ```powershell
@@ -99,6 +123,33 @@ If you need more control over the installation process:
    ```powershell
    .\Office Management System.exe
    ```
+
+---
+
+## 🔧 Alternative Setup Methods
+
+### Running One-Click Setup Separately
+
+If you skipped automatic setup during installation, you can run it anytime:
+
+1. Navigate to the installation folder
+2. Right-click `one-click-setup.bat` and select "Run as administrator"
+3. Wait for the process to complete (5-15 minutes)
+
+This will:
+- Automatically install PostgreSQL if needed
+- Create and configure the database
+- Initialize all schemas
+- Set up demo users
+
+### Using Individual Setup Scripts
+
+For troubleshooting or custom setup:
+
+- **check-postgresql.bat** - Verify PostgreSQL installation
+- **install-postgresql.ps1** - Install PostgreSQL automatically (PowerShell)
+- **setup-database.bat** - Set up database only (requires PostgreSQL)
+- **one-click-setup.bat** - Complete automatic setup
 
 ---
 

@@ -1,5 +1,5 @@
 ; Custom NSIS installer script for Office Management System
-; This script handles PostgreSQL installation and configuration
+; This script handles automatic PostgreSQL installation and configuration
 
 !macro customInstall
   ; Create data directory for application
@@ -7,9 +7,12 @@
   CreateDirectory "$INSTDIR\data\database"
   CreateDirectory "$INSTDIR\data\logs"
   
-  ; Copy database setup script
+  ; Copy all setup scripts
   File /oname=$INSTDIR\setup-database.bat "${BUILD_RESOURCES_DIR}\setup-database.bat"
   File /oname=$INSTDIR\check-postgresql.bat "${BUILD_RESOURCES_DIR}\check-postgresql.bat"
+  File /oname=$INSTDIR\one-click-setup.bat "${BUILD_RESOURCES_DIR}\one-click-setup.bat"
+  File /oname=$INSTDIR\install-postgresql.ps1 "${BUILD_RESOURCES_DIR}\install-postgresql.ps1"
+  File /oname=$INSTDIR\refresh-env.bat "${BUILD_RESOURCES_DIR}\refresh-env.bat"
   
   ; Create config file with default database settings
   FileOpen $0 "$INSTDIR\data\db-config.txt" w
@@ -17,35 +20,34 @@
   FileWrite $0 "DB_PORT=5432$\r$\n"
   FileWrite $0 "DB_NAME=office_management$\r$\n"
   FileWrite $0 "DB_USER=postgres$\r$\n"
-  FileWrite $0 "DB_PASSWORD=postgres$\r$\n"
+  FileWrite $0 "DB_PASSWORD=postgres123!$\r$\n"
   FileClose $0
   
-  ; Display PostgreSQL setup instructions
-  MessageBox MB_OKCANCEL|MB_ICONINFORMATION "PostgreSQL Database Setup Required$\n$\nThe application requires PostgreSQL 13 or higher.$\n$\nSetup Options:$\n1. If PostgreSQL is already installed, click OK to continue$\n2. If not installed, click Cancel to download PostgreSQL first$\n$\nAfter installation completes:$\n- Run 'setup-database.bat' in the installation folder$\n- Or use the application's built-in database setup wizard" IDOK skip_download
+  ; Display one-click setup dialog
+  MessageBox MB_YESNO|MB_ICONQUESTION "Office Management System - Automatic Setup$\n$\nWould you like to run the automatic setup now?$\n$\nThis will:$\n1. Install PostgreSQL (if not already installed)$\n2. Create the database$\n3. Initialize all tables and schemas$\n4. Create demo users$\n$\nThis process takes 5-15 minutes.$\n$\nClick YES for automatic setup (recommended)$\nClick NO to set up manually later" IDYES run_auto_setup IDNO skip_auto_setup
   
-  ; User chose to download PostgreSQL
-  ExecShell "open" "https://www.postgresql.org/download/windows/"
-  Goto end_postgres_setup
+  run_auto_setup:
+  ; Show progress message
+  DetailPrint "Running automatic setup..."
+  DetailPrint "This may take several minutes. Please wait..."
   
-  skip_download:
-  ; Check if PostgreSQL is available
-  nsExec::ExecToStack 'cmd /c where psql > nul 2>&1 && echo FOUND || echo NOT_FOUND'
+  ; Run one-click setup with elevated privileges
+  nsExec::ExecToLog '"$INSTDIR\one-click-setup.bat" -silent'
   Pop $0
-  Pop $1
   
-  ${If} $1 == "NOT_FOUND"
-    MessageBox MB_OK|MB_ICONEXCLAMATION "PostgreSQL not found in system PATH.$\n$\nPlease ensure PostgreSQL is installed and added to system PATH.$\n$\nYou can run 'setup-database.bat' from the installation folder after installing PostgreSQL."
+  ${If} $0 == 0
+    DetailPrint "Automatic setup completed successfully!"
+    MessageBox MB_OK|MB_ICONINFORMATION "Setup Complete!$\n$\nOffice Management System is ready to use.$\n$\nDemo credentials:$\n  admin@demo.com / admin123$\n  manager@demo.com / manager123$\n$\nSee the installation folder for more user accounts."
   ${Else}
-    MessageBox MB_YESNO|MB_ICONQUESTION "PostgreSQL found! Would you like to run the database setup now?$\n$\n(You can also run 'setup-database.bat' later)" IDYES run_setup IDNO skip_setup
-    
-    run_setup:
-    ; Run database setup in background
-    ExecShell "open" "$INSTDIR\setup-database.bat"
-    
-    skip_setup:
+    DetailPrint "Automatic setup encountered issues."
+    MessageBox MB_OK|MB_ICONWARNING "Setup completed with warnings.$\n$\nYou may need to run 'setup-database.bat' manually.$\n$\nCheck the log file in the data\logs folder for details."
   ${EndIf}
+  Goto end_setup
   
-  end_postgres_setup:
+  skip_auto_setup:
+  MessageBox MB_OK|MB_ICONINFORMATION "Manual Setup Required$\n$\nTo complete installation:$\n$\n1. Run 'one-click-setup.bat' from the installation folder$\n   OR$\n2. Run 'setup-database.bat' if PostgreSQL is already installed$\n$\nSee WINDOWS_SERVER_INSTALLATION.md for detailed instructions."
+  
+  end_setup:
 !macroend
 
 !macro customUnInstall
