@@ -59,6 +59,33 @@ electron-builder will:
 
 This error occurs when the custom script duplicates directives that electron-builder sets automatically. **Solution:** Remove duplicate directives like `Name`, `OutFile`, `InstallDir`, etc. from the custom script.
 
+### NSIS Warning: "MUI_UNPAGE_* inserted after MUI_LANGUAGE"
+
+This warning occurs when uninstaller page macros are defined after the language macro. According to NSIS MUI2 documentation, all page definitions must come before language definitions.
+
+**Solution:** Ensure the following order in your NSIS script:
+1. Include statements (`!include "MUI2.nsh"`)
+2. Variables (`Var VariableName`)
+3. All page macros (`!insertmacro MUI_PAGE_*` and `!insertmacro MUI_UNPAGE_*`)
+4. Language macro (`!insertmacro MUI_LANGUAGE`)
+5. Functions and macros
+
+### Warnings Treated as Errors
+
+If you encounter build failures due to harmless NSIS warnings, you can configure electron-builder to not treat warnings as errors by adding `"warningsAsErrors": false` to the `nsis` section in `package.json`:
+
+```json
+{
+  "build": {
+    "nsis": {
+      "warningsAsErrors": false
+    }
+  }
+}
+```
+
+**Note:** Only use this option if you've verified that the warnings are indeed harmless and don't affect the installer's functionality.
+
 ### Custom Pages Not Showing
 
 Make sure custom pages are defined with `Page custom FunctionName` and that the functions are properly implemented with `nsDialogs`.

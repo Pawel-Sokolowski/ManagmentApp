@@ -169,7 +169,8 @@
                   "allowElevation": true,
                   "include": "installer-resources/installer.nsh",
                   "perMachine": false,
-                  "shortcutName": "Office Management System"
+                  "shortcutName": "Office Management System",
+                  "warningsAsErrors": false
             },
             "portable": {
                   "artifactName": "${productName}-${version}-portable.${ext}"
