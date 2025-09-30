@@ -1,24 +1,14 @@
 ; NSIS Installer Script for Office Management System
 ; Provides options for Desktop or Server installation
+; Note: Name, OutFile, InstallDir, and RequestExecutionLevel are set by electron-builder
 
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
-
-; Installer name and settings
-Name "Office Management System"
-OutFile "Office-Management-System-Setup.exe"
-InstallDir "$PROGRAMFILES\Office Management System"
-RequestExecutionLevel admin
 
 ; Variables
 Var InstallationType
 Var PostgreSQLInstalled
 Var SetupSuccess
-
-; Interface Settings
-!define MUI_ABORTWARNING
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
 ; Pages
 !insertmacro MUI_PAGE_WELCOME
@@ -70,15 +60,11 @@ Function InstallationTypePageLeave
   ${EndIf}
 FunctionEnd
 
-; Main installation section
-Section "Install"
-  SetOutPath "$INSTDIR"
-  
-  DetailPrint "Installing Office Management System..."
+; Custom Install Section (runs after electron-builder's main install)
+; This creates configuration files and performs additional setup
+!macro customInstall
+  DetailPrint "Running custom installation steps..."
   DetailPrint "Installation Type: $InstallationType"
-  
-  ; Copy application files (these would be populated by electron-builder)
-  File /r "${BUILD_RESOURCES_DIR}\*.*"
   
   ; Create .env file based on installation type
   ${If} $InstallationType == "Server"
@@ -122,31 +108,8 @@ Section "Install"
     continue:
   ${EndIf}
   
-  ; Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
-  
-  ; Create shortcuts based on installation type
-  ${If} $InstallationType == "Desktop"
-    DetailPrint "Creating desktop shortcut..."
-    CreateShortCut "$DESKTOP\Office Management System.lnk" "$INSTDIR\Office Management System.exe"
-    CreateDirectory "$SMPROGRAMS\Office Management System"
-    CreateShortCut "$SMPROGRAMS\Office Management System\Office Management System.lnk" "$INSTDIR\Office Management System.exe"
-    CreateShortCut "$SMPROGRAMS\Office Management System\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-  ${Else}
-    DetailPrint "Server installation - skipping desktop shortcuts..."
-    CreateDirectory "$SMPROGRAMS\Office Management System"
-    CreateShortCut "$SMPROGRAMS\Office Management System\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-  ${EndIf}
-  
-  ; Write registry keys for uninstaller
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "DisplayName" "Office Management System"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "UninstallString" "$INSTDIR\Uninstall.exe"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "InstallLocation" "$INSTDIR"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "Publisher" "Office Management System"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem" "DisplayVersion" "1.0.0"
-  
   StrCpy $SetupSuccess "Yes"
-SectionEnd
+!macroend
 
 ; Post-installation page
 Function PostInstallPageCreate
@@ -166,18 +129,9 @@ Function PostInstallPageCreate
   nsDialogs::Show
 FunctionEnd
 
-; Uninstaller section
-Section "Uninstall"
-  ; Remove files
-  Delete "$INSTDIR\*.*"
-  RMDir /r "$INSTDIR"
-  
-  ; Remove shortcuts
-  Delete "$DESKTOP\Office Management System.lnk"
-  RMDir /r "$SMPROGRAMS\Office Management System"
-  
-  ; Remove registry keys
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OfficeManagementSystem"
-  
+; Custom Uninstall actions
+!macro customUnInstall
+  ; Show informational message
   MessageBox MB_OK "Office Management System has been uninstalled.$\r$\n$\r$\nNote: PostgreSQL and the database were not removed.$\r$\nYou can uninstall PostgreSQL separately if needed."
-SectionEnd
+!macroend
+
