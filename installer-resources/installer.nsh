@@ -3,10 +3,11 @@
 ;
 ; IMPORTANT: This script is INCLUDED by electron-builder's generated NSIS script.
 ; Do NOT define: Name, OutFile, InstallDir, RequestExecutionLevel - electron-builder sets these.
+; Do NOT define standard MUI pages (MUI_PAGE_WELCOME, MUI_PAGE_DIRECTORY, etc.) - electron-builder provides these.
+; Do NOT define MUI_LANGUAGE - electron-builder provides this.
 ; Do NOT create Section "Install" or Section "Uninstall" - use !macro customInstall and !macro customUnInstall instead.
 ; For details, see README.md in this directory.
 
-!include "MUI2.nsh"
 !include "LogicLib.nsh"
 
 ; Variables
@@ -14,26 +15,11 @@ Var InstallationType
 Var PostgreSQLInstalled
 Var SetupSuccess
 
-; Pages
-!insertmacro MUI_PAGE_WELCOME
-
-; Custom page for installation type selection
+; Custom page for installation type selection (inserted before directory page)
 Page custom InstallationTypePageCreate InstallationTypePageLeave
 
-!insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_INSTFILES
-
-; Custom page for post-installation
+; Custom page for post-installation (inserted after instfiles page)
 Page custom PostInstallPageCreate
-
-!insertmacro MUI_PAGE_FINISH
-
-; Uninstaller pages (must be before MUI_LANGUAGE)
-!insertmacro MUI_UNPAGE_CONFIRM
-!insertmacro MUI_UNPAGE_INSTFILES
-
-; Languages (must be after all page definitions)
-!insertmacro MUI_LANGUAGE "English"
 
 ; Custom page to select installation type
 Function InstallationTypePageCreate
