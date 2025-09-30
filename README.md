@@ -4,14 +4,15 @@ A comprehensive office management system built with React, Electron, and Postgre
 
 ---
 
-## 📖 Documentation
+## 🎯 Want an Executable (.exe) File?
 
-**New to this project?** Start here:
-- 🚀 **[I want an .exe file!](DOCUMENTATION_INDEX.md)** - Choose the best path for you
-- 📘 **[QUICK_START.md](QUICK_START.md)** - Build executable in 10 minutes (non-technical)
-- 🤖 **[GITHUB_ACTIONS_GUIDE.md](GITHUB_ACTIONS_GUIDE.md)** - Build in the cloud (no Windows needed!)
-- 📗 **[BUILD_GUIDE.md](BUILD_GUIDE.md)** - Comprehensive build guide (developers)
-- 📋 **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - All documentation in one place
+**→ [START HERE: SOLUTION.md](SOLUTION.md)** - Complete guide to building your executable! 🚀
+
+**Quick options:**
+- 🤖 [Build in the cloud](GITHUB_ACTIONS_GUIDE.md) (easiest - no Windows needed!)
+- 📱 [Build on Windows](QUICK_START.md) (simple step-by-step)
+- 🔧 [Advanced build](BUILD_GUIDE.md) (for developers)
+- 📖 [All documentation](DOCUMENTATION_INDEX.md) (everything in one place)
 
 ---
 
