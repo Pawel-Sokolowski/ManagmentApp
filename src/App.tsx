@@ -1,5 +1,5 @@
 import { Clock, Zap } from "lucide-react";
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useEffect } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { ActiveTimerDisplay } from "./components/ActiveTimerDisplay";
@@ -8,12 +8,14 @@ import { ClientForm } from "./components/ClientForm";
 import { ClientList } from "./components/ClientList";
 import { ClientDetails } from "./components/ClientDetails";
 import { Login } from "./components/Login";
+import { DatabaseSetupWizard } from "./components/DatabaseSetupWizard";
 import { Toaster } from "./components/ui/sonner";
 import { LoadingSpinner } from "./components/common/LoadingSpinner";
 import { PermissionProvider } from "./contexts/PermissionContext";
 import { LayoutDashboard, Users, UserPlus, MessageSquare, Mail, FileText, Settings, CalendarDays, UserCog, MailOpen, FolderOpen, BarChart3, CreditCard, ScrollText, Building2, Timer } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 import { Client, User, EmailTemplate, Email } from "./types/client";
+import { electronAPI, isElectron } from "./utils/electronAPI";
 
 // Lazy load heavy components to reduce initial bundle size
 const AutomaticInvoicing = lazy(() => import("./components/AutomaticInvoicing").then(module => ({ default: module.AutomaticInvoicing })));
@@ -101,6 +103,60 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [emails, setEmails] = useState<Email[]>(initialEmails);
   const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>(mockEmailTemplates);
+  const [databaseSetupRequired, setDatabaseSetupRequired] = useState(false);
+  const [checkingDatabase, setCheckingDatabase] = useState(true);
+
+  // Check database setup on mount (Electron only)
+  useEffect(() => {
+    const checkDatabaseSetup = async () => {
+      if (isElectron && electronAPI.dbSetupCheck) {
+        try {
+          const result = await electronAPI.dbSetupCheck();
+          if (result.requiresSetup) {
+            setDatabaseSetupRequired(true);
+          }
+        } catch (error) {
+          console.error('Database check error:', error);
+          // If check fails, assume setup is needed
+          setDatabaseSetupRequired(true);
+        }
+      } else {
+        // For web version, check via API
+        try {
+          const response = await fetch('/api/db-status');
+          const data = await response.json();
+          if (data.requiresSetup || !data.connected) {
+            setDatabaseSetupRequired(true);
+          }
+        } catch (error) {
+          console.error('Database check error:', error);
+          // Don't require setup for web version if check fails
+        }
+      }
+      setCheckingDatabase(false);
+    };
+
+    checkDatabaseSetup();
+  }, []);
+
+  // Show loading while checking database
+  if (checkingDatabase) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  // Show database setup wizard if needed
+  if (databaseSetupRequired) {
+    return (
+      <PermissionProvider>
+        <DatabaseSetupWizard onComplete={() => setDatabaseSetupRequired(false)} />
+        <Toaster />
+      </PermissionProvider>
+    );
+  }
 
   // If not logged in, show login screen
   if (!currentUser) {

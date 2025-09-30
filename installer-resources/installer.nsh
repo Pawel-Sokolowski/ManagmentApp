@@ -82,22 +82,58 @@ FunctionEnd
     FileClose $0
   ${EndIf}
   
-  ; Check for PostgreSQL
+  ; Check for PostgreSQL - Enhanced detection
   DetailPrint "Checking for PostgreSQL installation..."
-  nsExec::ExecToStack 'cmd /c where psql'
+  StrCpy $PostgreSQLInstalled "No"
+  
+  ; Method 1: Check if psql is in PATH
+  nsExec::ExecToStack 'cmd /c where psql 2>nul'
   Pop $0
   Pop $1
-  
   ${If} $0 == "0"
     StrCpy $PostgreSQLInstalled "Yes"
-    DetailPrint "PostgreSQL is already installed"
-  ${Else}
-    StrCpy $PostgreSQLInstalled "No"
-    DetailPrint "PostgreSQL not found. Please install PostgreSQL 13+ manually."
-    MessageBox MB_OKCANCEL "PostgreSQL is not installed.$\r$\n$\r$\nYou need to install PostgreSQL 13 or higher for this application to work.$\r$\n$\r$\nClick OK to continue without PostgreSQL (you'll need to install it later),$\r$\nor Cancel to abort installation." IDOK continue
-    Abort "Installation cancelled. Please install PostgreSQL and try again."
-    continue:
+    DetailPrint "PostgreSQL found in PATH"
+    Goto pg_found
   ${EndIf}
+  
+  ; Method 2: Check Windows Registry
+  ReadRegStr $0 HKLM "SOFTWARE\PostgreSQL\Installations" "PostgreSQL"
+  ${If} $0 != ""
+    StrCpy $PostgreSQLInstalled "Yes"
+    DetailPrint "PostgreSQL found in registry: $0"
+    Goto pg_found
+  ${EndIf}
+  
+  ; Method 3: Check common installation paths
+  ${If} ${FileExists} "C:\Program Files\PostgreSQL\*.*"
+    StrCpy $PostgreSQLInstalled "Yes"
+    DetailPrint "PostgreSQL found in Program Files"
+    Goto pg_found
+  ${EndIf}
+  
+  ${If} ${FileExists} "C:\Program Files (x86)\PostgreSQL\*.*"
+    StrCpy $PostgreSQLInstalled "Yes"
+    DetailPrint "PostgreSQL found in Program Files (x86)"
+    Goto pg_found
+  ${EndIf}
+  
+  ; Method 4: Check for pg_ctl service
+  nsExec::ExecToStack 'cmd /c sc query postgresql-x64-* 2>nul'
+  Pop $0
+  Pop $1
+  ${If} $0 == "0"
+    StrCpy $PostgreSQLInstalled "Yes"
+    DetailPrint "PostgreSQL service found"
+    Goto pg_found
+  ${EndIf}
+  
+  ; PostgreSQL not found - show warning
+  DetailPrint "PostgreSQL not found. Please install PostgreSQL 13+ manually."
+  MessageBox MB_OKCANCEL "PostgreSQL is not detected on your system.$\r$\n$\r$\nYou need to install PostgreSQL 13 or higher for this application to work.$\r$\n$\r$\nThe application will help you configure the database connection on first run.$\r$\n$\r$\nClick OK to continue without PostgreSQL (you can install it later),$\r$\nor Cancel to abort installation." IDOK continue
+  Abort "Installation cancelled. Please install PostgreSQL and try again."
+  continue:
+  
+  pg_found:
   
   StrCpy $SetupSuccess "Yes"
 !macroend
@@ -110,11 +146,21 @@ Function PostInstallPageCreate
   Pop $0
   
   ${If} $InstallationType == "Server"
-    ${NSD_CreateLabel} 0 0 100% 60u "Installation Type: Server$\r$\n$\r$\nNext Steps:$\r$\n1. Ensure PostgreSQL is installed and running$\r$\n2. Initialize the database using the provided schema files$\r$\n3. Configure the application as a Windows Service (optional)$\r$\n4. Configure firewall rules for network access$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
-    Pop $0
+    ${If} $PostgreSQLInstalled == "Yes"
+      ${NSD_CreateLabel} 0 0 100% 70u "Installation Type: Server$\r$\n$\r$\nPostgreSQL: Detected ✓$\r$\n$\r$\nNext Steps:$\r$\n1. Launch the application$\r$\n2. Complete the Database Setup Wizard on first run$\r$\n3. Configure the application as a Windows Service (optional)$\r$\n4. Configure firewall rules for network access$\r$\n$\r$\nThe application will guide you through database configuration.$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+      Pop $0
+    ${Else}
+      ${NSD_CreateLabel} 0 0 100% 70u "Installation Type: Server$\r$\n$\r$\nPostgreSQL: Not detected ✗$\r$\n$\r$\nNext Steps:$\r$\n1. Install PostgreSQL 13+ from postgresql.org$\r$\n2. Launch the application$\r$\n3. Complete the Database Setup Wizard$\r$\n4. Configure the application as a Windows Service (optional)$\r$\n5. Configure firewall rules for network access$\r$\n$\r$\nThe application will guide you through database configuration.$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+      Pop $0
+    ${EndIf}
   ${Else}
-    ${NSD_CreateLabel} 0 0 100% 50u "Installation Type: Desktop Application$\r$\n$\r$\nNext Steps:$\r$\n1. Ensure PostgreSQL is installed and running$\r$\n2. Initialize the database using the provided schema files$\r$\n3. Launch the application from your desktop$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
-    Pop $0
+    ${If} $PostgreSQLInstalled == "Yes"
+      ${NSD_CreateLabel} 0 0 100% 60u "Installation Type: Desktop Application$\r$\n$\r$\nPostgreSQL: Detected ✓$\r$\n$\r$\nNext Steps:$\r$\n1. Launch the application from your desktop$\r$\n2. Complete the Database Setup Wizard on first run$\r$\n$\r$\nThe application will automatically guide you through$\r$\ndatabase configuration on first launch.$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+      Pop $0
+    ${Else}
+      ${NSD_CreateLabel} 0 0 100% 60u "Installation Type: Desktop Application$\r$\n$\r$\nPostgreSQL: Not detected ✗$\r$\n$\r$\nNext Steps:$\r$\n1. Install PostgreSQL 13+ from postgresql.org$\r$\n2. Launch the application from your desktop$\r$\n3. Complete the Database Setup Wizard$\r$\n$\r$\nThe application will guide you through database configuration.$\r$\n$\r$\nFor detailed instructions, see INSTALLATION_GUIDE.md"
+      Pop $0
+    ${EndIf}
   ${EndIf}
   
   nsDialogs::Show

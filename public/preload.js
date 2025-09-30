@@ -14,6 +14,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Database methods
   dbQuery: (query, params) => ipcRenderer.invoke('db-query', query, params),
   
+  // Database setup wizard methods
+  dbSetupCheck: () => ipcRenderer.invoke('db-setup-check'),
+  dbSetupTestConnection: (config) => ipcRenderer.invoke('db-setup-test-connection', config),
+  dbSetupRun: (config) => ipcRenderer.invoke('db-setup-run', config),
+  
   // File operations
   selectFile: () => ipcRenderer.invoke('select-file'),
   saveFile: (data, filePath) => ipcRenderer.invoke('save-file', data, filePath),
