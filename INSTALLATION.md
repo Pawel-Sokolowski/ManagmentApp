@@ -66,7 +66,17 @@ Service will start automatically on server boot.
 **You don't need them.** The installer runs them automatically. They're included only for advanced troubleshooting.
 
 ### "Is there an MSI installer?"
-The .exe installer is equivalent to MSI and works on all Windows systems. For silent enterprise deployment: `"Office Management System Setup.exe" /S`
+**The NSIS .exe installer is the recommended format** because:
+- ✅ Enables automatic PostgreSQL installation (MSI cannot do this)
+- ✅ Interactive setup wizard
+- ✅ Enterprise deployment support (silent install: `Setup.exe /S`)
+- ✅ Works on all Windows versions
+- ✅ Industry standard for Electron applications
+
+**Why not MSI?**
+MSI installers cannot run the complex setup logic needed for automatic PostgreSQL installation and database configuration. The .exe installer provides a superior installation experience.
+
+**For Group Policy deployment:** The NSIS .exe installer fully supports silent installation for enterprise environments.
 
 ### "What if I already have PostgreSQL?"
 The installer detects existing PostgreSQL and uses it automatically.
