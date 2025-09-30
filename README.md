@@ -2,51 +2,80 @@
 
 A comprehensive office management system built with React, Electron, and PostgreSQL. This application provides a complete solution for managing clients, invoices, calendar events, team communication, and more.
 
-## 📥 Quick Download & Install ⚡
+---
 
-**The application now features TRUE ONE-CLICK INSTALLATION!**
+## 🎯 **ONE INSTALLER. ZERO SCRIPTS. JUST WORKS.** ⚡
 
-Download the installer and let it handle everything automatically:
+**Download ONE file. Run it. That's it.**
 
-- **Windows (Recommended):** `Office Management System Setup.exe` - **One-click installer with automatic PostgreSQL setup**
-- **Windows (Portable):** `Office Management System-portable.exe` - Requires manual PostgreSQL setup
-- **Linux:** `Office Management System.AppImage` - Portable application
-- **macOS:** `Office Management System.dmg` - Disk image installer
+### 📥 For Windows Desktop/Workstation:
+**[Download: `Office Management System Setup.exe`](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)**
 
-**Get installers from:** [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)
+This single installer file:
+- ✅ Installs the complete application
+- ✅ Installs PostgreSQL database automatically (if needed)
+- ✅ Sets up everything with demo users
+- ✅ **No scripts to run. No configuration needed.**
 
-**🌐 Try Online:** [Browser Demo](https://pawel-sokolowski.github.io/ManagmentApp/) (No installation required)
+### 🖥️ For Windows Server (Dedicated Server):
+**[Download: `Office Management System Setup.exe`](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)**
 
-**📘 Full Documentation:** See [Windows Server Installation Guide](WINDOWS_SERVER_INSTALLATION.md)
+Same installer, server-optimized:
+- ✅ Full server installation with PostgreSQL
+- ✅ Automatic database initialization
+- ✅ Can be configured as Windows Service
+- ✅ **One file installs everything**
 
 ---
 
-## ⚡ One-Click Windows Installation
+## ⚡ Installation (3 Steps - 5 Minutes)
 
-The Windows installer now includes **complete automatic setup**:
+**📘 [Full Installation Guide →](INSTALLATION.md)**
 
-### What Happens Automatically:
-1. ✅ **PostgreSQL Installation** - Automatically downloads and installs PostgreSQL 15
-2. ✅ **Database Creation** - Creates the `office_management` database
-3. ✅ **Schema Initialization** - Runs 1,400+ lines of SQL to set up all tables
-4. ✅ **Demo Users** - Creates 6 users with different permission levels
-5. ✅ **Configuration** - Sets up all application settings
+### For Desktop/Workstation Users:
 
-### Installation Steps:
-1. Download `Office Management System Setup.exe`
-2. Run the installer as Administrator
-3. When prompted, click **YES** for automatic setup
-4. Wait 5-15 minutes for installation to complete
-5. **Done!** Launch the application and log in
+1. **Download** `Office Management System Setup.exe` from [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)
+2. **Run** the installer (right-click → "Run as administrator")
+3. **Click YES** when prompted for automatic setup
 
-**Default Database Credentials:**
-- Host: `localhost`
-- Port: `5432`
-- Database: `office_management`
-- Username: `postgres`
-- Password: `postgres123!`
+**That's it!** Launch the app and log in with:
+- Email: `admin@demo.com`
+- Password: `admin123`
 
-**No scripts to run. No manual configuration. Just click and go!** 🎉
+### For Server Deployment:
+
+Same 3 steps above, then optionally install as Windows Service:
+1. Open PowerShell as Administrator in installation folder
+2. Run: `.\install-service.ps1`
+3. Service starts automatically on boot
+
+**See [INSTALLATION.md](INSTALLATION.md) for complete details and FAQ.**
+
+---
+
+## 🌐 Try Online Demo (No Installation)
+
+**[Live Browser Demo](https://pawel-sokolowski.github.io/ManagmentApp/)**
+
+Test all features in your browser before installing. No download required.
+
+---
+
+## 📋 What You Get
+
+**ONE installer includes:**
+- ✅ Complete desktop application
+- ✅ PostgreSQL 15 database (auto-installed)
+- ✅ Express.js backend server (embedded)
+- ✅ 6 demo users with different roles
+- ✅ Sample data for testing
+- ✅ All modules fully configured
+
+**System Requirements:**
+- Windows 10/11 or Windows Server 2016+
+- 4 GB RAM (8 GB recommended for server)
+- 10 GB free disk space
+- Internet connection (for PostgreSQL download)
 
 ## 🚀 Features
 
@@ -60,206 +89,126 @@ The Windows installer now includes **complete automatic setup**:
 - **Financial Reports**: Comprehensive reporting and analytics
 - **User Management**: Role-based access control and user permissions
 
-## 📋 Prerequisites
+## 💡 Common Questions
 
-### For Using Pre-built Installer (Recommended)
-- **Windows 10/11** (64-bit)
-- **Administrator privileges** for installation
-- **Internet connection** (for automatic PostgreSQL download if needed)
-- **10 GB free disk space**
+### "Do I need to install PostgreSQL separately?"
+**No.** The installer does it automatically.
 
-**That's it!** The installer handles PostgreSQL and all other requirements automatically.
+### "Do I need to run any scripts or configuration?"
+**No.** Everything is configured automatically during installation.
 
-### For Building from Source
+### "What if I already have PostgreSQL?"
+The installer detects it and uses your existing installation.
 
-**Requirements:**
-- **Node.js 18+**
-- **PostgreSQL 13+** (if not using one-click installer)
-- **Windows 10/11** (64-bit)
+### "Can I use this on a server?"
+**Yes.** Same installer works for desktop and server deployment.
 
-## 🔧 Building from Source
+### "What about MSI installer?"
+The NSIS .exe installer is equivalent to MSI and works on all Windows systems.
 
-1. **Install Node.js** (version 18 or higher)
-2. **Clone the repository**:
+---
+
+## 🔧 Advanced: Building from Source
+
+<details>
+<summary>Click to expand - For developers only</summary>
+
+### Requirements
+- Node.js 18+
+- PostgreSQL 13+ (optional - installer can add it)
+
+### Steps
+1. Clone the repository:
    ```bash
    git clone https://github.com/Pawel-Sokolowski/ManagmentApp.git
    cd ManagmentApp
    ```
 
-3. **Install dependencies**:
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-4. **Configure database**:
+3. Build Windows installer:
    ```bash
-   # Copy environment template
-   copy .env.example .env
-   
-   # Edit .env file with your PostgreSQL credentials
-   ```
-
-5. **Initialize database**:
-   ```bash
-   npm run setup-db
-   ```
-
-6. **Build and run**:
-   ```bash
-   # For development
-   npm run electron-dev
-   
-   # Build Windows installer with one-click setup
    npm run dist-win
    ```
 
-## 🗄️ Database Setup
+The installer will be created in `dist-electron/` directory.
 
-The application includes an automatic database setup script:
+</details>
 
-```bash
-npm run setup-db
-```
-
-This will:
-- Create the `office_management` database
-- Install all required tables and functions
-- Create a demo admin user (email: admin@demo.com, password: admin123)
-- Insert sample data for testing
-
-## 🖥️ Usage
-
-### First Launch
-
-1. Start the application
-2. Login with demo credentials:
-   - **Email**: admin@demo.com
-   - **Password**: admin123
-3. Begin exploring the system and adding your data
-
-### Key Operations
-
-- **Add Clients**: Navigate to "Dodaj Klienta" to add new clients
-- **Create Invoices**: Use the "Faktury" section to manage invoicing
-- **Schedule Events**: Access the "Kalendarz" for event management
-- **Team Communication**: Use "Chat Zespołowy" for internal communication
-- **Generate Reports**: Access various reports through the dashboard
+---
 
 ## 🌐 Browser Demo
 
-A browser-based demo version is available that doesn't require installing the desktop application:
+Want to try before installing?
 
-### 🚀 Live GitHub Pages Demo
+**[Live Demo →](https://pawel-sokolowski.github.io/ManagmentApp/)**
 
-**[Try the live demo here!](https://pawel-sokolowski.github.io/ManagmentApp/)**
-
-The demo is automatically deployed to GitHub Pages and includes:
+Features:
 - ✅ Full application interface
-- ✅ All UI components and navigation
-- ✅ Mock data for demonstration
-- ✅ Client management
-- ✅ Invoice generation
-- ✅ Calendar functionality
-- ✅ Team communication
-- ⚠️ No backend features (database operations are simulated)
+- ✅ All UI components
+- ✅ Mock data for testing
+- ⚠️ Database features require desktop installation
 
-### 🔑 Demo Login Credentials
+**Demo Login:**
+- Email: `admin@demo.com`
+- Password: `admin123`
 
-- **Email**: admin@demo.com
-- **Password**: admin123
+---
 
-### Running the Browser Demo Locally
+## 🔐 Security & Production Use
 
-```bash
-# Quick start (builds and runs the demo)
-npm run demo
+**After installation:**
+1. Change all demo user passwords
+2. Remove unused demo accounts
+3. Configure Windows Firewall
+4. Set up regular database backups
 
-# For development (with hot reload)
-npm run demo-dev
-```
+**For production servers:**
+- Install as Windows Service (included)
+- Use strong PostgreSQL password
+- Enable SSL connections
+- Configure network security
 
-The local demo will be available at: **http://localhost:3001**
+---
 
-### Local Demo Features
+## 📚 Documentation
 
-- ✅ Full application interface
-- ✅ All UI components and navigation
-- ✅ Mock data for demonstration
-- ✅ Client management
-- ✅ Invoice generation
-- ✅ Calendar functionality
-- ✅ Team communication
-- ⚠️ Database features require PostgreSQL setup (optional for demo)
+### Installation & Setup
+- **[INSTALLATION.md](INSTALLATION.md)** - ⭐ **Start here** - ONE file installation guide with FAQ
+- **[QUICK_START.md](QUICK_START.md)** - Get started in 5 minutes
+- **[WINDOWS_SERVER_INSTALLATION.md](WINDOWS_SERVER_INSTALLATION.md)** - Detailed installation and troubleshooting
 
-The browser demo uses the same interface as the desktop version but runs in your web browser, making it perfect for showcasing the application to others without requiring installation.
+### Advanced Deployment
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Enterprise deployment and custom configurations
+- **[INSTALLER_GUIDE.md](INSTALLER_GUIDE.md)** - About the installer and building from source
+
+---
 
 ## 🛠️ Development
 
-### Development Setup
+<details>
+<summary>For developers - Build and development info</summary>
 
-```bash
-# Start development server
-npm run dev
+### Available Scripts
+- `npm run dev` - Start development server
+- `npm run electron-dev` - Start Electron with hot reload
+- `npm run dist-win` - Build Windows installer
+- `npm run demo` - Run browser demo locally
 
-# Start Electron in development mode
-npm run electron-dev
-
-# Start backend server only
-npm run server
-```
-
-### Building for Production
-
-```bash
-# Build for Windows
-npm run dist-win
-```
-
-## 📝 Available Scripts
-
-### Desktop Application (Electron)
-- `npm run dev` - Start Vite development server
-- `npm run electron` - Start Electron in development mode
-- `npm run electron-dev` - Start both Vite dev server and Electron
-- `npm run dist-win` - Build Windows installer (.exe)
-- `npm run dist-mac` - Build macOS installer (.dmg)
-- `npm run dist-linux` - Build Linux installer (.AppImage)
-
-### Browser Demo
-- `npm run demo` - Build and run browser demo (http://localhost:3001)
-- `npm run demo-dev` - Run browser demo with hot reload
-
-### Development & Utilities
-- `npm run build` - Build the React application
-- `npm run build:pages` - Build for GitHub Pages deployment
-- `npm run server` - Start the Express.js backend server
-- `npm run setup-db` - Initialize PostgreSQL database with demo data
-
-## 🏗️ Architecture
-
+### Architecture
 ```
 Office Management System/
-├── src/                    # React frontend source
-│   ├── components/         # React components
-│   ├── database/          # Database schemas and documentation
-│   └── types/             # TypeScript definitions
-├── server/                # Express.js backend
-│   ├── routes/           # API endpoints
-│   └── index.js          # Main server file
-├── public/               # Electron main process
-│   ├── electron.js       # Main Electron process
-│   └── preload.js        # Preload script
-└── scripts/              # Utility scripts
-    └── setup-database.js # Database initialization
+├── src/                    # React frontend
+├── server/                # Express.js backend  
+├── public/                # Electron main process
+├── scripts/               # Database setup
+└── installer-resources/   # Installer scripts
 ```
 
-## 🔐 Security Features
-
-- **Password Encryption**: All passwords are hashed using bcrypt
-- **JWT Authentication**: Secure token-based authentication
-- **Role-based Access**: Different permission levels for users
-- **SQL Injection Protection**: Parameterized queries throughout
-- **XSS Protection**: Content Security Policy and input sanitization
+</details>
 
 ---
 

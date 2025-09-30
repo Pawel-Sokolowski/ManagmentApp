@@ -1,8 +1,26 @@
 # Windows Server Deployment Guide
 
+## ⚠️ **For Advanced Production Deployments Only**
+
+**Most users should use the simple ONE-CLICK installer instead.**
+
+This guide is for:
+- ✅ Enterprise deployments with custom requirements
+- ✅ Separate database server configurations
+- ✅ High-availability setups
+- ✅ Custom security configurations
+
+**For standard installation, see:** [QUICK_START.md](QUICK_START.md)
+
+---
+
 ## Overview
 
-This guide provides step-by-step instructions for deploying the Office Management System on a production Windows Server environment.
+This guide provides step-by-step instructions for deploying the Office Management System on a production Windows Server environment with advanced customization.
+
+**For simple installation:** Use the ONE-CLICK installer from [GitHub Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases). See [QUICK_START.md](QUICK_START.md).
+
+---
 
 ## Deployment Scenarios
 

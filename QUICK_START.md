@@ -1,168 +1,130 @@
 # Office Management System - Quick Start Guide
 
-## Welcome!
+## 🎯 **3 Steps to Get Started**
 
-Thank you for installing the Office Management System. This guide will help you get started quickly.
+### Step 1: Download
+**[Get the installer →](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)**
 
-## First Steps
+Download: `Office Management System Setup.exe` (ONE file, ~100MB)
 
-### 1. Installation (One-Click Setup) ⚡
+---
 
-The Office Management System now features **automatic installation**!
+### Step 2: Install
+1. Right-click the downloaded file
+2. Select **"Run as administrator"**
+3. Follow the installation wizard
+4. When prompted: **Click YES** for automatic setup
 
-**During Installation:**
-1. Download and run `Office Management System Setup.exe`
-2. When prompted, click **YES** for automatic setup
-3. Wait 5-15 minutes while the installer:
-   - Installs PostgreSQL (if needed)
-   - Creates the database
-   - Initializes all tables
-   - Sets up demo users
+⏱️ **Wait 5-15 minutes** while the installer:
+- Installs PostgreSQL database (if needed)
+- Creates all tables and configurations
+- Sets up demo users
 
-**That's it!** The application is ready to use immediately after installation.
+---
 
-**If you skipped automatic setup:**
-1. Navigate to installation folder: `C:\Program Files\Office Management System`
-2. Right-click `one-click-setup.bat` and select "Run as administrator"
-3. Wait for the process to complete
+### Step 3: Launch & Login
+1. Open **"Office Management System"** from Start Menu or Desktop
+2. Log in with demo credentials:
+   - **Email:** `admin@demo.com`
+   - **Password:** `admin123`
 
-**Manual setup (if preferred):**
-- Run `setup-database.bat` if PostgreSQL is already installed
-- Or follow the detailed guide in `WINDOWS_SERVER_INSTALLATION.md`
+**🎉 You're done!** Start exploring the application.
 
-### 2. Start the Application
+---
 
-After database setup:
+## ✅ That's It - No Scripts, No Configuration
 
-**Option A: Desktop App**
-- Launch "Office Management System" from Start Menu or Desktop shortcut
+**You do NOT need to:**
+- ❌ Install PostgreSQL manually
+- ❌ Run any batch files or scripts
+- ❌ Edit configuration files
+- ❌ Set up databases manually
 
-**Option B: Server Mode**
-- Run `start-server.bat` for server mode
-- Access at: http://localhost:3001
+**Everything is automatic.**
 
-**Option C: Windows Service** (Recommended for servers)
-- Run PowerShell as Administrator
-- Execute: `.\install-service.ps1`
-- The service will start automatically on boot
+---
 
-## Demo User Credentials
+## 🔑 Demo User Accounts
 
-The system includes 6 demo users for testing:
+Test the application with these accounts:
 
-### Administrator (Full Access)
-- **Email:** admin@demo.com
-- **Password:** admin123
+| Role | Email | Password | Access Level |
+|------|-------|----------|--------------|
+| **Administrator** | admin@demo.com | admin123 | Full system access |
+| **Manager** | manager@demo.com | manager123 | Management features |
+| **Accountant** | accountant@demo.com | accountant123 | Financial features |
+| **Secretary** | secretary@demo.com | secretary123 | Basic access |
+| **HR** | hr@demo.com | hr123 | User management |
+| **Owner** | owner@demo.com | owner123 | All except admin |
 
-### Office Manager
-- **Email:** manager@demo.com
-- **Password:** manager123
+⚠️ **Change these passwords** before using in production!
 
-### Chief Accountant
-- **Email:** accountant@demo.com
-- **Password:** accountant123
+---
 
-### Secretary
-- **Email:** secretary@demo.com
-- **Password:** secretary123
+## 🚀 Key Features to Explore
 
-### HR Manager
-- **Email:** hr@demo.com
-- **Password:** hr123
+After logging in, try these features:
 
-### Company Owner
-- **Email:** owner@demo.com
-- **Password:** owner123
-
-**⚠️ IMPORTANT:** Change these passwords immediately in a production environment!
-
-## Key Features
-
-- **Client Management** - Manage customer database and contacts
+- **Client Management** - Add and manage customer database
 - **Invoicing** - Create and track invoices
 - **Calendar** - Schedule meetings and events
 - **Team Chat** - Internal communication
 - **Documents** - Store and organize files
-- **Reports** - Business analytics and insights
-- **User Management** - Role-based access control
+- **Reports** - Business analytics
+- **User Management** - Role-based access
 
-## Need Help?
+---
 
-### Documentation
-- Full installation guide: `WINDOWS_SERVER_INSTALLATION.md`
-- Installer resources: `INSTALLER_README.md`
-- Database guide: `src/database/DATABASE_SETUP_GUIDE.md`
+## ❓ Common Questions
 
-### Troubleshooting
+### "The installer asks about automatic setup - what should I choose?"
+**Click YES.** This installs everything automatically (recommended).
 
-**Can't connect to database?**
-- Verify PostgreSQL is running
-- Check credentials in `.env` file
-- Run `check-postgresql.bat` to verify installation
+### "What if I clicked NO during installation?"
+Navigate to `C:\Program Files\Office Management System` and run `one-click-setup.bat` as administrator.
 
-**Application won't start?**
-- Check port 3001 is not in use
-- Review logs in installation folder
-- Ensure database setup completed successfully
+### "Do I need to install PostgreSQL first?"
+**No.** The installer does it automatically.
 
-**Permission errors?**
-- Log in as administrator (admin@demo.com)
-- Verify user roles in User Management section
-- Check database `user_permissions` table
+### "Can I use this on Windows Server?"
+**Yes.** Same installer works on Windows Server 2016+.
 
-### Support Resources
-- GitHub: https://github.com/Pawel-Sokolowski/ManagmentApp
-- Issues: Submit via GitHub Issues
+---
 
-## Security Recommendations
+## 🖥️ For Server Deployment (Optional)
 
-For production use:
+If you want to run as a Windows Service (auto-start on boot):
 
-1. **Change All Passwords**
-   - Log in as admin
-   - Update all demo user passwords
-   - Remove unused accounts
+1. Complete the standard installation above
+2. Open PowerShell as Administrator
+3. Navigate to: `C:\Program Files\Office Management System`
+4. Run: `.\install-service.ps1`
 
-2. **Secure Database**
-   - Use strong PostgreSQL password
-   - Configure firewall rules
-   - Enable SSL connections if needed
+The service will start automatically on every boot.
 
-3. **Network Security**
-   - Configure Windows Firewall
-   - Use HTTPS for remote access
-   - Consider VPN for external connections
+---
 
-4. **Regular Maintenance**
-   - Backup database regularly
-   - Update application when new versions available
-   - Monitor logs for issues
+## 🔒 Security Checklist (Production)
 
-## Next Steps
+Before using in production:
 
-1. ✅ Complete database setup
-2. ✅ Log in with admin credentials
-3. ✅ Change admin password
-4. ✅ Create your team users
-5. ✅ Configure company settings
-6. ✅ Import/add client data
-7. ✅ Explore features and modules
+- [ ] Change all demo user passwords
+- [ ] Remove unused demo accounts
+- [ ] Configure Windows Firewall
+- [ ] Set up database backups
+- [ ] Use strong PostgreSQL password
 
-## Getting Started Checklist
+---
 
-- [ ] PostgreSQL installed and running
-- [ ] Database setup completed (`setup-database.bat`)
-- [ ] Logged in successfully
-- [ ] Admin password changed
-- [ ] Team users created
-- [ ] Demo users removed or secured
-- [ ] Company information configured
-- [ ] Firewall configured (if needed)
-- [ ] Backup strategy established
+## 📞 Need Help?
+
+- **Documentation:** See `WINDOWS_SERVER_INSTALLATION.md` in installation folder
+- **Issues:** [GitHub Issues](https://github.com/Pawel-Sokolowski/ManagmentApp/issues)
+- **Live Demo:** [Try online](https://pawel-sokolowski.github.io/ManagmentApp/)
 
 ---
 
 **Version:** 1.0.0  
 **Platform:** Windows 10/11, Windows Server 2016+
 
-Enjoy using the Office Management System!
+**🎊 Enjoy your Office Management System!**

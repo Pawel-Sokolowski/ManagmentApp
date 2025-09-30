@@ -1,5 +1,29 @@
 # One-Click Installer Flow Diagram
 
+## 📌 **Technical Flow Diagram**
+
+**This document shows the internal installer flow for developers.**
+
+**For installation instructions, see:** [QUICK_START.md](QUICK_START.md)
+
+---
+
+## User Experience Flow
+
+**From the user's perspective:**
+
+1. Download `Office Management System Setup.exe`
+2. Run installer (right-click → Run as administrator)
+3. Click YES when prompted for automatic setup
+4. Wait 5-15 minutes
+5. Launch application
+
+**That's it!** The flow below shows what happens behind the scenes.
+
+---
+
+## Technical Installation Flow
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │

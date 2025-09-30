@@ -1,155 +1,108 @@
 # Windows Server Installation Guide
 
-## Quick Installation for Windows Server
+## 🎯 **ONE Installer for Everything**
 
-This guide provides step-by-step instructions for deploying the Office Management System on a Windows Server with PostgreSQL database.
-
----
-
-## 📋 Prerequisites
-
-### System Requirements
-- **Windows Server 2016 or higher** (or Windows 10/11 for testing)
-- **4 GB RAM minimum** (8 GB recommended)
-- **10 GB free disk space**
-- **Administrator privileges**
-
-### Required Software
-1. **PostgreSQL 13+** - Database server
-2. **Node.js 18+** - For running the setup script (comes with installer)
+**Desktop or Server - Same installer file handles both scenarios automatically.**
 
 ---
 
-## 🚀 Installation Steps
+## 📥 Download
 
-### Option 1: One-Click Automatic Install (Recommended) ⚡
+**[Get the installer from GitHub Releases →](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)**
 
-The installer now includes **fully automatic setup** that installs PostgreSQL, creates the database, and configures everything in one go!
+**Download:** `Office Management System Setup.exe`
 
-1. **Download the installer**
-   - Get `Office Management System Setup.exe` from the releases page
-   - Save to a location like `C:\Downloads`
-
-2. **Run the installer**
-   - Right-click the installer and select "Run as administrator"
-   - Follow the installation wizard
-   - Choose installation directory (default: `C:\Program Files\Office Management System`)
-
-3. **Choose automatic setup** (When prompted)
-   - Click **YES** when asked "Would you like to run the automatic setup now?"
-   - The installer will automatically:
-     - Download and install PostgreSQL 15 (if not already installed)
-     - Create the `office_management` database
-     - Initialize all tables and schemas (1,400+ lines of SQL)
-     - Create 6 demo users with different permission levels
-     - Configure all application settings
-   - **Wait 5-15 minutes** for the process to complete
-
-4. **Start using the application**
-   - Launch "Office Management System" from Start Menu or Desktop
-   - Log in with one of the demo accounts (see credentials below)
-   - **That's it! You're ready to go!** 🎉
-
-**Default Database Credentials:**
-- **Host:** localhost
-- **Port:** 5432
-- **Database:** office_management
-- **Username:** postgres
-- **Password:** postgres123!
+**This ONE file installs:**
+- ✅ Complete application (desktop + server)
+- ✅ PostgreSQL 15 database (automatic)
+- ✅ All tables and schemas (1,400+ lines SQL)
+- ✅ 6 demo users with different roles
+- ✅ Full configuration
 
 ---
 
-### Option 2: Quick Install (PostgreSQL Already Installed)
+## 🚀 Installation (3 Steps)
 
-If you already have PostgreSQL installed:
+### For Both Desktop and Server Deployment:
 
-1. **Download and run the installer**
-   - Right-click `Office Management System Setup.exe` and select "Run as administrator"
-   - Follow the installation wizard
+**Step 1:** Right-click installer → **"Run as administrator"**
 
-2. **Choose automatic setup**
-   - When prompted, click **YES** to run automatic setup
-   - The installer will detect existing PostgreSQL
-   - Enter your PostgreSQL password if different from the default
-   - Wait for database initialization to complete
+**Step 2:** Follow the installation wizard
+- Choose installation directory
+- Default: `C:\Program Files\Office Management System`
 
-3. **Start the application**
-   - Launch from Start Menu or Desktop
-   - Log in with demo credentials
+**Step 3:** When prompted: **Click YES** for automatic setup
+- Wait 5-15 minutes for complete installation
+- PostgreSQL installs automatically if needed
+
+**🎉 Done!** Launch the application and log in.
 
 ---
 
-### Option 3: Manual Setup (Advanced Users)
+## 📋 System Requirements
 
-For users who want full control over the installation:
+### Workstation/Desktop:
+- **OS:** Windows 10/11 (64-bit)
+- **RAM:** 4 GB minimum
+- **Disk:** 10 GB free space
+- **Network:** Internet (for PostgreSQL download)
 
-1. **Install PostgreSQL**
-   ```powershell
-   # Download and install PostgreSQL 15
-   # Set postgres user password during installation
-   # Add PostgreSQL bin to system PATH
-   ```
+### Server Deployment:
+- **OS:** Windows Server 2016 or higher
+- **RAM:** 8 GB recommended
+- **Disk:** 10 GB free space
+- **Network:** Internet (for initial PostgreSQL download)
 
-2. **Install Node.js** (if not already installed)
-   ```powershell
-   # Download from: https://nodejs.org/
-   # Install LTS version (18.x or higher)
-   ```
-
-3. **Extract Application Files**
-   - Extract the portable version to your preferred location
-   - Example: `C:\OfficeManagement`
-
-4. **Configure Database Connection**
-   - Copy `.env.example` to `.env`
-   - Edit `.env` with your database credentials:
-     ```
-     DB_HOST=localhost
-     DB_PORT=5432
-     DB_NAME=office_management
-     DB_USER=postgres
-     DB_PASSWORD=your_postgres_password
-     PORT=3001
-     NODE_ENV=production
-     ```
-
-5. **Run Database Setup**
-   ```powershell
-   cd C:\OfficeManagement
-   .\setup-database.bat
-   ```
-
-6. **Start the Application**
-   ```powershell
-   .\Office Management System.exe
-   ```
+### Permissions:
+- **Administrator privileges** required for installation
 
 ---
 
-## 🔧 Alternative Setup Methods
+## 🖥️ Server-Specific Setup (Optional)
 
-### Running One-Click Setup Separately
+After standard installation, configure as Windows Service:
 
-If you skipped automatic setup during installation, you can run it anytime:
+### Install as Windows Service:
 
-1. Navigate to the installation folder
-2. Right-click `one-click-setup.bat` and select "Run as administrator"
-3. Wait for the process to complete (5-15 minutes)
+1. Open **PowerShell as Administrator**
+2. Navigate to: `C:\Program Files\Office Management System`
+3. Run: `.\install-service.ps1`
 
-This will:
-- Automatically install PostgreSQL if needed
-- Create and configure the database
-- Initialize all schemas
-- Set up demo users
+**Benefits:**
+- ✅ Auto-start on server boot
+- ✅ Runs in background
+- ✅ Auto-restart on failure
+- ✅ Service management via Windows Services
 
-### Using Individual Setup Scripts
+### Manage the Service:
 
-For troubleshooting or custom setup:
+```powershell
+# Start service
+Start-Service -Name OfficeManagementSystem
 
-- **check-postgresql.bat** - Verify PostgreSQL installation
-- **install-postgresql.ps1** - Install PostgreSQL automatically (PowerShell)
-- **setup-database.bat** - Set up database only (requires PostgreSQL)
-- **one-click-setup.bat** - Complete automatic setup
+# Stop service
+Stop-Service -Name OfficeManagementSystem
+
+# Check status
+Get-Service -Name OfficeManagementSystem
+```
+
+---
+
+## ✅ No Scripts Needed
+
+**You do NOT need to run:**
+- ❌ `setup-database.bat`
+- ❌ `one-click-setup.bat`
+- ❌ `check-postgresql.bat`
+- ❌ Any other batch files
+
+**The installer handles everything automatically during installation.**
+
+**These scripts are included only for:**
+- Advanced troubleshooting
+- Custom configurations
+- Manual recovery scenarios
 
 ---
 
@@ -263,6 +216,17 @@ For server deployment with remote access:
 
 ## 🔍 Troubleshooting
 
+### Installation Issues
+
+**Problem:** Automatic setup failed or was skipped
+
+**Solution:**
+1. Navigate to: `C:\Program Files\Office Management System`
+2. Right-click `one-click-setup.bat` → "Run as administrator"
+3. Wait 5-15 minutes for completion
+
+---
+
 ### PostgreSQL Connection Issues
 
 **Problem:** Cannot connect to database
@@ -282,28 +246,47 @@ For server deployment with remote access:
    psql -h localhost -U postgres -d office_management
    ```
 
-3. Check firewall settings
-4. Verify credentials in `.env` file
+3. Check database configuration:
+   - Default credentials: postgres/postgres123!
+   - Default port: 5432
+   - Database name: office_management
+
+---
 
 ### Application Won't Start
 
 **Problem:** Application closes immediately or shows error
 
 **Solutions:**
-1. Check logs in installation directory: `data\logs`
-2. Verify Node.js dependencies are installed
-3. Run `check-postgresql.bat` to verify database
-4. Ensure port 3001 is not in use by another application
+1. Check logs: `C:\Program Files\Office Management System\data\logs`
+2. Verify PostgreSQL service is running
+3. Ensure port 3001 is available
+4. Try running application as Administrator
+
+---
 
 ### Permission Errors
 
 **Problem:** User cannot access certain features
 
 **Solutions:**
-1. Log in as administrator
-2. Check user permissions in system settings
+1. Log in as administrator (admin@demo.com / admin123)
+2. Go to User Management → Edit user → Permissions
 3. Verify user role matches intended access level
-4. Review database table `user_permissions`
+
+---
+
+### Advanced Troubleshooting Tools
+
+**Only use these for advanced troubleshooting:**
+
+Located in installation directory:
+
+- `check-postgresql.bat` - Verify PostgreSQL installation and status
+- `setup-database.bat` - Reinitialize database only (WARNING: destructive)
+- `one-click-setup.bat` - Rerun complete setup (if installation was incomplete)
+
+⚠️ **These tools are for troubleshooting only. Normal installation doesn't require them.**
 
 ---
 
