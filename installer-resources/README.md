@@ -14,6 +14,10 @@ Custom NSIS script that provides additional installation options beyond electron
 - `OutFile` directive (electron-builder manages output file naming)
 - `InstallDir` directive (electron-builder manages installation directory)
 - `RequestExecutionLevel` directive (electron-builder handles permissions)
+- Standard MUI page macros (`!insertmacro MUI_PAGE_WELCOME`, `MUI_PAGE_DIRECTORY`, `MUI_PAGE_INSTFILES`, `MUI_PAGE_FINISH`, etc.)
+- Uninstaller page macros (`!insertmacro MUI_UNPAGE_CONFIRM`, `MUI_UNPAGE_INSTFILES`, etc.)
+- Language definitions (`!insertmacro MUI_LANGUAGE "English"`)
+- `!include "MUI2.nsh"` (electron-builder's generated script includes this)
 - `Section "Install"` (use `!macro customInstall` instead)
 - `Section "Uninstall"` (use `!macro customUnInstall` instead)
 
@@ -59,16 +63,26 @@ electron-builder will:
 
 This error occurs when the custom script duplicates directives that electron-builder sets automatically. **Solution:** Remove duplicate directives like `Name`, `OutFile`, `InstallDir`, etc. from the custom script.
 
+### NSIS Error: "can't load same language file twice"
+
+This error occurs when the custom script defines `!insertmacro MUI_LANGUAGE` which conflicts with electron-builder's generated script that already includes language definitions.
+
+**Solution:** Remove all of the following from the custom script:
+- `!include "MUI2.nsh"` (electron-builder includes this)
+- Standard MUI page macros (`!insertmacro MUI_PAGE_WELCOME`, `MUI_PAGE_DIRECTORY`, etc.)
+- Uninstaller page macros (`!insertmacro MUI_UNPAGE_CONFIRM`, `MUI_UNPAGE_INSTFILES`, etc.)
+- Language macro (`!insertmacro MUI_LANGUAGE "English"`)
+
+Keep only:
+- `!include "LogicLib.nsh"` (for conditional logic)
+- Variable declarations (`Var VariableName`)
+- Custom page definitions (`Page custom FunctionName`)
+- Custom functions
+- Custom install/uninstall macros (`!macro customInstall`, `!macro customUnInstall`)
+
 ### NSIS Warning: "MUI_UNPAGE_* inserted after MUI_LANGUAGE"
 
-This warning occurs when uninstaller page macros are defined after the language macro. According to NSIS MUI2 documentation, all page definitions must come before language definitions.
-
-**Solution:** Ensure the following order in your NSIS script:
-1. Include statements (`!include "MUI2.nsh"`)
-2. Variables (`Var VariableName`)
-3. All page macros (`!insertmacro MUI_PAGE_*` and `!insertmacro MUI_UNPAGE_*`)
-4. Language macro (`!insertmacro MUI_LANGUAGE`)
-5. Functions and macros
+This warning occurs when uninstaller page macros are defined after the language macro. However, since electron-builder includes this script, you should not define standard MUI pages or language at all in the custom script - electron-builder handles these.
 
 ### Warnings Treated as Errors
 
