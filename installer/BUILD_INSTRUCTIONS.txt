@@ -1,0 +1,31 @@
+# INSTALLER FILE LOCATION
+
+The Windows installer executable should be placed in this folder.
+
+## To Build the Installer:
+
+On a Windows machine with Node.js installed:
+
+```bash
+cd /path/to/ManagmentApp
+npm install
+npm run dist-win
+```
+
+Then copy the generated installer:
+```bash
+copy dist-electron\Office-Management-System-Setup-*.exe installer\Office-Management-System-Setup.exe
+```
+
+## Why isn't the installer here?
+
+The installer is a compiled Windows executable that must be built on Windows or with Wine.
+This repository was cleaned up to simplify documentation and remove scripts.
+The installer can be built using the instructions above.
+
+## Installation Guide
+
+For complete installation instructions, see:
+- **INSTALLATION_GUIDE.md** (in the root directory)
+
+This guide explains both Desktop and Server installation options.
