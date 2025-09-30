@@ -2,17 +2,51 @@
 
 A comprehensive office management system built with React, Electron, and PostgreSQL. This application provides a complete solution for managing clients, invoices, calendar events, team communication, and more.
 
-## 📥 Quick Download
+## 📥 Quick Download & Install ⚡
 
-**Ready-to-use installers are available in [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases):**
+**The application now features TRUE ONE-CLICK INSTALLATION!**
 
-- **Windows:** `Office Management System Setup.exe` (Full installer) or `Office Management System-portable.exe` (Portable)
-- **Linux:** `Office Management System.AppImage` (Portable application)
-- **macOS:** `Office Management System.dmg` (Disk image installer)
+Download the installer and let it handle everything automatically:
 
-**🌐 Try Online:** [Browser Demo](https://pawel-sokolowski.github.io/ManagmentApp/)
+- **Windows (Recommended):** `Office Management System Setup.exe` - **One-click installer with automatic PostgreSQL setup**
+- **Windows (Portable):** `Office Management System-portable.exe` - Requires manual PostgreSQL setup
+- **Linux:** `Office Management System.AppImage` - Portable application
+- **macOS:** `Office Management System.dmg` - Disk image installer
 
-**📘 Server Installation:** See [Windows Server Installation Guide](WINDOWS_SERVER_INSTALLATION.md) for production deployment
+**Get installers from:** [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)
+
+**🌐 Try Online:** [Browser Demo](https://pawel-sokolowski.github.io/ManagmentApp/) (No installation required)
+
+**📘 Full Documentation:** See [Windows Server Installation Guide](WINDOWS_SERVER_INSTALLATION.md)
+
+---
+
+## ⚡ One-Click Windows Installation
+
+The Windows installer now includes **complete automatic setup**:
+
+### What Happens Automatically:
+1. ✅ **PostgreSQL Installation** - Automatically downloads and installs PostgreSQL 15
+2. ✅ **Database Creation** - Creates the `office_management` database
+3. ✅ **Schema Initialization** - Runs 1,400+ lines of SQL to set up all tables
+4. ✅ **Demo Users** - Creates 6 users with different permission levels
+5. ✅ **Configuration** - Sets up all application settings
+
+### Installation Steps:
+1. Download `Office Management System Setup.exe`
+2. Run the installer as Administrator
+3. When prompted, click **YES** for automatic setup
+4. Wait 5-15 minutes for installation to complete
+5. **Done!** Launch the application and log in
+
+**Default Database Credentials:**
+- Host: `localhost`
+- Port: `5432`
+- Database: `office_management`
+- Username: `postgres`
+- Password: `postgres123!`
+
+**No scripts to run. No manual configuration. Just click and go!** 🎉
 
 ## 🚀 Features
 
@@ -28,15 +62,22 @@ A comprehensive office management system built with React, Electron, and Postgre
 
 ## 📋 Prerequisites
 
-Before installing the application, ensure you have:
-
-- **PostgreSQL 13+** installed and running
-- **Windows 10/11** (64-bit recommended)
+### For Using Pre-built Installer (Recommended)
+- **Windows 10/11** (64-bit)
 - **Administrator privileges** for installation
+- **Internet connection** (for automatic PostgreSQL download if needed)
+- **10 GB free disk space**
 
-## 🔧 Installation
+**That's it!** The installer handles PostgreSQL and all other requirements automatically.
 
-### Build from Source
+### For Building from Source
+
+**Requirements:**
+- **Node.js 18+**
+- **PostgreSQL 13+** (if not using one-click installer)
+- **Windows 10/11** (64-bit)
+
+## 🔧 Building from Source
 
 1. **Install Node.js** (version 18 or higher)
 2. **Clone the repository**:
@@ -68,7 +109,7 @@ Before installing the application, ensure you have:
    # For development
    npm run electron-dev
    
-   # For production build
+   # Build Windows installer with one-click setup
    npm run dist-win
    ```
 

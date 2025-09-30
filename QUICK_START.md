@@ -6,17 +6,29 @@ Thank you for installing the Office Management System. This guide will help you 
 
 ## First Steps
 
-### 1. Database Setup (Required)
+### 1. Installation (One-Click Setup) ⚡
 
-Before using the application, you need to set up the PostgreSQL database:
+The Office Management System now features **automatic installation**!
 
-1. Open the installation folder (typically `C:\Program Files\Office Management System`)
-2. Run `setup-database.bat` as Administrator
-3. Follow the prompts to configure your database connection
-4. The script will create the database and demo users automatically
+**During Installation:**
+1. Download and run `Office Management System Setup.exe`
+2. When prompted, click **YES** for automatic setup
+3. Wait 5-15 minutes while the installer:
+   - Installs PostgreSQL (if needed)
+   - Creates the database
+   - Initializes all tables
+   - Sets up demo users
 
-**Note:** If PostgreSQL is not installed, download it from:
-https://www.postgresql.org/download/windows/
+**That's it!** The application is ready to use immediately after installation.
+
+**If you skipped automatic setup:**
+1. Navigate to installation folder: `C:\Program Files\Office Management System`
+2. Right-click `one-click-setup.bat` and select "Run as administrator"
+3. Wait for the process to complete
+
+**Manual setup (if preferred):**
+- Run `setup-database.bat` if PostgreSQL is already installed
+- Or follow the detailed guide in `WINDOWS_SERVER_INSTALLATION.md`
 
 ### 2. Start the Application
 

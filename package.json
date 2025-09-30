@@ -134,6 +134,18 @@
                         "to": "start-server.bat"
                   },
                   {
+                        "from": "installer-resources/one-click-setup.bat",
+                        "to": "one-click-setup.bat"
+                  },
+                  {
+                        "from": "installer-resources/install-postgresql.ps1",
+                        "to": "install-postgresql.ps1"
+                  },
+                  {
+                        "from": "installer-resources/refresh-env.bat",
+                        "to": "refresh-env.bat"
+                  },
+                  {
                         "from": "installer-resources/install-service.ps1",
                         "to": "install-service.ps1"
                   },
