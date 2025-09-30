@@ -5,6 +5,9 @@ interface ElectronAPI {
   showSaveDialog: (options: any) => Promise<any>;
   showOpenDialog: (options: any) => Promise<any>;
   dbQuery: (query: string, params?: any[]) => Promise<any>;
+  dbSetupCheck?: () => Promise<any>;
+  dbSetupTestConnection?: (config: any) => Promise<any>;
+  dbSetupRun?: (config: any) => Promise<any>;
   selectFile: () => Promise<any>;
   saveFile: (data: any, filePath: string) => Promise<any>;
   platform: string;

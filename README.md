@@ -16,17 +16,49 @@ A comprehensive office management system built with React, Electron, and Postgre
 
 ---
 
-## 📥 Installation
+## 📥 Installation & Deployment
 
-### Option 1: Download Pre-built Installer (Recommended)
+### Two Deployment Options Available
 
-**[📘 Complete Installation Guide →](INSTALLATION_GUIDE.md)**
+This application can be deployed in **two different ways** depending on your needs:
 
-Check the [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases) page for pre-built installers.
+#### Option 1: Desktop Application (Windows/Mac/Linux)
+**Best for:** Single-user workstations or small teams with local installations
 
-### Option 2: Build Your Own Executable
+- **Desktop installer** for Windows, Mac, or Linux
+- Runs as a native desktop application with Electron
+- Can work offline once configured
+- Database can be local or remote
 
-**Three ways to get an executable:**
+**[📘 Desktop Installation Guide →](INSTALLATION_GUIDE.md)**
+
+**Quick install:**
+1. Download installer from [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)
+2. Run as administrator
+3. Choose installation type (Desktop or Server mode)
+
+#### Option 2: Web Application (Server Deployment)
+**Best for:** Multi-user environments, centralized access, remote teams
+
+- Pure web-based application (no desktop app needed)
+- Access from any browser
+- Centralized server deployment
+- Supports unlimited concurrent users
+
+**[🌐 Web Deployment Guide →](WEB_DEPLOYMENT_GUIDE.md)**
+
+**Quick web deployment:**
+```bash
+npm install
+npm run build:web
+npm run server:prod
+```
+
+---
+
+### Build Your Own Executable
+
+**Three ways to get a desktop executable:**
 
 1. **🚀 Use GitHub Actions (Easiest - No Windows PC Needed!)**
    - [GITHUB_ACTIONS_GUIDE.md](GITHUB_ACTIONS_GUIDE.md) - Build in the cloud for FREE
@@ -41,15 +73,6 @@ Check the [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases) 
 3. **📗 For Developers**
    - [BUILD_GUIDE.md](BUILD_GUIDE.md) - Comprehensive build documentation
    - Advanced options and customization
-
-### Quick Install
-1. Download installer from [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)
-2. Run as administrator
-3. Choose installation type:
-   - **Desktop Application** - For single-user workstations
-   - **Server Installation** - For multi-user server environments
-
-The installer automatically handles everything including PostgreSQL installation, database setup, and configuration.
 
 ---
 
