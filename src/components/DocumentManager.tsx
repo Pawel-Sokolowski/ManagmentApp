@@ -21,10 +21,12 @@ import {
   File,
   Image,
   FileSpreadsheet,
-  Calendar
+  Calendar,
+  FilePlus
 } from "lucide-react";
-import { Client } from "../types/client";
+import { Client, User } from "../types/client";
 import { toast } from "sonner@2.0.3";
+import { AuthorizationFormDialog } from "./AuthorizationFormDialog";
 
 interface Document {
   id: string;
@@ -52,6 +54,41 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [isAuthFormDialogOpen, setIsAuthFormDialogOpen] = useState(false);
+
+  // Mock employees for authorization forms
+  const mockEmployees: User[] = [
+    {
+      id: '1',
+      firstName: 'Anna',
+      lastName: 'Kowalska',
+      email: 'anna.kowalska@firma.pl',
+      role: 'księgowa',
+      position: 'Główna księgowa',
+      phone: '+48 123 456 789',
+      isActive: true
+    },
+    {
+      id: '2',
+      firstName: 'Piotr',
+      lastName: 'Nowak',
+      email: 'piotr.nowak@firma.pl',
+      role: 'ksiegowosc',
+      position: 'Specjalista ds. ZUS',
+      phone: '+48 234 567 890',
+      isActive: true
+    },
+    {
+      id: '3',
+      firstName: 'Maria',
+      lastName: 'Wiśniewska',
+      email: 'maria.wisniewska@firma.pl',
+      role: 'kadry',
+      position: 'Specjalista kadrowy',
+      phone: '+48 345 678 901',
+      isActive: true
+    }
+  ];
 
   useEffect(() => {
     // Mock documents
@@ -192,14 +229,20 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
             Przechowywanie i organizacja dokumentów klientów
           </p>
         </div>
-        <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Upload className="mr-2 h-4 w-4" />
-              Prześlij dokument
-            </Button>
-          </DialogTrigger>
-        </Dialog>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setIsAuthFormDialogOpen(true)}>
+            <FilePlus className="mr-2 h-4 w-4" />
+            Generuj pełnomocnictwo
+          </Button>
+          <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Upload className="mr-2 h-4 w-4" />
+                Prześlij dokument
+              </Button>
+            </DialogTrigger>
+          </Dialog>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
@@ -240,7 +283,57 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
         </Select>
       </div>
 
+      {/* Filter Summary */}
+      {(selectedClient !== 'all' || selectedCategory !== 'all' || searchTerm) && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-4">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm text-muted-foreground">Aktywne filtry:</span>
+                {selectedClient !== 'all' && (
+                  <Badge variant="secondary">
+                    Klient: {getClientName(selectedClient)}
+                  </Badge>
+                )}
+                {selectedCategory !== 'all' && (
+                  <Badge variant="secondary">
+                    Kategoria: {getCategoryLabel(selectedCategory as Document['category'])}
+                  </Badge>
+                )}
+                {searchTerm && (
+                  <Badge variant="secondary">
+                    Wyszukiwanie: "{searchTerm}"
+                  </Badge>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => {
+                    setSelectedClient('all');
+                    setSelectedCategory('all');
+                    setSearchTerm('');
+                  }}
+                >
+                  Wyczyść filtry
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Dokumenty</CardTitle>
+              <CardDescription>
+                Wyświetlono {filteredDocuments.length} z {documents.filter(d => !d.isArchived).length} dokumentów
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -255,7 +348,14 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredDocuments.map((document) => (
+              {filteredDocuments.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    Nie znaleziono dokumentów spełniających kryteria wyszukiwania
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredDocuments.map((document) => (
                 <TableRow key={document.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -304,7 +404,8 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -430,6 +531,15 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Authorization Form Dialog */}
+      <AuthorizationFormDialog
+        isOpen={isAuthFormDialogOpen}
+        onClose={() => setIsAuthFormDialogOpen(false)}
+        clients={clients}
+        employees={mockEmployees}
+        preSelectedClientId={selectedClient !== 'all' ? selectedClient : undefined}
+      />
     </div>
   );
 }
