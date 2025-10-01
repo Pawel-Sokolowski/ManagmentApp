@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import { Client, User } from '../types/client';
 import { UPL1PdfFiller } from './upl1PdfFiller';
+import { TaxFormService } from './taxFormService';
 
 // Form type definitions with complexity levels
 export type FormType = 
@@ -263,6 +264,22 @@ export class AuthorizationFormGenerator {
       return await this.generateUPL1FormFromTemplate(data);
     }
 
+    // Try template-based filling for forms that have templates
+    const templateForms = [
+      'PIT-37', 'PIT-R', 'PEL', 'ZAW-FA',
+      'PIT-2', 'PIT-OP', 'IFT-1', 'UPL-1P',
+      'OPD-1', 'OPL-1', 'OPO-1', 'OPS-1',
+      'PPD-1', 'PPO-1', 'PPS-1'
+    ];
+    if (templateForms.includes(data.formType)) {
+      try {
+        return await this.generateFormFromTemplate(data);
+      } catch (error) {
+        console.log(`${data.formType} template not available, falling back to jsPDF generation`);
+        // Fall through to jsPDF generation if template not available
+      }
+    }
+
     // For all other forms, use jsPDF
     this.pdf = new jsPDF();
 
@@ -355,6 +372,153 @@ export class AuthorizationFormGenerator {
       scope: data.additionalData?.scope,
       taxOffice: data.additionalData?.taxOffice,
     });
+  }
+
+  /**
+   * Generate form using official PDF template and TaxFormService
+   * Supports: PIT-37, PIT-R, PEL, ZAW-FA, PIT-2, PIT-OP, IFT-1, UPL-1P, and declaration forms
+   */
+  private async generateFormFromTemplate(data: AuthorizationFormData): Promise<Blob> {
+    const { client, employee, additionalData, formType } = data;
+    const year = additionalData?.year || new Date().getFullYear().toString();
+    
+    let formData: any = {};
+
+    // Prepare form data based on form type
+    switch(formType) {
+      case 'PIT-37':
+        formData = {
+          taxpayerName: `${client.firstName} ${client.lastName}`,
+          taxpayerId: client.pesel || '',
+          taxpayerNIP: client.nip || '',
+          taxpayerAddress: client.address || '',
+          taxpayerCity: client.city || '',
+          taxpayerPostalCode: client.postalCode || '',
+          taxOffice: additionalData?.taxOffice || '',
+          employmentIncome: additionalData?.employmentIncome || 0,
+          civilContractIncome: additionalData?.civilContractIncome || 0,
+          numberOfChildren: additionalData?.numberOfChildren || 0,
+          childDeduction: additionalData?.childDeduction || 1112.04,
+          taxPaid: additionalData?.taxPaid || 0,
+        };
+        break;
+
+      case 'PIT-R':
+        formData = {
+          taxpayerName: `${client.firstName} ${client.lastName}`,
+          taxpayerId: client.pesel || '',
+          taxpayerNIP: client.nip || '',
+          taxpayerAddress: client.address || '',
+          taxpayerCity: client.city || '',
+          taxOffice: additionalData?.taxOffice || '',
+          businessIncome: additionalData?.businessIncome || 0,
+          businessCosts: additionalData?.businessCosts || 0,
+          taxPaid: additionalData?.taxPaid || 0,
+        };
+        break;
+
+      case 'PIT-2':
+        formData = {
+          taxpayerName: `${client.firstName} ${client.lastName}`,
+          taxpayerId: client.pesel || '',
+          taxpayerNIP: client.nip || '',
+          taxOffice: additionalData?.taxOffice || '',
+          taxYear: additionalData?.taxYear || year,
+          totalIncome: additionalData?.totalIncome || 0,
+          taxAmount: additionalData?.taxAmount || 0,
+        };
+        break;
+
+      case 'PIT-OP':
+        formData = {
+          taxpayerName: `${client.firstName} ${client.lastName}`,
+          taxpayerId: client.pesel || '',
+          taxpayerAddress: client.address || '',
+          taxOffice: additionalData?.taxOffice || '',
+          advancePayment: additionalData?.advancePayment || 0,
+          paymentMonth: additionalData?.paymentMonth || new Date().getMonth() + 1,
+        };
+        break;
+
+      case 'IFT-1':
+        formData = {
+          taxpayerName: `${client.firstName} ${client.lastName}`,
+          taxpayerId: client.pesel || '',
+          taxpayerNIP: client.nip || '',
+          taxpayerAddress: client.address || '',
+          taxOffice: additionalData?.taxOffice || '',
+          incomeSource: additionalData?.incomeSource || '',
+          incomeAmount: additionalData?.incomeAmount || 0,
+          taxAmount: additionalData?.taxAmount || 0,
+        };
+        break;
+
+      case 'UPL-1P':
+        formData = {
+          principalName: client.companyName || `${client.firstName} ${client.lastName}`,
+          principalNIP: client.nip || '',
+          attorneyName: employee ? `${employee.firstName} ${employee.lastName}` : '',
+          attorneyPESEL: employee?.pesel || '',
+          scope: additionalData?.scope || 'Reprezentacja podatkowa',
+          issueDate: new Date().toLocaleDateString('pl-PL'),
+        };
+        break;
+
+      case 'PEL':
+        formData = {
+          principalName: client.companyName || `${client.firstName} ${client.lastName}`,
+          principalNIP: client.nip || '',
+          principalREGON: client.regon || '',
+          principalAddress: client.address || '',
+          attorneyName: employee ? `${employee.firstName} ${employee.lastName}` : '',
+          attorneyPESEL: employee?.pesel || '',
+          scope: additionalData?.scope || 'Reprezentacja w ZUS',
+          issueDate: new Date().toLocaleDateString('pl-PL'),
+        };
+        break;
+
+      case 'ZAW-FA':
+        formData = {
+          employeeName: `${client.firstName} ${client.lastName}`,
+          employeePESEL: client.pesel || '',
+          employeeAddress: client.address || '',
+          employerName: additionalData?.employerName || '',
+          employerNIP: additionalData?.employerNIP || '',
+          employmentDate: additionalData?.employmentDate || new Date().toLocaleDateString('pl-PL'),
+          taxDeduction: additionalData?.taxDeduction || 'TAK',
+        };
+        break;
+
+      case 'OPD-1':
+      case 'OPL-1':
+      case 'OPO-1':
+      case 'OPS-1':
+      case 'PPD-1':
+      case 'PPO-1':
+      case 'PPS-1':
+        // Declaration forms - generic structure
+        formData = {
+          payerName: client.companyName || `${client.firstName} ${client.lastName}`,
+          payerNIP: client.nip || '',
+          declarationDate: new Date().toLocaleDateString('pl-PL'),
+          amount: additionalData?.amount || 0,
+        };
+        break;
+
+      default:
+        throw new Error(`Form type ${formType} not supported in template generation`);
+    }
+
+    const taxFormService = new TaxFormService();
+    return await taxFormService.fillFormAsBlob(formType, year, formData);
+  }
+
+  /**
+   * @deprecated Use generateFormFromTemplate instead
+   * Generate PIT-37 form using official PDF template and TaxFormService
+   */
+  private async generatePIT37FromTemplate(data: AuthorizationFormData): Promise<Blob> {
+    return await this.generateFormFromTemplate(data);
   }
 
   private generateUPL1Form(data: AuthorizationFormData): void {
