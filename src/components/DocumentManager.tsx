@@ -220,6 +220,29 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
     return labels[category];
   };
 
+  const handlePreviewDocument = (document: Document) => {
+    toast.info(`Podgląd dokumentu: ${document.name}`);
+    // TODO: Implement document preview functionality
+  };
+
+  const handleDownloadDocument = (document: Document) => {
+    toast.success(`Pobieranie dokumentu: ${document.name}`);
+    // TODO: Implement actual download functionality
+  };
+
+  const handleEditDocument = (document: Document) => {
+    toast.info(`Edycja dokumentu: ${document.name}`);
+    // TODO: Implement document edit functionality
+  };
+
+  const handleDeleteDocument = (documentId: string) => {
+    const document = documents.find(d => d.id === documentId);
+    if (document) {
+      setDocuments(prev => prev.filter(d => d.id !== documentId));
+      toast.success(`Dokument "${document.name}" został usunięty`);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -389,16 +412,36 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
                   <TableCell>{formatFileSize(document.size)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center gap-1 justify-end">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handlePreviewDocument(document)}
+                        title="Podgląd"
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleDownloadDocument(document)}
+                        title="Pobierz"
+                      >
                         <Download className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleEditDocument(document)}
+                        title="Edytuj"
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleDeleteDocument(document.id)}
+                        title="Usuń"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

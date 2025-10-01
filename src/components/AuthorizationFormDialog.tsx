@@ -88,7 +88,8 @@ export function AuthorizationFormDialog({
       }, 500);
     } catch (error) {
       console.error('Error generating form:', error);
-      toast.error("Błąd podczas generowania dokumentu");
+      const errorMessage = error instanceof Error ? error.message : 'Nieznany błąd';
+      toast.error(`Błąd podczas generowania dokumentu: ${errorMessage}`);
     } finally {
       setIsGenerating(false);
     }
