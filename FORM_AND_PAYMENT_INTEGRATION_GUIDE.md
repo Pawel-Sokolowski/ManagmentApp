@@ -20,6 +20,9 @@ The enhanced form generation system supports 20+ Polish tax forms with intellige
 
 #### Pełnomocnictwa (Authorization Forms)
 - **UPL-1** - Pełnomocnictwo do Urzędu Skarbowego
+  - **Implementation**: Uses official PDF template with pdf-lib for coordinate-based filling
+  - **Template**: `/public/upl-1_06-08-2.pdf`
+  - **See**: [UPL1_COORDINATE_GUIDE.md](./UPL1_COORDINATE_GUIDE.md) for coordinate adjustment
 - **PEL** - Pełnomocnictwo do ZUS
 
 #### PIT Forms (Personal Income Tax)
@@ -71,8 +74,20 @@ import { Client, User } from './types/client';
 // Initialize generator
 const generator = new AuthorizationFormGenerator();
 
-// Generate and download form
-generator.downloadForm({
+// Generate and download form (async)
+await generator.downloadForm({
+  client: clientData,
+  employee: employeeData,
+  formType: 'UPL-1',  // Uses official PDF template
+  additionalData: {
+    startDate: '01.10.2024',
+    endDate: '31.12.2024',
+    taxOffice: 'US Warszawa Śródmieście'
+  }
+});
+
+// Or generate as blob for custom handling
+const blob = await generator.generateForm({
   client: clientData,
   employee: employeeData,
   formType: 'PIT-36',
