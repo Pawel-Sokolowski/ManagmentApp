@@ -264,12 +264,13 @@ export class AuthorizationFormGenerator {
       return await this.generateUPL1FormFromTemplate(data);
     }
 
-    // Special handling for PIT-37 - try template-based filling first
-    if (data.formType === 'PIT-37') {
+    // Try template-based filling for forms that have templates
+    const templateForms = ['PIT-37', 'PIT-R', 'PEL', 'ZAW-FA'];
+    if (templateForms.includes(data.formType)) {
       try {
-        return await this.generatePIT37FromTemplate(data);
+        return await this.generateFormFromTemplate(data);
       } catch (error) {
-        console.log('PIT-37 template not available, falling back to jsPDF generation');
+        console.log(`${data.formType} template not available, falling back to jsPDF generation`);
         // Fall through to jsPDF generation if template not available
       }
     }
@@ -369,30 +370,87 @@ export class AuthorizationFormGenerator {
   }
 
   /**
+   * Generate form using official PDF template and TaxFormService
+   * Supports: PIT-37, PIT-R, PEL, ZAW-FA
+   */
+  private async generateFormFromTemplate(data: AuthorizationFormData): Promise<Blob> {
+    const { client, employee, additionalData, formType } = data;
+    const year = additionalData?.year || new Date().getFullYear().toString();
+    
+    let formData: any = {};
+
+    // Prepare form data based on form type
+    switch(formType) {
+      case 'PIT-37':
+        formData = {
+          taxpayerName: `${client.firstName} ${client.lastName}`,
+          taxpayerId: client.pesel || '',
+          taxpayerNIP: client.nip || '',
+          taxpayerAddress: client.address || '',
+          taxpayerCity: client.city || '',
+          taxpayerPostalCode: client.postalCode || '',
+          taxOffice: additionalData?.taxOffice || '',
+          employmentIncome: additionalData?.employmentIncome || 0,
+          civilContractIncome: additionalData?.civilContractIncome || 0,
+          numberOfChildren: additionalData?.numberOfChildren || 0,
+          childDeduction: additionalData?.childDeduction || 1112.04,
+          taxPaid: additionalData?.taxPaid || 0,
+        };
+        break;
+
+      case 'PIT-R':
+        formData = {
+          taxpayerName: `${client.firstName} ${client.lastName}`,
+          taxpayerId: client.pesel || '',
+          taxpayerNIP: client.nip || '',
+          taxpayerAddress: client.address || '',
+          taxpayerCity: client.city || '',
+          taxOffice: additionalData?.taxOffice || '',
+          businessIncome: additionalData?.businessIncome || 0,
+          businessCosts: additionalData?.businessCosts || 0,
+          taxPaid: additionalData?.taxPaid || 0,
+        };
+        break;
+
+      case 'PEL':
+        formData = {
+          principalName: client.companyName || `${client.firstName} ${client.lastName}`,
+          principalNIP: client.nip || '',
+          principalREGON: client.regon || '',
+          principalAddress: client.address || '',
+          attorneyName: employee ? `${employee.firstName} ${employee.lastName}` : '',
+          attorneyPESEL: employee?.pesel || '',
+          scope: additionalData?.scope || 'Reprezentacja w ZUS',
+          issueDate: new Date().toLocaleDateString('pl-PL'),
+        };
+        break;
+
+      case 'ZAW-FA':
+        formData = {
+          employeeName: `${client.firstName} ${client.lastName}`,
+          employeePESEL: client.pesel || '',
+          employeeAddress: client.address || '',
+          employerName: additionalData?.employerName || '',
+          employerNIP: additionalData?.employerNIP || '',
+          employmentDate: additionalData?.employmentDate || new Date().toLocaleDateString('pl-PL'),
+          taxDeduction: additionalData?.taxDeduction || 'TAK',
+        };
+        break;
+
+      default:
+        throw new Error(`Form type ${formType} not supported in template generation`);
+    }
+
+    const taxFormService = new TaxFormService();
+    return await taxFormService.fillFormAsBlob(formType, year, formData);
+  }
+
+  /**
+   * @deprecated Use generateFormFromTemplate instead
    * Generate PIT-37 form using official PDF template and TaxFormService
    */
   private async generatePIT37FromTemplate(data: AuthorizationFormData): Promise<Blob> {
-    const { client, additionalData } = data;
-    const year = additionalData?.year || new Date().getFullYear().toString();
-    
-    // Prepare form data for PIT-37
-    const formData = {
-      taxpayerName: `${client.firstName} ${client.lastName}`,
-      taxpayerId: client.pesel || '',
-      taxpayerNIP: client.nip || '',
-      taxpayerAddress: client.address || '',
-      taxpayerCity: client.city || '',
-      taxpayerPostalCode: client.postalCode || '',
-      taxOffice: additionalData?.taxOffice || '',
-      employmentIncome: additionalData?.employmentIncome || 0,
-      civilContractIncome: additionalData?.civilContractIncome || 0,
-      numberOfChildren: additionalData?.numberOfChildren || 0,
-      childDeduction: additionalData?.childDeduction || 1112.04, // Standard deduction per child in Poland
-      taxPaid: additionalData?.taxPaid || 0,
-    };
-
-    const taxFormService = new TaxFormService();
-    return await taxFormService.fillFormAsBlob('PIT-37', year, formData);
+    return await this.generateFormFromTemplate(data);
   }
 
   private generateUPL1Form(data: AuthorizationFormData): void {

@@ -1,12 +1,19 @@
 # UPL-1 2023 Template
 
-Place the official UPL-1 2023 PDF template file here.
-
-Expected filename: `UPL-1_2023.pdf`
+✅ **This template is available** - copied from PDFFile folder.
 
 ## Source
-Currently using the UPL-1 template from `/public/upl-1_06-08-2.pdf`
+- Original file: `PDFFile/upl-1_06-08-2.pdf`
+- Also available in: `public/upl-1_06-08-2.pdf`
+- Form: Power of Attorney to Tax Office (Pełnomocnictwo do Urzędu Skarbowego)
+
+## Usage
+This form is ready to use with the TaxFormService.
+
+```typescript
+const service = new TaxFormService();
+await service.fillFormAsBlob('UPL-1', '2023', formData);
+```
 
 ## Note
-This directory is created to support template-based PDF filling.
-The actual PDF template file can be copied from the public directory or downloaded separately.
+This is the same file that was previously used in the UPL1PdfFiller implementation.

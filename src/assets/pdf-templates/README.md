@@ -8,16 +8,43 @@ This directory contains PDF templates and their corresponding field mappings for
 src/assets/pdf-templates/
 ├── PIT-37/
 │   ├── 2023/
-│   │   └── PIT-37_2023.pdf    (place official PDF here)
+│   │   └── PIT-37_2023.pdf    (placeholder - needs official PDF)
 │   ├── 2022/
-│   │   └── PIT-37_2022.pdf    (place official PDF here)
+│   │   └── PIT-37_2022.pdf    (placeholder - needs official PDF)
 │   └── mapping.json           (field mappings and calculations)
-├── UPL-1/
+├── PIT-R/                     ✅ AVAILABLE
+│   ├── 2024/
+│   │   └── PIT-R_2024.pdf     (tax return for business income)
 │   ├── 2023/
-│   │   └── UPL-1_2023.pdf     (place official PDF here)
-│   └── mapping.json           (field mappings)
+│   │   └── PIT-R_2023.pdf
+│   ├── 2022/
+│   │   └── PIT-R_2022.pdf
+│   └── mapping.json
+├── UPL-1/                     ✅ AVAILABLE
+│   ├── 2023/
+│   │   └── UPL-1_2023.pdf     (power of attorney - tax office)
+│   └── mapping.json
+├── PEL/                       ✅ AVAILABLE
+│   ├── 2023/
+│   │   └── PEL_2023.pdf       (power of attorney - ZUS)
+│   └── mapping.json
+├── ZAW-FA/                    ✅ AVAILABLE
+│   ├── 2023/
+│   │   └── ZAW-FA_2023.pdf    (employee tax card)
+│   └── mapping.json
 └── [other-form-types]/
 ```
+
+## Forms Status
+
+**✅ Available with PDFs from PDFFile folder:**
+- **PIT-R** - Tax return for business income (2022, 2023, 2024)
+- **UPL-1** - Power of attorney to tax office (2023)
+- **PEL** - Power of attorney to ZUS (2023)
+- **ZAW-FA** - Employee tax card (2023)
+
+**📋 Placeholders (need official PDFs):**
+- **PIT-37** - Personal income tax return (not found in PDFFile folder)
 
 ## Mapping File Format
 

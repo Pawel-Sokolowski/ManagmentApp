@@ -129,8 +129,10 @@ export class TaxFormService {
     // Handle form-specific logic
     if (formType === 'PIT-37') {
       processedData.calculatedFields = this.processPIT37Calculations(data, mappings);
-    } else if (formType === 'UPL-1') {
-      // UPL-1 doesn't require calculations, just pass through
+    } else if (formType === 'PIT-R') {
+      processedData.calculatedFields = this.processPITRCalculations(data, mappings);
+    } else if (formType === 'UPL-1' || formType === 'PEL' || formType === 'ZAW-FA') {
+      // These forms don't require calculations, just pass through
       processedData.calculatedFields = {};
     }
 
@@ -159,6 +161,30 @@ export class TaxFormService {
     }
 
     // Calculate tax due (simplified 17% rate)
+    if (calculated.taxBase !== undefined) {
+      calculated.taxDue = calculated.taxBase * 0.17;
+    }
+
+    // Calculate tax to pay/refund
+    if (calculated.taxDue !== undefined && data.taxPaid !== undefined) {
+      calculated.taxToPay = calculated.taxDue - (data.taxPaid || 0);
+    }
+
+    return calculated;
+  }
+
+  /**
+   * Process PIT-R specific calculations (for business income)
+   */
+  private processPITRCalculations(data: TaxFormData, mappings: FormMapping): Record<string, number> {
+    const calculated: Record<string, number> = {};
+
+    // Calculate tax base (income - costs)
+    if (data.businessIncome !== undefined && data.businessCosts !== undefined) {
+      calculated.taxBase = (data.businessIncome || 0) - (data.businessCosts || 0);
+    }
+
+    // Calculate tax due (17% rate for business income)
     if (calculated.taxBase !== undefined) {
       calculated.taxDue = calculated.taxBase * 0.17;
     }
