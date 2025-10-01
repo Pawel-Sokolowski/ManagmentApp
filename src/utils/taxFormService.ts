@@ -52,33 +52,33 @@ export class TaxFormService {
    * Load PDF template from assets or public directory
    */
   private async loadPdfTemplate(formType: string, year: string): Promise<PDFDocument> {
-    // First try to load from assets (for bundled templates)
-    const assetPath = `/src/assets/pdf-templates/${formType}/${year}/${formType}_${year}.pdf`;
+    // Load from public directory (static assets)
+    const publicPath = `/pdf-templates/${formType}/${year}/${formType}_${year}.pdf`;
     
-    // Fallback to public directory for backward compatibility (UPL-1)
-    const publicPath = formType === 'UPL-1' ? '/upl-1_06-08-2.pdf' : null;
+    // Fallback to root public directory for backward compatibility (UPL-1)
+    const fallbackPath = formType === 'UPL-1' ? '/upl-1_06-08-2.pdf' : null;
     
     try {
-      // Try to fetch from assets first
-      const response = await fetch(assetPath);
+      // Try to fetch from pdf-templates directory
+      const response = await fetch(publicPath);
       if (response.ok) {
         const arrayBuffer = await response.arrayBuffer();
         return await PDFDocument.load(arrayBuffer);
       }
     } catch (error) {
-      console.log(`Template not found in assets: ${assetPath}`);
+      console.log(`Template not found: ${publicPath}`);
     }
 
-    // Try public directory as fallback
-    if (publicPath) {
+    // Try fallback path for backward compatibility
+    if (fallbackPath) {
       try {
-        const response = await fetch(publicPath);
+        const response = await fetch(fallbackPath);
         if (response.ok) {
           const arrayBuffer = await response.arrayBuffer();
           return await PDFDocument.load(arrayBuffer);
         }
       } catch (error) {
-        console.error(`Template not found in public: ${publicPath}`);
+        console.error(`Template not found at fallback: ${fallbackPath}`);
       }
     }
 
@@ -96,7 +96,7 @@ export class TaxFormService {
       return this.mappingCache.get(cacheKey)!;
     }
 
-    const mappingPath = `/src/assets/pdf-templates/${formType}/mapping.json`;
+    const mappingPath = `/pdf-templates/${formType}/mapping.json`;
     
     try {
       const response = await fetch(mappingPath);

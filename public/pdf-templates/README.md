@@ -5,7 +5,7 @@ This directory contains PDF templates and their corresponding field mappings for
 ## Directory Structure
 
 ```
-src/assets/pdf-templates/
+public/pdf-templates/
 ├── PIT-37/
 │   ├── 2023/
 │   │   └── PIT-37_2023.pdf    (placeholder - needs official PDF)
@@ -136,13 +136,13 @@ To add a new form template:
 
 1. **Create directory structure**:
    ```bash
-   mkdir -p src/assets/pdf-templates/FORM-NAME/2023
+   mkdir -p public/pdf-templates/FORM-NAME/2023
    ```
 
 2. **Add PDF template**:
    Place the official PDF in the year directory:
    ```
-   src/assets/pdf-templates/FORM-NAME/2023/FORM-NAME_2023.pdf
+   public/pdf-templates/FORM-NAME/2023/FORM-NAME_2023.pdf
    ```
 
 3. **Create mapping.json**:
