@@ -33,6 +33,12 @@ import {
   getDaysUntilDue,
   DEFAULT_PAYMENT_CONFIG
 } from "../types/payment";
+import { 
+  generatePaymentReminderEmail,
+  generateMonthlySummaryEmail,
+  generateOverduePaymentEmail,
+  sendPaymentEmail
+} from "../utils/paymentEmailService";
 import { toast } from "sonner@2.0.3";
 
 interface PaymentTrackingPanelProps {
@@ -214,25 +220,47 @@ export function PaymentTrackingPanel({ clients }: PaymentTrackingPanelProps) {
   };
 
   // Send payment reminder
-  const handleSendReminder = (payment: Payment) => {
+  const handleSendReminder = async (payment: Payment) => {
     const client = clients.find(c => c.id === payment.clientId);
     if (!client) {
       toast.error("Nie znaleziono klienta");
       return;
     }
 
-    // In real app, this would trigger an email
-    toast.success(`Przypomnienie wysłane do ${client.firstName} ${client.lastName}`);
+    const daysUntil = getDaysUntilDue(payment.dueDate);
     
-    setPayments(payments.map(p => 
-      p.id === payment.id 
-        ? { ...p, reminderSent: true, reminderSentDate: new Date().toISOString() }
-        : p
-    ));
+    try {
+      let emailNotification;
+      
+      if (daysUntil < 0) {
+        // Payment is overdue - send urgent notification
+        emailNotification = generateOverduePaymentEmail(client, payment, Math.abs(daysUntil));
+      } else {
+        // Normal reminder
+        emailNotification = generatePaymentReminderEmail(client, payment, daysUntil);
+      }
+      
+      const success = await sendPaymentEmail(emailNotification);
+      
+      if (success) {
+        toast.success(`Przypomnienie wysłane do ${client.firstName} ${client.lastName}`);
+        
+        setPayments(payments.map(p => 
+          p.id === payment.id 
+            ? { ...p, reminderSent: true, reminderSentDate: new Date().toISOString() }
+            : p
+        ));
+      } else {
+        toast.error("Błąd podczas wysyłania przypomnienia");
+      }
+    } catch (error) {
+      console.error("Error sending reminder:", error);
+      toast.error("Błąd podczas wysyłania przypomnienia");
+    }
   };
 
   // Send monthly summary
-  const handleSendMonthlySummary = (clientId: string) => {
+  const handleSendMonthlySummary = async (clientId: string) => {
     const client = clients.find(c => c.id === clientId);
     const summary = paymentSummaries[clientId];
     
@@ -241,8 +269,65 @@ export function PaymentTrackingPanel({ clients }: PaymentTrackingPanelProps) {
       return;
     }
 
-    // In real app, this would trigger an email
-    toast.success(`Podsumowanie miesięczne wysłane do ${client.firstName} ${client.lastName}`);
+    try {
+      const emailNotification = generateMonthlySummaryEmail(client, summary);
+      const success = await sendPaymentEmail(emailNotification);
+      
+      if (success) {
+        toast.success(`Podsumowanie miesięczne wysłane do ${client.firstName} ${client.lastName}`);
+      } else {
+        toast.error("Błąd podczas wysyłania podsumowania");
+      }
+    } catch (error) {
+      console.error("Error sending summary:", error);
+      toast.error("Błąd podczas wysyłania podsumowania");
+    }
+  };
+
+  // Send all pending reminders
+  const handleSendAllReminders = async () => {
+    const pendingPayments = filteredPayments.filter(p => 
+      p.status === 'pending' && !p.reminderSent
+    );
+    
+    if (pendingPayments.length === 0) {
+      toast.info("Brak płatności wymagających przypomnienia");
+      return;
+    }
+
+    toast.info(`Wysyłanie ${pendingPayments.length} przypomnień...`);
+    
+    let sent = 0;
+    let failed = 0;
+    
+    for (const payment of pendingPayments) {
+      const client = clients.find(c => c.id === payment.clientId);
+      if (!client) continue;
+      
+      try {
+        const daysUntil = getDaysUntilDue(payment.dueDate);
+        const emailNotification = generatePaymentReminderEmail(client, payment, daysUntil);
+        const success = await sendPaymentEmail(emailNotification);
+        
+        if (success) {
+          sent++;
+          setPayments(prev => prev.map(p => 
+            p.id === payment.id 
+              ? { ...p, reminderSent: true, reminderSentDate: new Date().toISOString() }
+              : p
+          ));
+        } else {
+          failed++;
+        }
+        
+        // Rate limiting - wait 1 second between emails
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } catch (error) {
+        failed++;
+      }
+    }
+    
+    toast.success(`Wysłano ${sent} przypomnień. Błędów: ${failed}`);
   };
 
   // Calculate overall statistics
@@ -292,13 +377,18 @@ export function PaymentTrackingPanel({ clients }: PaymentTrackingPanelProps) {
           <h2 className="text-2xl font-bold">Śledzenie Płatności</h2>
           <p className="text-muted-foreground">Monitorowanie płatności VAT, PIT-4, ZUS i innych</p>
         </div>
-        <Dialog open={showAddPayment} onOpenChange={setShowAddPayment}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Dodaj płatność
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleSendAllReminders}>
+            <Mail className="mr-2 h-4 w-4" />
+            Wyślij wszystkie przypomnienia
+          </Button>
+          <Dialog open={showAddPayment} onOpenChange={setShowAddPayment}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Dodaj płatność
+              </Button>
+            </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Dodaj nową płatność</DialogTitle>
