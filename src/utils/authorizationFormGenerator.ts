@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import { Client, User } from '../types/client';
 import { UPL1PdfFiller } from './upl1PdfFiller';
+import { TaxFormService } from './taxFormService';
 
 // Form type definitions with complexity levels
 export type FormType = 
@@ -263,6 +264,16 @@ export class AuthorizationFormGenerator {
       return await this.generateUPL1FormFromTemplate(data);
     }
 
+    // Special handling for PIT-37 - try template-based filling first
+    if (data.formType === 'PIT-37') {
+      try {
+        return await this.generatePIT37FromTemplate(data);
+      } catch (error) {
+        console.log('PIT-37 template not available, falling back to jsPDF generation');
+        // Fall through to jsPDF generation if template not available
+      }
+    }
+
     // For all other forms, use jsPDF
     this.pdf = new jsPDF();
 
@@ -355,6 +366,33 @@ export class AuthorizationFormGenerator {
       scope: data.additionalData?.scope,
       taxOffice: data.additionalData?.taxOffice,
     });
+  }
+
+  /**
+   * Generate PIT-37 form using official PDF template and TaxFormService
+   */
+  private async generatePIT37FromTemplate(data: AuthorizationFormData): Promise<Blob> {
+    const { client, additionalData } = data;
+    const year = additionalData?.year || new Date().getFullYear().toString();
+    
+    // Prepare form data for PIT-37
+    const formData = {
+      taxpayerName: `${client.firstName} ${client.lastName}`,
+      taxpayerId: client.pesel || '',
+      taxpayerNIP: client.nip || '',
+      taxpayerAddress: client.address || '',
+      taxpayerCity: client.city || '',
+      taxpayerPostalCode: client.postalCode || '',
+      taxOffice: additionalData?.taxOffice || '',
+      employmentIncome: additionalData?.employmentIncome || 0,
+      civilContractIncome: additionalData?.civilContractIncome || 0,
+      numberOfChildren: additionalData?.numberOfChildren || 0,
+      childDeduction: additionalData?.childDeduction || 1112.04, // Standard deduction per child in Poland
+      taxPaid: additionalData?.taxPaid || 0,
+    };
+
+    const taxFormService = new TaxFormService();
+    return await taxFormService.fillFormAsBlob('PIT-37', year, formData);
   }
 
   private generateUPL1Form(data: AuthorizationFormData): void {
