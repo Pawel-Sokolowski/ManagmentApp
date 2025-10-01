@@ -198,12 +198,29 @@ export class UPL1PdfFiller {
 
   /**
    * Sanitize text to handle Polish characters
-   * Basic implementation - can be enhanced with proper font embedding
+   * Converts Polish characters to ASCII equivalents for PDF compatibility
    */
   private sanitizeText(text: string): string {
-    // For now, keep Polish characters as-is
-    // StandardFonts.Helvetica has limited support, but basic characters work
-    return text.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+    // Map Polish characters to ASCII equivalents
+    const polishCharMap: { [key: string]: string } = {
+      'ą': 'a', 'Ą': 'A',
+      'ć': 'c', 'Ć': 'C',
+      'ę': 'e', 'Ę': 'E',
+      'ł': 'l', 'Ł': 'L',
+      'ń': 'n', 'Ń': 'N',
+      'ó': 'o', 'Ó': 'O',
+      'ś': 's', 'Ś': 'S',
+      'ź': 'z', 'Ź': 'Z',
+      'ż': 'z', 'Ż': 'Z'
+    };
+    
+    let sanitized = text;
+    for (const [polish, ascii] of Object.entries(polishCharMap)) {
+      sanitized = sanitized.replace(new RegExp(polish, 'g'), ascii);
+    }
+    
+    // Remove control characters
+    return sanitized.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
   }
 
   /**
