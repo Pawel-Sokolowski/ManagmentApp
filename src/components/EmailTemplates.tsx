@@ -11,7 +11,7 @@ import { Checkbox } from "./ui/checkbox";
 import { Plus, Edit, Trash2, Mail, Copy, Eye } from "lucide-react";
 import { EmailTemplate } from "../types/client";
 import { mockEmailTemplates } from "../data/mockData";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 export function EmailTemplates() {
   const [templates, setTemplates] = useState<EmailTemplate[]>(mockEmailTemplates);

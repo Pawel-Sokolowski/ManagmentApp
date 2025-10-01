@@ -31,7 +31,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { Client, Invoice, InvoiceItem } from "../types/client";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { PDFInvoiceGenerator, availableTemplates } from "../utils/pdfGenerator";
 import { usePermissions } from "../contexts/PermissionContext";
 

@@ -11,7 +11,7 @@ import { FileText, Plus, Eye, Edit, Download, Trash2, Calculator } from "lucide-
 import { Invoice, InvoiceItem, Client } from "../types/client";
 import { mockInvoices } from "../data/mockData";
 import { mockClients } from "../data/mockClients";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 export function InvoiceManager() {
   const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);

@@ -34,7 +34,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { Email, EmailAttachment, Client, EmailTemplate } from "../types/client";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface EmailFolder {
   id: string;

@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Calendar as CalendarIcon, Plus, Clock, MapPin, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { CalendarEvent, User } from "../types/client";
 import { mockCalendarEvents, mockUsers } from "../data/mockData";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 export function Calendar() {
   const [events, setEvents] = useState<CalendarEvent[]>(mockCalendarEvents);
