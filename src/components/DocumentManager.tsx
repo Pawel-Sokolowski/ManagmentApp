@@ -21,10 +21,12 @@ import {
   File,
   Image,
   FileSpreadsheet,
-  Calendar
+  Calendar,
+  FilePlus
 } from "lucide-react";
-import { Client } from "../types/client";
+import { Client, User } from "../types/client";
 import { toast } from "sonner@2.0.3";
+import { AuthorizationFormDialog } from "./AuthorizationFormDialog";
 
 interface Document {
   id: string;
@@ -52,6 +54,41 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [isAuthFormDialogOpen, setIsAuthFormDialogOpen] = useState(false);
+
+  // Mock employees for authorization forms
+  const mockEmployees: User[] = [
+    {
+      id: '1',
+      firstName: 'Anna',
+      lastName: 'Kowalska',
+      email: 'anna.kowalska@firma.pl',
+      role: 'księgowa',
+      position: 'Główna księgowa',
+      phone: '+48 123 456 789',
+      isActive: true
+    },
+    {
+      id: '2',
+      firstName: 'Piotr',
+      lastName: 'Nowak',
+      email: 'piotr.nowak@firma.pl',
+      role: 'ksiegowosc',
+      position: 'Specjalista ds. ZUS',
+      phone: '+48 234 567 890',
+      isActive: true
+    },
+    {
+      id: '3',
+      firstName: 'Maria',
+      lastName: 'Wiśniewska',
+      email: 'maria.wisniewska@firma.pl',
+      role: 'kadry',
+      position: 'Specjalista kadrowy',
+      phone: '+48 345 678 901',
+      isActive: true
+    }
+  ];
 
   useEffect(() => {
     // Mock documents
@@ -192,14 +229,20 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
             Przechowywanie i organizacja dokumentów klientów
           </p>
         </div>
-        <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Upload className="mr-2 h-4 w-4" />
-              Prześlij dokument
-            </Button>
-          </DialogTrigger>
-        </Dialog>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setIsAuthFormDialogOpen(true)}>
+            <FilePlus className="mr-2 h-4 w-4" />
+            Generuj pełnomocnictwo
+          </Button>
+          <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Upload className="mr-2 h-4 w-4" />
+                Prześlij dokument
+              </Button>
+            </DialogTrigger>
+          </Dialog>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
@@ -430,6 +473,15 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Authorization Form Dialog */}
+      <AuthorizationFormDialog
+        isOpen={isAuthFormDialogOpen}
+        onClose={() => setIsAuthFormDialogOpen(false)}
+        clients={clients}
+        employees={mockEmployees}
+        preSelectedClientId={selectedClient !== 'all' ? selectedClient : undefined}
+      />
     </div>
   );
 }
