@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import { Client, User } from '../types/client';
+import { UPL1PdfFiller } from './upl1PdfFiller';
 
 // Form type definitions with complexity levels
 export type FormType = 
@@ -256,14 +257,17 @@ export class AuthorizationFormGenerator {
     this.pdf = new jsPDF();
   }
 
-  generateForm(data: AuthorizationFormData): Blob {
+  async generateForm(data: AuthorizationFormData): Promise<Blob> {
+    // Special handling for UPL-1 - use official PDF template with pdf-lib
+    if (data.formType === 'UPL-1') {
+      return await this.generateUPL1FormFromTemplate(data);
+    }
+
+    // For all other forms, use jsPDF
     this.pdf = new jsPDF();
 
     // Route to appropriate form generator based on type
     switch(data.formType) {
-      case 'UPL-1':
-        this.generateUPL1Form(data);
-        break;
       case 'PEL':
         this.generatePELForm(data);
         break;
@@ -325,8 +329,8 @@ export class AuthorizationFormGenerator {
     return this.pdf.output('blob');
   }
 
-  downloadForm(data: AuthorizationFormData): void {
-    const blob = this.generateForm(data);
+  async downloadForm(data: AuthorizationFormData): Promise<void> {
+    const blob = await this.generateForm(data);
     const fileName = `${data.formType}_${data.client.lastName}_${data.client.firstName}_${new Date().toISOString().split('T')[0]}.pdf`;
     
     // Create download link
@@ -336,6 +340,21 @@ export class AuthorizationFormGenerator {
     link.download = fileName;
     link.click();
     URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Generate UPL-1 form using official PDF template and pdf-lib
+   */
+  private async generateUPL1FormFromTemplate(data: AuthorizationFormData): Promise<Blob> {
+    const filler = new UPL1PdfFiller('/upl-1_06-08-2.pdf');
+    return await filler.fillFormAsBlob({
+      client: data.client,
+      employee: data.employee,
+      startDate: data.additionalData?.startDate,
+      endDate: data.additionalData?.endDate,
+      scope: data.additionalData?.scope,
+      taxOffice: data.additionalData?.taxOffice,
+    });
   }
 
   private generateUPL1Form(data: AuthorizationFormData): void {

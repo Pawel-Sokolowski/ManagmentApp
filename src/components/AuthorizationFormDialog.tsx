@@ -70,7 +70,7 @@ export function AuthorizationFormDialog({
 
     try {
       const generator = new AuthorizationFormGenerator();
-      generator.downloadForm({
+      await generator.downloadForm({
         client,
         employee,
         formType
