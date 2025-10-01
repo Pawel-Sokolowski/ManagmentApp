@@ -131,8 +131,9 @@ export class TaxFormService {
       processedData.calculatedFields = this.processPIT37Calculations(data, mappings);
     } else if (formType === 'PIT-R') {
       processedData.calculatedFields = this.processPITRCalculations(data, mappings);
-    } else if (formType === 'UPL-1' || formType === 'PEL' || formType === 'ZAW-FA') {
-      // These forms don't require calculations, just pass through
+    } else {
+      // All other forms don't require calculations, just pass through
+      // Including: UPL-1, PEL, ZAW-FA, PIT-2, PIT-OP, IFT-1, UPL-1P, and declaration forms
       processedData.calculatedFields = {};
     }
 
