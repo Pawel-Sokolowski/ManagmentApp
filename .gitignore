@@ -48,4 +48,4 @@ installer/*.exe
 
 # Temporary files
 tmp/
-temp/
+temp/test-output-*.pdf
