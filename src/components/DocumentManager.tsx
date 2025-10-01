@@ -283,7 +283,57 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
         </Select>
       </div>
 
+      {/* Filter Summary */}
+      {(selectedClient !== 'all' || selectedCategory !== 'all' || searchTerm) && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-4">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm text-muted-foreground">Aktywne filtry:</span>
+                {selectedClient !== 'all' && (
+                  <Badge variant="secondary">
+                    Klient: {getClientName(selectedClient)}
+                  </Badge>
+                )}
+                {selectedCategory !== 'all' && (
+                  <Badge variant="secondary">
+                    Kategoria: {getCategoryLabel(selectedCategory as Document['category'])}
+                  </Badge>
+                )}
+                {searchTerm && (
+                  <Badge variant="secondary">
+                    Wyszukiwanie: "{searchTerm}"
+                  </Badge>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => {
+                    setSelectedClient('all');
+                    setSelectedCategory('all');
+                    setSearchTerm('');
+                  }}
+                >
+                  Wyczyść filtry
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Dokumenty</CardTitle>
+              <CardDescription>
+                Wyświetlono {filteredDocuments.length} z {documents.filter(d => !d.isArchived).length} dokumentów
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -298,7 +348,14 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredDocuments.map((document) => (
+              {filteredDocuments.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    Nie znaleziono dokumentów spełniających kryteria wyszukiwania
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredDocuments.map((document) => (
                 <TableRow key={document.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -347,7 +404,8 @@ export function DocumentManager({ clients }: DocumentManagerProps) {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -46,6 +46,7 @@ let categories = [
   { id: 'umowy', name: 'Umowy', color: '#10b981' },
   { id: 'podatki', name: 'Podatki', color: '#f59e0b' },
   { id: 'korespondencja', name: 'Korespondencja', color: '#8b5cf6' },
+  { id: 'pelnomocnictwa', name: 'Pełnomocnictwa', color: '#ec4899' },
   { id: 'inne', name: 'Inne', color: '#6b7280' }
 ];
 
@@ -155,6 +156,40 @@ router.get('/search/:query', (req, res) => {
     doc.category.toLowerCase().includes(query.toLowerCase())
   );
   res.json(searchResults);
+});
+
+// Generate authorization form (UPL-1, PEL)
+router.post('/generate-authorization', (req, res) => {
+  const { formType, clientId, employeeId, clientName, employeeName } = req.body;
+  
+  if (!formType || !clientId || !employeeId) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  // Create a record of the generated document
+  const newDocument = {
+    id: (documents.length + 1).toString(),
+    name: `${formType}_${clientName}_${new Date().toISOString().split('T')[0]}.pdf`,
+    type: 'authorization',
+    category: 'pelnomocnictwa',
+    size: Math.floor(Math.random() * 500000) + 100000,
+    clientId: clientId,
+    uploadedBy: employeeId,
+    uploadedAt: new Date().toISOString(),
+    tags: ['pełnomocnictwo', formType.toLowerCase(), 'wygenerowane'],
+    isArchived: false,
+    metadata: {
+      formType,
+      generatedBy: employeeName,
+      generatedFor: clientName
+    }
+  };
+
+  documents.push(newDocument);
+  res.status(201).json({ 
+    message: 'Authorization form generated successfully',
+    document: newDocument 
+  });
 });
 
 module.exports = router;
