@@ -118,7 +118,7 @@ export function AuthorizationFormDialog({
               setFormType(forms[0].type);
             }
           }}>
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-6 sticky top-0 z-10 bg-background">
               <TabsTrigger value="pelnomocnictwa">Pełnomocnictwa</TabsTrigger>
               <TabsTrigger value="pit">PIT</TabsTrigger>
               <TabsTrigger value="vat">VAT</TabsTrigger>
