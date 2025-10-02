@@ -1,8 +1,8 @@
 import { Clock, Zap } from "lucide-react";
 import { useState, lazy, Suspense, useEffect } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import { ThemeToggle } from "./components/ThemeToggle";
-import { ActiveTimerDisplay } from "./components/ActiveTimerDisplay";
+import { ThemeToggle } from "./components/gui/ThemeToggle";
+import { ActiveTimerDisplay } from "./components/gui/ActiveTimerDisplay";
 import { Dashboard } from "./components/Dashboard";
 import { ClientForm } from "./components/ClientForm";
 import { ClientList } from "./components/ClientList";
