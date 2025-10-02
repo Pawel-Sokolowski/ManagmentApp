@@ -35,12 +35,11 @@ Thumbs.db
 logs
 *.log
 
-# Electron build outputs
+# Legacy Electron build outputs (no longer used)
 dist-electron/
 app-dist/
-
-# Installer executables (large binary files)
-installer/*.exe
+installer/
+installer-resources/
 
 # Database files
 *.sqlite
