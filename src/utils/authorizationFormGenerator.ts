@@ -363,7 +363,7 @@ export class AuthorizationFormGenerator {
    * Generate UPL-1 form using official PDF template and pdf-lib
    */
   private async generateUPL1FormFromTemplate(data: AuthorizationFormData): Promise<Blob> {
-    const filler = new UPL1PdfFiller('/upl-1_06-08-2.pdf');
+    const filler = new UPL1PdfFiller('/pdf-templates/UPL-1/2023/UPL-1_2023.pdf');
     return await filler.fillFormAsBlob({
       client: data.client,
       employee: data.employee,

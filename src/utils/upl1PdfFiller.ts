@@ -64,7 +64,7 @@ const UPL1_FIELD_COORDINATES = {
 export class UPL1PdfFiller {
   private pdfTemplatePath: string;
 
-  constructor(pdfTemplatePath: string = '/upl-1_06-08-2.pdf') {
+  constructor(pdfTemplatePath: string = '/pdf-templates/UPL-1/2023/UPL-1_2023.pdf') {
     this.pdfTemplatePath = pdfTemplatePath;
   }
 
@@ -86,10 +86,11 @@ export class UPL1PdfFiller {
     
     let response = await fetch(templateUrl);
     
-    // If primary path fails, try alternative locations
-    if (!response.ok && templateUrl === '/upl-1_06-08-2.pdf') {
+    // If primary path fails, try alternative locations (including legacy path for backward compatibility)
+    if (!response.ok) {
       console.log('Primary PDF path failed, trying alternative locations...');
       const alternativePaths = [
+        '/upl-1_06-08-2.pdf',  // Legacy path for backward compatibility
         '/pdf-templates/UPL-1/2023/UPL-1_2023.pdf'
       ];
       
