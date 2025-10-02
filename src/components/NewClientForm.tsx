@@ -12,7 +12,7 @@ import { Separator } from "./ui/separator";
 import { Alert, AlertDescription } from "./ui/alert";
 import { X, Plus, User, Building2, Calculator, Shield, Download, Mail, AlertCircle, Check } from "lucide-react";
 import { Client, Owner, CEIDGCompanyData } from "../types/client";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface ClientFormProps {
   client?: Client;

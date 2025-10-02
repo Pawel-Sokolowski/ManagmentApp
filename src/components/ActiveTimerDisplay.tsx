@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Timer, Play, Pause, Square } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface ActiveTimer {
   id: string;

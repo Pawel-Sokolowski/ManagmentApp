@@ -8,7 +8,7 @@ import {
   FileText,
   CheckCircle
 } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { availableTemplates, InvoiceTemplate, PDFInvoiceGenerator } from "../utils/pdfGenerator";
 import { mockInvoices } from "../data/mockData";
 import { mockClients } from "../data/mockClients";

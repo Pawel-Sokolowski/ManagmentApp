@@ -29,7 +29,7 @@ import {
   Reply
 } from "lucide-react";
 import { ChatChannel, ChatMessage, PrivateMessage, User as UserType } from "../types/client";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface AdvancedChatProps {
   currentUser: UserType;

@@ -13,7 +13,7 @@ import { Checkbox } from "./ui/checkbox";
 import { UserPlus, Edit, Trash2, Shield, Users, Building, BarChart3 } from "lucide-react";
 import { User, Permission, Company, Department } from "../types/client";
 import { mockUsers, mockCompany } from "../data/mockData";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 export function UserManagement() {
   const [users, setUsers] = useState<User[]>(mockUsers);

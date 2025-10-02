@@ -25,7 +25,7 @@ import {
   FilePlus
 } from "lucide-react";
 import { Client, User } from "../types/client";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { AuthorizationFormDialog } from "./AuthorizationFormDialog";
 
 interface Document {

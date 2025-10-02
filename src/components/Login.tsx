@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Building2, Lock, User, Globe, Monitor } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { isElectron } from '../utils/electronAPI';
 import { usePermissions } from '../contexts/PermissionContext';
 

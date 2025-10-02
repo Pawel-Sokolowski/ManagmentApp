@@ -29,7 +29,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { Client, User as UserType } from "../types/client";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface WorkTimeEntry {
   id: string;

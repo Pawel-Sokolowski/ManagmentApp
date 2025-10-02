@@ -46,7 +46,7 @@ import {
   Clipboard
 } from "lucide-react";
 import { Client } from "../types/client";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface MonthlyClientData {
   clientId: string;

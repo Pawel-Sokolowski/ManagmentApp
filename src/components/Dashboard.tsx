@@ -24,7 +24,7 @@ import {
 import { mockClients } from "../data/mockClients";
 import { mockEmails, mockInvoices, mockUsers } from "../data/mockData";
 import { User } from "../types/client";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface DashboardProps {
   currentUser: User;

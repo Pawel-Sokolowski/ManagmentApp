@@ -13,7 +13,7 @@ import { Toaster } from "./components/ui/sonner";
 import { LoadingSpinner } from "./components/common/LoadingSpinner";
 import { PermissionProvider } from "./contexts/PermissionContext";
 import { LayoutDashboard, Users, UserPlus, MessageSquare, Mail, FileText, Settings, CalendarDays, UserCog, MailOpen, FolderOpen, BarChart3, CreditCard, ScrollText, Building2, Timer } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 import { Client, User, EmailTemplate, Email } from "./types/client";
 import { electronAPI, isElectron } from "./utils/electronAPI";
 

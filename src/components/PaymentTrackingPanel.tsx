@@ -39,7 +39,7 @@ import {
   generateOverduePaymentEmail,
   sendPaymentEmail
 } from "../utils/paymentEmailService";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface PaymentTrackingPanelProps {
   clients: Client[];

@@ -7,7 +7,7 @@ import { Separator } from "./ui/separator";
 import { Badge } from "./ui/badge";
 import { Search, Building, MapPin, Calendar, AlertCircle, CheckCircle, Settings } from "lucide-react";
 import { CEIDGCompanyData, Client } from "../types/client";
-import { toast } from "sonner@2.0.3";
+import { toast } from 'sonner';
 
 interface CEIDGIntegrationProps {
   onAddClient: (clientData: Partial<Client>) => void;
