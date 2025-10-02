@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { Client, User } from "../types/client";
 import { toast } from 'sonner';
-import { AuthorizationFormDialog } from "./AuthorizationFormDialog";
+import { AuthorizationFormDialog } from "./gui/AuthorizationFormDialog";
 
 interface Document {
   id: string;

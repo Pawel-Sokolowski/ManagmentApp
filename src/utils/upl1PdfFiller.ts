@@ -76,11 +76,35 @@ export class UPL1PdfFiller {
   async fillForm(data: UPL1Data): Promise<Uint8Array> {
     // Load the template PDF from public folder
     // In browser, fetch from the public URL
-    const templateUrl = this.pdfTemplatePath;
+    // Try multiple paths for better compatibility
+    let templateUrl = this.pdfTemplatePath;
     
-    const response = await fetch(templateUrl);
+    // Ensure the path is absolute (starts with /)
+    if (!templateUrl.startsWith('/')) {
+      templateUrl = '/' + templateUrl;
+    }
+    
+    let response = await fetch(templateUrl);
+    
+    // If primary path fails, try alternative locations
+    if (!response.ok && templateUrl === '/upl-1_06-08-2.pdf') {
+      console.log('Primary PDF path failed, trying alternative locations...');
+      const alternativePaths = [
+        '/pdf-templates/UPL-1/2023/UPL-1_2023.pdf',
+        '/public/upl-1_06-08-2.pdf'
+      ];
+      
+      for (const altPath of alternativePaths) {
+        response = await fetch(altPath);
+        if (response.ok) {
+          console.log(`PDF loaded from alternative path: ${altPath}`);
+          break;
+        }
+      }
+    }
+    
     if (!response.ok) {
-      throw new Error(`Failed to load PDF template: ${response.statusText}`);
+      throw new Error(`Failed to load PDF template from ${templateUrl}: ${response.statusText}. Please ensure the PDF file exists in the public folder.`);
     }
     const pdfBytes = await response.arrayBuffer();
 

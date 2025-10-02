@@ -1,20 +1,20 @@
 import { useState, useMemo } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { FileText, Download, Info } from "lucide-react";
-import { Client, User } from "../types/client";
+import { Client, User } from "../../types/client";
 import { 
   AuthorizationFormGenerator, 
   FormType, 
   FormCategory, 
   FORM_METADATA,
   getFormsByCategory 
-} from "../utils/authorizationFormGenerator";
+} from "../../utils/authorizationFormGenerator";
 import { toast } from 'sonner';
-import { Badge } from "./ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Badge } from "../ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 interface AuthorizationFormDialogProps {
   isOpen: boolean;
@@ -109,7 +109,7 @@ export function AuthorizationFormDialog({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Category tabs */}
+          {/* Category tabs - horizontal layout with prominent main categories */}
           <Tabs value={selectedCategory} onValueChange={(value) => {
             setSelectedCategory(value as FormCategory);
             // Set default form for category
@@ -118,10 +118,10 @@ export function AuthorizationFormDialog({
               setFormType(forms[0].type);
             }
           }}>
-            <TabsList className="grid w-full grid-cols-6 sticky top-0 z-10 bg-background">
-              <TabsTrigger value="pelnomocnictwa">Pełnomocnictwa</TabsTrigger>
-              <TabsTrigger value="pit">PIT</TabsTrigger>
-              <TabsTrigger value="vat">VAT</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 gap-2 sticky top-0 z-10 bg-background p-2">
+              <TabsTrigger value="pelnomocnictwa" className="font-semibold">Pełnomocnictwa</TabsTrigger>
+              <TabsTrigger value="pit" className="font-semibold">PIT</TabsTrigger>
+              <TabsTrigger value="vat" className="font-semibold">VAT</TabsTrigger>
               <TabsTrigger value="cit">CIT</TabsTrigger>
               <TabsTrigger value="zus">ZUS</TabsTrigger>
               <TabsTrigger value="jpk">JPK</TabsTrigger>
