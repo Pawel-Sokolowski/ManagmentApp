@@ -90,8 +90,7 @@ export class UPL1PdfFiller {
     if (!response.ok && templateUrl === '/upl-1_06-08-2.pdf') {
       console.log('Primary PDF path failed, trying alternative locations...');
       const alternativePaths = [
-        '/pdf-templates/UPL-1/2023/UPL-1_2023.pdf',
-        '/public/upl-1_06-08-2.pdf'
+        '/pdf-templates/UPL-1/2023/UPL-1_2023.pdf'
       ];
       
       for (const altPath of alternativePaths) {
