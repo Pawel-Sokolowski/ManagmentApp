@@ -65,11 +65,16 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Database query endpoint for browser version
+// Secure database query endpoint for browser version
 app.post('/api/db-query', async (req, res) => {
   try {
-    const { query, params } = req.body;
-    const result = await pool.query(query, params);
+    const { table } = req.body;
+    const allowedTables = ['users', 'projects', 'tasks', 'clients']; // Whitelist allowed table names
+    if (!table || !allowedTables.includes(table)) {
+      return res.status(400).json({ success: false, error: 'Invalid table name' });
+    }
+    // Never interpolate table names directly into query - use identifier escaping for prod
+    const result = await pool.query(`SELECT * FROM ${table} LIMIT 100`);
     res.json({ 
       success: true, 
       data: result.rows,
