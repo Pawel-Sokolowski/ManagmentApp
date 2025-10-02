@@ -18,8 +18,15 @@ const createInvoiceLimiter = rateLimit({
   message: { error: "Too many invoice creations from this IP, please try again later." }
 });
 
+// Limit to 100 get requests per 15 minutes per IP
+const getInvoicesLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { error: "Too many requests for invoices from this IP, please try again later." }
+});
+
 // Get all invoices
-router.get('/', async (req, res) => {
+router.get('/', getInvoicesLimiter, async (req, res) => {
   try {
     const query = `
       SELECT i.*, c.company_name as client_name
