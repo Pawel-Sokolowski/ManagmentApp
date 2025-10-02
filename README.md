@@ -6,13 +6,11 @@ A comprehensive office management system built with React, Electron, and Postgre
 
 ## 🎯 Want an Executable (.exe) File?
 
-**→ [START HERE: SOLUTION.md](SOLUTION.md)** - Complete guide to building your executable! 🚀
-
 **Quick options:**
-- 🤖 [Build in the cloud](GITHUB_ACTIONS_GUIDE.md) (easiest - no Windows needed!)
-- 📱 [Build on Windows](QUICK_START.md) (simple step-by-step)
-- 🔧 [Advanced build](BUILD_GUIDE.md) (for developers)
-- 📖 [All documentation](DOCUMENTATION_INDEX.md) (everything in one place)
+- 🤖 [Build in the cloud](docs/development/GITHUB_ACTIONS_GUIDE.md) (easiest - no Windows needed!)
+- 📱 [Build on Windows](docs/guides/QUICK_START.md) (simple step-by-step)
+- 🔧 [Advanced build](docs/development/HOW_TO_BUILD.md) (for developers)
+- 📖 [All documentation](docs/README.md) (organized and easy to navigate)
 
 ---
 
@@ -30,7 +28,7 @@ This application can be deployed in **two different ways** depending on your nee
 - Can work offline once configured
 - Database can be local or remote
 
-**[📘 Desktop Installation Guide →](INSTALLATION_GUIDE.md)**
+**[📘 Desktop Installation Guide →](docs/guides/INSTALLATION_GUIDE.md)**
 
 **Quick install:**
 1. Download installer from [Releases](https://github.com/Pawel-Sokolowski/ManagmentApp/releases)
@@ -45,7 +43,7 @@ This application can be deployed in **two different ways** depending on your nee
 - Centralized server deployment
 - Supports unlimited concurrent users
 
-**[🌐 Web Deployment Guide →](WEB_DEPLOYMENT_GUIDE.md)**
+**[🌐 Web Deployment Guide →](docs/development/WEB_DEPLOYMENT_GUIDE.md)**
 
 **Quick web deployment:**
 ```bash
@@ -61,17 +59,17 @@ npm run server:prod
 **Three ways to get a desktop executable:**
 
 1. **🚀 Use GitHub Actions (Easiest - No Windows PC Needed!)**
-   - [GITHUB_ACTIONS_GUIDE.md](GITHUB_ACTIONS_GUIDE.md) - Build in the cloud for FREE
+   - [GITHUB_ACTIONS_GUIDE.md](docs/development/GITHUB_ACTIONS_GUIDE.md) - Build in the cloud for FREE
    - Works from Mac, Linux, or Windows
    - Takes 5-10 minutes
 
 2. **📘 For Non-Technical Users**
-   - [QUICK_START.md](QUICK_START.md) - Simple step-by-step guide
+   - [QUICK_START.md](docs/guides/QUICK_START.md) - Simple step-by-step guide
    - Requires Windows PC
    - Takes 10-15 minutes
 
 3. **📗 For Developers**
-   - [BUILD_GUIDE.md](BUILD_GUIDE.md) - Comprehensive build documentation
+   - [HOW_TO_BUILD.md](docs/development/HOW_TO_BUILD.md) - Comprehensive build documentation
    - Advanced options and customization
 
 ---
@@ -112,10 +110,14 @@ Test features in your browser before installing.
 Want to build the executable yourself? We have guides for everyone:
 
 ### 📘 For Non-Technical Users
-**[QUICK_START.md](QUICK_START.md)** - Simple step-by-step guide with screenshots
+**[QUICK_START.md](docs/guides/QUICK_START.md)** - Simple step-by-step guide with screenshots
 
 ### 📗 For Developers
-**[BUILD_GUIDE.md](BUILD_GUIDE.md)** - Comprehensive build documentation
+**[HOW_TO_BUILD.md](docs/development/HOW_TO_BUILD.md)** - Comprehensive build documentation
+**[HOW_TO_TEST.md](docs/development/HOW_TO_TEST.md)** - Testing guidelines
+
+### 📚 All Documentation
+**[Documentation Index](docs/README.md)** - Organized documentation with guides, development docs, and feature documentation
 
 ### Quick Build (Windows)
 
