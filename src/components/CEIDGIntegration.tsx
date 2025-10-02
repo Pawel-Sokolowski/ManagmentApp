@@ -105,16 +105,80 @@ export function CEIDGIntegration({ onAddClient }: CEIDGIntegrationProps) {
     setSearchQuery('');
   };
 
-  const handleSaveApiKey = () => {
+  // Utility to encrypt text with a passphrase using AES-GCM and PBKDF2
+  async function encryptApiKey(plainText: string, passphrase: string): Promise<string> {
+    // Salt and IV generation
+    const enc = new TextEncoder();
+    const salt = window.crypto.getRandomValues(new Uint8Array(16));
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+    // Key derivation
+    const keyMaterial = await window.crypto.subtle.importKey(
+      'raw',
+      enc.encode(passphrase),
+      {name: 'PBKDF2'},
+      false,
+      ['deriveKey']
+    );
+    const key = await window.crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        salt,
+        iterations: 100000,
+        hash: 'SHA-256'
+      },
+      keyMaterial,
+      {name: 'AES-GCM', length: 256},
+      false,
+      ['encrypt', 'decrypt']
+    );
+
+    // Encrypt
+    const ciphertext = await window.crypto.subtle.encrypt(
+      {name: 'AES-GCM', iv},
+      key,
+      enc.encode(plainText)
+    );
+
+    // Concatenate salt + iv + ciphertext as a base64 string
+    function arrayBufferToBase64(buffer: ArrayBuffer): string {
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
+    }
+
+    const packed = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
+    packed.set(salt, 0);
+    packed.set(iv, salt.length);
+    packed.set(new Uint8Array(ciphertext), salt.length + iv.length);
+
+    return arrayBufferToBase64(packed.buffer);
+  }
+
+  const handleSaveApiKey = async () => {
     if (!apiKey.trim()) {
       toast.error("Wprowadź klucz API");
       return;
     }
     
-    // In real implementation, this would be saved securely
-    localStorage.setItem('ceidg_api_key', apiKey);
-    toast.success("Klucz API został zapisany");
-    setIsConfiguring(false);
+    // Ask user for an encryption passphrase
+    const passphrase = window.prompt("Podaj hasło do zaszyfrowania klucza API (zapamiętaj je!):", "");
+    if (!passphrase || passphrase.length < 4) {
+      toast.error("Musisz wprowadzić hasło (min. 4 znaki) do zaszyfrowania klucza API.");
+      return;
+    }
+
+    try {
+      const encryptedValue = await encryptApiKey(apiKey, passphrase);
+      localStorage.setItem('ceidg_api_key', encryptedValue);
+      toast.success("Klucz API został zaszyfrowany i zapisany (zapamiętaj hasło!)");
+      setIsConfiguring(false);
+    } catch (err) {
+      toast.error("Błąd przy szyfrowaniu klucza API");
+    }
   };
 
   return (
