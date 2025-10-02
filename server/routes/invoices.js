@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Pool } = require('pg');
+const rateLimit = require('express-rate-limit'); // Add rate limiting middleware import
 
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
@@ -8,6 +9,13 @@ const pool = new Pool({
   database: process.env.DB_NAME || 'office_management',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'password',
+});
+
+// Limit to 10 create requests per 15 minutes per IP
+const createInvoiceLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: { error: "Too many invoice creations from this IP, please try again later." }
 });
 
 // Get all invoices
@@ -28,7 +36,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create invoice
-router.post('/', async (req, res) => {
+router.post('/', createInvoiceLimiter, async (req, res) => {
   try {
     const { clientId, amount, dueDate, description, items } = req.body;
     
